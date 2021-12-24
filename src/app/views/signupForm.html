@@ -1,0 +1,22 @@
+{{define "title"}}signup{{end}}
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+{{define "content"}}
+  <h1>Signup</h1>
+  <form action="/registration" method="post">
+    <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+
+    <div>
+      <p>username</p><input type="text" name="username" required="required" maxlength="30">{{.username}}{{.username_status}}
+      <p>email</p><input type="text" name="email" required="required" maxlength="255">{{.email}}{{.bad_email}}{{.email_status}}
+      <p>password</p><input type="password" name="password" required="required" maxlength="30">        
+    </div>
+    <div><input type="submit" value="signup"></div>
+</form>
+{{end}}

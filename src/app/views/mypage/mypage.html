@@ -1,0 +1,19 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+  {{else}}
+    <li class="nav__item"><a href="/loginform">ログイン</a></li>
+    <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+
+{{define "content"}}
+  <a href="/purchase-history">購入履歴</a><br>
+  <a href="/registered-items">登録済商品</a><br>
+  <a href="/sell-items-form">商品登録フォーム</a><br>
+  <a href="/user-detailed-information">お客様情報フォーム</a><br>
+  <a href="/payment-info">支払い情報入力フォーム</a><br><br><br>
+  <a href="/create-an-express-account">Stripeアカウントリンク</a>
+{{end}}

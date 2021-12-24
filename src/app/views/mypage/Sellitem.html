@@ -1,0 +1,27 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+  {{else}}
+    <li class="nav__item"><a href="/loginform">ログイン</a></li>
+    <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+
+{{define "content"}}
+<h1>Signup</h1>
+<form action="#" method="post">
+  <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+  <div>
+    <p>商品名</p><input type="text" name="itemname" required="required" maxlength="100">
+    <p>商品説明</p><textarea name="item-description" cols="30" rows="10" maxlength="2000"></textarea>
+    <p>商品価格</p><input type="number" name="price" required="required" maxlength="10"><p>円</p>
+    <p>商品画像1</p><input type="file" name="image1" accept=".png, .jpg" required="required">
+    <p>商品画像2</p><input type="file" name="image2" accept=".png, .jpg">
+    <p>商品画像3</p><input type="file" name="image3" accept=".png, .jpg">
+
+  </div>
+  <div><input type="submit" value="登録"></div>
+</form>
+{{end}}

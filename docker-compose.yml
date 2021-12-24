@@ -1,0 +1,24 @@
+version: "3"
+services:
+  db:
+    image: postgres:11
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgresdb
+    volumes:
+      - "./db/postgres:/var/lib/postgresql/data"
+
+  web:
+    build:
+      context: .
+    tty:
+      true
+    volumes:
+      - "./src:/app"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
