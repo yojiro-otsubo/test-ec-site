@@ -23,14 +23,26 @@ func ConnectionDB() {
 		log.Fatalln(err)
 	}
 
-	cmd := "CREATE TABLE IF NOT EXISTS user_account (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255));"
+	cmd := "CREATE TABLE IF NOT EXISTS user (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255));"
 	_, err = DbConnection.Exec(cmd)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	cmd1 := "CREATE TABLE IF NOT EXISTS item_registration (id serial PRIMARY KEY, username VARCHAR(50), itemname VARCHAR(100), item_description VARCHAR(2100), price INT);"
+	cmd1 := "CREATE TABLE IF NOT EXISTS accouts (id serial PRIMARY KEY, user_id INT, stripe_account VARCHAR(100));"
 	_, err = DbConnection.Exec(cmd1)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, product_name VARCHAR(100), amount INT, quantity INT);"
+	_, err = DbConnection.Exec(cmd2)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd3 := "CREATE TABLE IF NOT EXISTS settlement (id serial PRIMARY KEY, user_id INT, product_id INT);"
+	_, err = DbConnection.Exec(cmd3)
 	if err != nil {
 		log.Fatalln(err)
 	}

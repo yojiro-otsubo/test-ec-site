@@ -13,6 +13,7 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
@@ -350,16 +351,6 @@ func createMultitemplate() multitemplate.Renderer {
 //スタートウェブサーバー（main.goから呼び出し)
 func StartWebServer() {
 
-	params2 := &stripe.AccountLinkParams{
-		Account:    stripe.String("acct_1KA6gGRE9KgqHjPz"),
-		RefreshURL: stripe.String("http://localhost:8080/"),
-		ReturnURL:  stripe.String("http://localhost:8080/test"),
-		Type:       stripe.String("account_onboarding"),
-	}
-	result2, _ := accountlink.New(params2)
-
-	log.Fatalln(result2.URL)
-
 	r := gin.Default()
 	r.HTMLRender = createMultitemplate()
 	r.Static("/static", "app/static")
@@ -414,12 +405,12 @@ func StartWebServer() {
 
 func CreateAnExpressAccount(c *gin.Context) {
 	stripe.Key = config.Config.StripeKey
-	//params1 := &stripe.AccountParams{Type: stripe.String("express")}
-	//result1, _ := account.New(params1)
-	//log.Fatalln(result1.ID)
+	params1 := &stripe.AccountParams{Type: stripe.String("express")}
+	result1, _ := account.New(params1)
+	log.Fatalln(result1.ID)
 
 	params2 := &stripe.AccountLinkParams{
-		Account:    stripe.String("acct_1KA6gGRE9KgqHjPz"),
+		Account:    stripe.String(result1.ID),
 		RefreshURL: stripe.String("http://localhost:8080/"),
 		ReturnURL:  stripe.String("http://localhost:8080/test"),
 		Type:       stripe.String("account_onboarding"),
