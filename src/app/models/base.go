@@ -23,13 +23,13 @@ func ConnectionDB() {
 		log.Fatalln(err)
 	}
 
-	cmd := "CREATE TABLE IF NOT EXISTS user (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255));"
+	cmd := "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255));"
 	_, err = DbConnection.Exec(cmd)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	cmd1 := "CREATE TABLE IF NOT EXISTS accouts (id serial PRIMARY KEY, user_id INT, stripe_account VARCHAR(100));"
+	cmd1 := "CREATE TABLE IF NOT EXISTS accouts (id serial PRIMARY KEY, user_id INT, stripe_account VARCHAR(255));"
 	_, err = DbConnection.Exec(cmd1)
 	if err != nil {
 		log.Fatalln(err)
@@ -89,7 +89,7 @@ func UserCheck(username string) bool {
 	}
 
 	var uname string
-	err = DbConnection.QueryRow("SELECT username FROM user_account WHERE username = $1", username).Scan(&uname)
+	err = DbConnection.QueryRow("SELECT username FROM users WHERE username = $1", username).Scan(&uname)
 	if err != nil {
 		return true
 	} else {
@@ -107,7 +107,7 @@ func EmailCheck(email string) bool {
 	}
 
 	var mail string
-	err = DbConnection.QueryRow("SELECT email FROM user_account WHERE email = $1", email).Scan(&mail)
+	err = DbConnection.QueryRow("SELECT email FROM users WHERE email = $1", email).Scan(&mail)
 	if err != nil {
 		return true
 	} else {
@@ -126,11 +126,11 @@ func LoginCheck(username, password string) bool {
 
 	var uname string
 	var hpass []byte
-	err = DbConnection.QueryRow("SELECT username FROM user_account WHERE username = $1", username).Scan(&uname)
+	err = DbConnection.QueryRow("SELECT username FROM users WHERE username = $1", username).Scan(&uname)
 	if err != nil {
 		return false
 	} else {
-		err = DbConnection.QueryRow("SELECT password FROM user_account WHERE username = $1", username).Scan(&hpass)
+		err = DbConnection.QueryRow("SELECT password FROM users WHERE username = $1", username).Scan(&hpass)
 		if err != nil {
 			log.Fatalln(err)
 			return false
@@ -152,29 +152,11 @@ func UserRegistration(username, email, hashpassword string) {
 		log.Fatalln(err)
 	}
 
-	cmd, err := DbConnection.Prepare("INSERT INTO user_account(username, password, email) VALUES($1, $2, $3) RETURNING id")
+	cmd, err := DbConnection.Prepare("INSERT INTO users(username, password, email) VALUES($1, $2, $3) RETURNING id")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	_, err = cmd.Exec(username, hashpassword, email)
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
-
-func ItemRegistrationDB(username interface{}, item_name, item_description, price string) {
-	var err error
-	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
-
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	cmd, err := DbConnection.Prepare("INSERT INTO user_account(username, itemname, item_description) VALUES($1, $2, $3) RETURNING id")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	_, err = cmd.Exec(username, item_name, price)
 	if err != nil {
 		log.Fatalln(err)
 	}

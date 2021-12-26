@@ -13,7 +13,6 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
@@ -124,24 +123,6 @@ func SellItemsForm(c *gin.Context) {
 func CreateUpFile(username interface{}) {
 }
 
-//商品登録処理
-func ItemRegistrationProcess(c *gin.Context) {
-	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
-	item_name := c.PostForm("itemname")
-	item_description := c.PostForm("item-description")
-	price := c.PostForm("price")
-
-	models.ItemRegistrationDB(LoginInfo.UserId, item_name, item_description, price)
-	//CreateUpFile(LoginInfo.UserId, item_name)
-
-	if LoginInfo.UserId != nil {
-
-	} else {
-		c.Redirect(302, "/")
-	}
-}
-
 //お客様情報入力フォーム
 func UserDetailedInformationForm(c *gin.Context) {
 	session := sessions.Default(c)
@@ -186,7 +167,8 @@ func PaymentInfoFrom(c *gin.Context) {
 
 //-------------------------------------------------- AUTH --------------------------------------------------
 type SessionInfo struct {
-	UserId interface{}
+	UserId        interface{}
+	StripeAccount interface{}
 }
 
 var LoginInfo SessionInfo
@@ -344,6 +326,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("UserDetailedInformation", "app/views/base.html", "app/views/mypage/UserDetailedInfoForm.html")
 	render.AddFromFiles("PaymentInfo", "app/views/base.html", "app/views/mypage/PaymentInfo.html")
 	render.AddFromFiles("test", "app/views/base.html", "app/views/mypage/test.html")
+	render.AddFromFiles("CreateAnExpressAccount", "app/views/stripe/CreateAnExpressAccount.html")
 
 	return render
 }
@@ -376,7 +359,6 @@ func StartWebServer() {
 	//商品登録フォーム
 	r.GET("/sell-items-form", SellItemsForm)
 	//商品登録処理
-	r.POST("item-registration-process", ItemRegistrationProcess)
 	r.GET("/user-detailed-information", UserDetailedInformationForm)
 	r.GET("/payment-info", PaymentInfoFrom)
 
@@ -405,24 +387,24 @@ func StartWebServer() {
 
 func CreateAnExpressAccount(c *gin.Context) {
 	stripe.Key = config.Config.StripeKey
-	params1 := &stripe.AccountParams{Type: stripe.String("express")}
+	/*params1 := &stripe.AccountParams{Type: stripe.String("express")}
 	result1, _ := account.New(params1)
-	log.Fatalln(result1.ID)
+	log.Fatalln(result1.ID)*/
 
 	params2 := &stripe.AccountLinkParams{
-		Account:    stripe.String(result1.ID),
+		Account:    stripe.String("acct_1KAaYGRFmQABdbE6"),
 		RefreshURL: stripe.String("http://localhost:8080/"),
 		ReturnURL:  stripe.String("http://localhost:8080/test"),
 		Type:       stripe.String("account_onboarding"),
 	}
 	result2, _ := accountlink.New(params2)
 
-	log.Fatalln(result2.URL)
+	c.Redirect(307, result2.URL)
 
-	c.Redirect(302, result2.URL)
 }
 
 func test(c *gin.Context) {
+
 	session := sessions.Default(c)
 	LoginInfo.UserId = session.Get("UserId")
 	if LoginInfo.UserId == nil {

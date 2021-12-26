@@ -14,5 +14,6 @@ RUN go get -u github.com/gin-gonic/gin
 RUN go get github.com/gin-contrib/multitemplate
 RUN go get github.com/gin-contrib/sessions
 RUN go get github.com/utrack/gin-csrf
-RUN go go get -u github.com/stripe/stripe-go/v72
-RUN go get github.com/stripe/stripe-go/account
+RUN go get -u github.com/stripe/stripe-go/v72
+RUN go get github.com/stripe/stripe-go/v72/account
+RUN go get github.com/stripe/stripe-go/v72/accountlink
