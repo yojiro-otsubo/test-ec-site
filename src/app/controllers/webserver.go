@@ -13,6 +13,7 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/stripe/stripe-go/v72"
+	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
@@ -21,8 +22,8 @@ import (
 //トップページ
 func top(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
-	if LoginInfo.UserId == nil {
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId == nil {
 		c.HTML(200, "top", gin.H{
 			"title":     "top",
 			"login":     false,
@@ -32,7 +33,7 @@ func top(c *gin.Context) {
 		c.HTML(200, "top", gin.H{
 			"title":     "top",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}
@@ -44,9 +45,9 @@ func top(c *gin.Context) {
 func mypage(c *gin.Context) {
 	uname := c.Param("username")
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
+	UserInfo.UserId = session.Get("UserId")
 
-	if LoginInfo.UserId == uname {
+	if UserInfo.UserId == uname {
 		c.HTML(200, "mypage", gin.H{
 			"title":    uname,
 			"login":    true,
@@ -60,9 +61,9 @@ func mypage(c *gin.Context) {
 //購入履歴
 func purchaseHistory(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
+	UserInfo.UserId = session.Get("UserId")
 
-	if LoginInfo.UserId == nil {
+	if UserInfo.UserId == nil {
 		c.HTML(200, "purchaseHistory", gin.H{
 			"title":     "purchaseHistory",
 			"login":     false,
@@ -72,7 +73,7 @@ func purchaseHistory(c *gin.Context) {
 		c.HTML(200, "purchaseHistory", gin.H{
 			"title":     "purchaseHistory",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}
@@ -81,9 +82,9 @@ func purchaseHistory(c *gin.Context) {
 //登録済商品一覧
 func registeredItems(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
+	UserInfo.UserId = session.Get("UserId")
 
-	if LoginInfo.UserId == nil {
+	if UserInfo.UserId == nil {
 		c.HTML(200, "registeredItems", gin.H{
 			"title":     "registeredItems",
 			"login":     false,
@@ -93,7 +94,7 @@ func registeredItems(c *gin.Context) {
 		c.HTML(200, "registeredItems", gin.H{
 			"title":     "registeredItems",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}
@@ -102,9 +103,9 @@ func registeredItems(c *gin.Context) {
 //商品登録フォーム
 func SellItemsForm(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
+	UserInfo.UserId = session.Get("UserId")
 
-	if LoginInfo.UserId == nil {
+	if UserInfo.UserId == nil {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     false,
@@ -114,7 +115,7 @@ func SellItemsForm(c *gin.Context) {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}
@@ -126,9 +127,9 @@ func CreateUpFile(username interface{}) {
 //お客様情報入力フォーム
 func UserDetailedInformationForm(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
+	UserInfo.UserId = session.Get("UserId")
 
-	if LoginInfo.UserId == nil {
+	if UserInfo.UserId == nil {
 		c.HTML(200, "UserDetailedInformation", gin.H{
 			"title":     "UserDetailedInformation",
 			"login":     false,
@@ -138,7 +139,7 @@ func UserDetailedInformationForm(c *gin.Context) {
 		c.HTML(200, "UserDetailedInformation", gin.H{
 			"title":     "UserDetailedInformation",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}
@@ -147,9 +148,9 @@ func UserDetailedInformationForm(c *gin.Context) {
 //支払い方法入力フォーム
 func PaymentInfoFrom(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
+	UserInfo.UserId = session.Get("UserId")
 
-	if LoginInfo.UserId == nil {
+	if UserInfo.UserId == nil {
 		c.HTML(200, "PaymentInfo", gin.H{
 			"title":     "PaymentInfo",
 			"login":     false,
@@ -159,7 +160,7 @@ func PaymentInfoFrom(c *gin.Context) {
 		c.HTML(200, "PaymentInfo", gin.H{
 			"title":     "PaymentInfo",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}
@@ -171,7 +172,7 @@ type SessionInfo struct {
 	StripeAccount interface{}
 }
 
-var LoginInfo SessionInfo
+var UserInfo SessionInfo
 
 //ユーザー登録
 func registration(c *gin.Context) {
@@ -254,8 +255,8 @@ func Login(c *gin.Context) {
 //ログアウト処理
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
-	if LoginInfo.UserId != nil {
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId != nil {
 		session.Clear()
 		session.Save()
 		c.Redirect(302, "/")
@@ -269,8 +270,8 @@ func Logout(c *gin.Context) {
 func sessionCheck() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		session := sessions.Default(c)
-		LoginInfo.UserId = session.Get(("UserID"))
-		if LoginInfo.UserId == nil {
+		UserInfo.UserId = session.Get(("UserID"))
+		if UserInfo.UserId == nil {
 			log.Println("ログインしていません")
 			c.HTML(http.StatusMovedPermanently, "loginform", gin.H{
 				"login_massage": "ログインが必要です",
@@ -278,17 +279,18 @@ func sessionCheck() gin.HandlerFunc {
 			})
 			c.Abort()
 		} else {
-			c.Set("UserID", LoginInfo.UserId)
+			c.Set("UserID", UserInfo.UserId)
 			c.Next()
 		}
 		log.Println("ログインチェック終了")
 	}
 }
 
+//ログインフォーム
 func LoginForm(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
-	if LoginInfo.UserId == nil {
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId == nil {
 		c.HTML(200, "loginform", gin.H{
 			"login":     false,
 			"csrfToken": csrf.GetToken(c),
@@ -298,10 +300,11 @@ func LoginForm(c *gin.Context) {
 	}
 }
 
+//登録フォーム
 func SignupForm(c *gin.Context) {
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
-	if LoginInfo.UserId == nil {
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId == nil {
 		c.HTML(200, "signupform", gin.H{
 			"login":     false,
 			"csrfToken": csrf.GetToken(c),
@@ -326,7 +329,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("UserDetailedInformation", "app/views/base.html", "app/views/mypage/UserDetailedInfoForm.html")
 	render.AddFromFiles("PaymentInfo", "app/views/base.html", "app/views/mypage/PaymentInfo.html")
 	render.AddFromFiles("test", "app/views/base.html", "app/views/mypage/test.html")
-	render.AddFromFiles("CreateAnExpressAccount", "app/views/stripe/CreateAnExpressAccount.html")
+	//render.AddFromFiles("CreateAnExpressAccount", "app/views/stripe/CreateAnExpressAccount.html")
 
 	return render
 }
@@ -385,39 +388,63 @@ func StartWebServer() {
 
 }
 
+//stripe連結アカウント作成、アカウント登録リンクへリダイレクト
 func CreateAnExpressAccount(c *gin.Context) {
-	stripe.Key = config.Config.StripeKey
-	/*params1 := &stripe.AccountParams{Type: stripe.String("express")}
-	result1, _ := account.New(params1)
-	log.Fatalln(result1.ID)*/
+	session := sessions.Default(c)
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.UserId = session.Get("UserId")
+	log.Println("Username = ", UserInfo.UserId)
+	if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
+		//stripe連結アカウント作成
+		stripe.Key = config.Config.StripeKey
+		params1 := &stripe.AccountParams{Type: stripe.String("express")}
+		result1, _ := account.New(params1)
 
-	params2 := &stripe.AccountLinkParams{
-		Account:    stripe.String("acct_1KAaYGRFmQABdbE6"),
-		RefreshURL: stripe.String("http://localhost:8080/"),
-		ReturnURL:  stripe.String("http://localhost:8080/test"),
-		Type:       stripe.String("account_onboarding"),
+		//user_id取得
+		userid := models.GetUserID(UserInfo.UserId)
+
+		//stripeアカウント登録
+		models.AccountRegist(userid, result1.ID)
+		session.Set("StripeAccount", result1.ID)
+		session.Save()
+		log.Println()
+		UserInfo.StripeAccount = session.Get("StripeAccount")
+		log.Println("stripe_account_id = ", UserInfo.StripeAccount, "\nusername = ", UserInfo.UserId)
+
+		//アカウントリンク作成
+		params2 := &stripe.AccountLinkParams{
+			Account:    stripe.String(result1.ID),
+			RefreshURL: stripe.String("http://localhost:8080/"),
+			ReturnURL:  stripe.String("http://localhost:8080/test"),
+			Type:       stripe.String("account_onboarding"),
+		}
+		result2, _ := accountlink.New(params2)
+
+		c.Redirect(307, result2.URL)
+
+	} else if UserInfo.UserId == nil && UserInfo.StripeAccount == nil {
+		c.Redirect(302, "/loginform")
+	} else {
+		c.Redirect(302, "/")
 	}
-	result2, _ := accountlink.New(params2)
-
-	c.Redirect(307, result2.URL)
 
 }
 
 func test(c *gin.Context) {
 
 	session := sessions.Default(c)
-	LoginInfo.UserId = session.Get("UserId")
-	if LoginInfo.UserId == nil {
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId == nil {
 		c.HTML(200, "test", gin.H{
 			"title":     "test",
 			"login":     false,
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {
-		c.HTML(200, "test", gin.H{
+		c.HTML(200, "CreateAnExpressAccount", gin.H{
 			"title":     "test",
 			"login":     true,
-			"username":  LoginInfo.UserId,
+			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}

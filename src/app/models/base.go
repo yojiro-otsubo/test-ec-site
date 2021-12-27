@@ -23,30 +23,35 @@ func ConnectionDB() {
 		log.Fatalln(err)
 	}
 
+	//usersテーブル作成
 	cmd := "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255));"
 	_, err = DbConnection.Exec(cmd)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	cmd1 := "CREATE TABLE IF NOT EXISTS accouts (id serial PRIMARY KEY, user_id INT, stripe_account VARCHAR(255));"
+	//accountsテーブル作成
+	cmd1 := "CREATE TABLE IF NOT EXISTS accounts (id serial PRIMARY KEY, user_id INT, stripe_account VARCHAR(255));"
 	_, err = DbConnection.Exec(cmd1)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	//productsテーブル作成
 	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, product_name VARCHAR(100), amount INT, quantity INT);"
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	//settlementテーブル作成
 	cmd3 := "CREATE TABLE IF NOT EXISTS settlement (id serial PRIMARY KEY, user_id INT, product_id INT);"
 	_, err = DbConnection.Exec(cmd3)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
+	//testテーブル作成
 	cmdtest := "CREATE TABLE IF NOT EXISTS test_db (id serial PRIMARY KEY, test VARCHAR(50));"
 	_, err = DbConnection.Exec(cmdtest)
 	if err != nil {
@@ -56,30 +61,23 @@ func ConnectionDB() {
 	defer DbConnection.Close()
 }
 
+//動作テスト
 func TestDb() {
 	DbConnection, err := sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	InsertCmd, err := DbConnection.Prepare("INSERT INTO test_db(test) VALUES($1) RETURNING id")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	_, err = InsertCmd.Exec("hogehoge")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	var id int
 
-	var test string
-
-	err = DbConnection.QueryRow("SELECT test FROM test_db WHERE test = $1", "hogehoge").Scan(&test)
+	err = DbConnection.QueryRow("SELECT id FROM users WHERE username = $1", "admin").Scan(&id)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(test)
+	log.Println("PRIMARY KEY = ", id)
 }
 
+//userテーブルのusername存在チェック
 func UserCheck(username string) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
@@ -98,6 +96,7 @@ func UserCheck(username string) bool {
 
 }
 
+//userテーブルのemailの存在チェック
 func EmailCheck(email string) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
@@ -116,6 +115,7 @@ func EmailCheck(email string) bool {
 
 }
 
+//ログインチェック
 func LoginCheck(username, password string) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
@@ -126,15 +126,17 @@ func LoginCheck(username, password string) bool {
 
 	var uname string
 	var hpass []byte
+	//usernameの存在
 	err = DbConnection.QueryRow("SELECT username FROM users WHERE username = $1", username).Scan(&uname)
 	if err != nil {
 		return false
 	} else {
+		//passwordの存在チェック
 		err = DbConnection.QueryRow("SELECT password FROM users WHERE username = $1", username).Scan(&hpass)
 		if err != nil {
-			log.Fatalln(err)
 			return false
 		}
+		//passwordチェック
 		err := bcrypt.CompareHashAndPassword(hpass, []byte(password))
 		if err != nil {
 			return false
@@ -144,20 +146,73 @@ func LoginCheck(username, password string) bool {
 
 }
 
+//user登録
 func UserRegistration(username, email, hashpassword string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
-
 	if err != nil {
 		log.Fatalln(err)
 	}
-
+	//userにINSERTする
 	cmd, err := DbConnection.Prepare("INSERT INTO users(username, password, email) VALUES($1, $2, $3) RETURNING id")
 	if err != nil {
-		log.Fatalln(err)
+		log.Println(err)
 	}
 	_, err = cmd.Exec(username, hashpassword, email)
 	if err != nil {
+		log.Println(err)
+	}
+}
+
+//accountsテーブルにINSERT
+func AccountRegist(userid int, stripeid string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
 		log.Fatalln(err)
 	}
+
+	cmd, err := DbConnection.Prepare("INSERT INTO accounts(user_id, stripe_account) VALUES($1, $2) RETURNING id")
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = cmd.Exec(userid, stripeid)
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
+//usersテーブルのid取得
+func GetUserID(username interface{}) int {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var userid int
+	err = DbConnection.QueryRow("SELECT id FROM users WHERE username = $1", username).Scan(&userid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return userid
+
+}
+
+func GetStripeAccountId(userid int) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var stripeid string
+	err = DbConnection.QueryRow("SELECT stripe_account FROM accounts WHERE user_id = $1", userid).Scan(&stripeid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return stripeid
 }
