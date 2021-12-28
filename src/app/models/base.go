@@ -164,7 +164,7 @@ func UserRegistration(username, email, hashpassword string) {
 	}
 }
 
-//accountsテーブルにINSERT
+//accountsテーブルにuser_idとstripe_accountをINSERT
 func AccountRegist(userid int, stripeid string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
@@ -183,7 +183,7 @@ func AccountRegist(userid int, stripeid string) {
 
 }
 
-//usersテーブルのid取得
+//usernameでusersテーブルのid取得
 func GetUserID(username interface{}) int {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
@@ -201,7 +201,8 @@ func GetUserID(username interface{}) int {
 
 }
 
-func GetStripeAccountId(userid int) string {
+//ussr_idでstripe_account取得
+func GetStripeAccountId(userid int) (string, bool) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
@@ -212,7 +213,8 @@ func GetStripeAccountId(userid int) string {
 	err = DbConnection.QueryRow("SELECT stripe_account FROM accounts WHERE user_id = $1", userid).Scan(&stripeid)
 	if err != nil {
 		log.Println(err)
+		return stripeid, false
 	}
 
-	return stripeid
+	return stripeid, true
 }

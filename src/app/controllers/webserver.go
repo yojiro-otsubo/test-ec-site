@@ -238,10 +238,25 @@ func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	if models.LoginCheck(username, password) == true {
-		session := sessions.Default(c)
-		session.Set("UserId", username)
-		session.Save()
-		c.Redirect(302, "/")
+		var check bool
+		userid := models.GetUserID(username)
+		stripeid, check := models.GetStripeAccountId(userid)
+		if check == true {
+			session := sessions.Default(c)
+			session.Set("UserId", username)
+			session.Set("StripeAccount", stripeid)
+			session.Save()
+			log.Println("username = ", session.Get("UserId"), "///stripeid = ", session.Get("StripeAccount"))
+			c.Redirect(302, "/")
+		} else {
+			session := sessions.Default(c)
+			session.Set("UserId", username)
+			session.Save()
+			log.Println("username = ", session.Get("UserId"), "///stripeid = 未登録")
+
+			c.Redirect(302, "/")
+		}
+
 	} else {
 		c.HTML(http.StatusBadRequest, "loginform", gin.H{
 			"login_status": "ユーザーネームまたはパスワードが違います",
@@ -409,7 +424,7 @@ func CreateAnExpressAccount(c *gin.Context) {
 		session.Save()
 		log.Println()
 		UserInfo.StripeAccount = session.Get("StripeAccount")
-		log.Println("stripe_account_id = ", UserInfo.StripeAccount, "\nusername = ", UserInfo.UserId)
+		log.Println("stripe_account_id = ", UserInfo.StripeAccount, "////username = ", UserInfo.UserId)
 
 		//アカウントリンク作成
 		params2 := &stripe.AccountLinkParams{
