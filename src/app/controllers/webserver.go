@@ -2,11 +2,14 @@ package controllers
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"main/app/models"
 	"main/config"
 	"net/http"
 	"net/mail"
+	"os"
+	"strconv"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
@@ -15,6 +18,8 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
+	"github.com/stripe/stripe-go/v72/price"
+	"github.com/stripe/stripe-go/v72/product"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -106,11 +111,8 @@ func SellItemsForm(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 
 	if UserInfo.UserId == nil {
-		c.HTML(200, "SellItems", gin.H{
-			"title":     "SellItems",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-		})
+
+		c.Redirect(302, "/loginform")
 	} else {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
@@ -121,49 +123,72 @@ func SellItemsForm(c *gin.Context) {
 	}
 }
 
-func CreateUpFile(username interface{}) {
-}
+func ItemRegist(c *gin.Context) {
 
-//お客様情報入力フォーム
-func UserDetailedInformationForm(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
+	UserInfo.StripeAccount = session.Get("StripeAccount")
 
-	if UserInfo.UserId == nil {
-		c.HTML(200, "UserDetailedInformation", gin.H{
-			"title":     "UserDetailedInformation",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-		})
+	if UserInfo.UserId != nil && UserInfo.StripeAccount != nil {
+
+		//post data
+		item := c.PostForm("itemname")
+		description := c.PostForm("item-description")
+		amount := c.PostForm("price")
+		amountInt64, _ := strconv.ParseInt(amount, 10, 64)
+		file, header, err := c.Request.FormFile("image")
+		if err != nil {
+			c.HTML(http.StatusBadRequest, "SellItems", gin.H{})
+		}
+
+		filename := header.Filename
+		log.Println(filename)
+
+		//get user id
+		userid := models.GetUserID(UserInfo.UserId)
+		struserid := strconv.Itoa(userid)
+
+		//create img folder
+		out, err := os.Create("app/static/img/item/userid" + struserid + "/" + filename)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer out.Close()
+
+		//file copy
+		_, err = io.Copy(out, file)
+		if err != nil {
+			log.Println(err)
+		}
+
+		//create stripe product
+		stripe.Key = config.Config.StripeKey
+		params := &stripe.ProductParams{
+			Name:        stripe.String(item),
+			Description: stripe.String(description),
+		}
+		result, _ := product.New(params)
+
+		//create stripe price
+		params2 := &stripe.PriceParams{
+			Product:    stripe.String(result.ID),
+			UnitAmount: stripe.Int64(amountInt64),
+			Currency:   stripe.String("jpy"),
+		}
+		p, _ := price.New(params2)
+
+		//regist for productsdb
+		models.RegistProduct(userid, result.ID, p.ID)
+
+		c.Redirect(302, "/registered-items")
+
+	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
+		c.Redirect(302, "/create-an-express-account")
 	} else {
-		c.HTML(200, "UserDetailedInformation", gin.H{
-			"title":     "UserDetailedInformation",
-			"login":     true,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
-		})
+		c.Redirect(302, "/loginform")
 	}
-}
 
-//支払い方法入力フォーム
-func PaymentInfoFrom(c *gin.Context) {
-	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-
-	if UserInfo.UserId == nil {
-		c.HTML(200, "PaymentInfo", gin.H{
-			"title":     "PaymentInfo",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-		})
-	} else {
-		c.HTML(200, "PaymentInfo", gin.H{
-			"title":     "PaymentInfo",
-			"login":     true,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
-		})
-	}
 }
 
 //-------------------------------------------------- AUTH --------------------------------------------------
@@ -341,10 +366,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("purchaseHistory", "app/views/base.html", "app/views/mypage/purchaseHistory.html")
 	render.AddFromFiles("registeredItems", "app/views/base.html", "app/views/mypage/RegisteredItems.html")
 	render.AddFromFiles("SellItems", "app/views/base.html", "app/views/mypage/Sellitem.html")
-	render.AddFromFiles("UserDetailedInformation", "app/views/base.html", "app/views/mypage/UserDetailedInfoForm.html")
-	render.AddFromFiles("PaymentInfo", "app/views/base.html", "app/views/mypage/PaymentInfo.html")
-	render.AddFromFiles("test", "app/views/base.html", "app/views/mypage/test.html")
-	//render.AddFromFiles("CreateAnExpressAccount", "app/views/stripe/CreateAnExpressAccount.html")
+	render.AddFromFiles("test", "app/views/base.html", "app/views/test.html")
 
 	return render
 }
@@ -372,14 +394,13 @@ func StartWebServer() {
 	r.GET("/", top)
 	//マイページ
 	r.GET("/mypage/:username", mypage)
+	//購入履歴一覧
 	r.GET("/purchase-history", purchaseHistory)
+	//登録した自分のアイテム一覧
 	r.GET("/registered-items", registeredItems)
 	//商品登録フォーム
 	r.GET("/sell-items-form", SellItemsForm)
-	//商品登録処理
-	r.GET("/user-detailed-information", UserDetailedInformationForm)
-	r.GET("/payment-info", PaymentInfoFrom)
-
+	r.POST("/itemregist", ItemRegist)
 	//stripe処理
 	r.GET("/create-an-express-account", CreateAnExpressAccount)
 
@@ -449,6 +470,13 @@ func test(c *gin.Context) {
 
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
+
+	out, err := os.Create("app/static/img/item/test.txt")
+	if err != nil {
+		log.Println(err)
+	}
+	defer out.Close()
+
 	if UserInfo.UserId == nil {
 		c.HTML(200, "test", gin.H{
 			"title":     "test",
@@ -456,7 +484,7 @@ func test(c *gin.Context) {
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {
-		c.HTML(200, "CreateAnExpressAccount", gin.H{
+		c.HTML(200, "test", gin.H{
 			"title":     "test",
 			"login":     true,
 			"username":  UserInfo.UserId,

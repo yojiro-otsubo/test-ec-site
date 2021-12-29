@@ -8,6 +8,6 @@ import (
 func main() {
 
 	models.ConnectionDB()
-	models.TestDb()
+	//models.TestDb()
 	controllers.StartWebServer()
 }

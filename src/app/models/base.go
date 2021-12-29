@@ -38,7 +38,7 @@ func ConnectionDB() {
 	}
 
 	//productsテーブル作成
-	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, product_name VARCHAR(100), amount INT, quantity INT);"
+	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255));"
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
 		log.Fatalln(err)
@@ -217,4 +217,21 @@ func GetStripeAccountId(userid int) (string, bool) {
 	}
 
 	return stripeid, true
+}
+
+func RegistProduct(userid int, productid, priceid string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd, err := DbConnection.Prepare("INSERT INTO products(user_id, stripe_product_id, stripe_price_id) VALUES($1, $2, $3) RETURNING id")
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = cmd.Exec(userid, productid, priceid)
+	if err != nil {
+		log.Println(err)
+	}
 }
