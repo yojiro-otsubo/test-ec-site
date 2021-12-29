@@ -235,3 +235,22 @@ func RegistProduct(userid int, productid, priceid string) {
 		log.Println(err)
 	}
 }
+
+//accountsテーブルのuserid存在チェック
+func UserIdCheck(userid int) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var uid string
+	err = DbConnection.QueryRow("SELECT user_id FROM accounts WHERE user_id = $1", userid).Scan(&uid)
+	if err != nil {
+		return true
+	} else {
+		return false
+	}
+
+}
