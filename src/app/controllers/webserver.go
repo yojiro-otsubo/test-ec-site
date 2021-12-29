@@ -403,6 +403,7 @@ func StartWebServer() {
 	r.POST("/itemregist", ItemRegist)
 	//stripe処理
 	r.GET("/create-an-express-account", CreateAnExpressAccount)
+	r.GET("/ok-create-an-express-account", OkCreateAnExpressAccount)
 
 	//ログインフォーム
 	r.GET("/loginform", LoginForm)
@@ -436,11 +437,6 @@ func CreateAnExpressAccount(c *gin.Context) {
 		params1 := &stripe.AccountParams{Type: stripe.String("express")}
 		result1, _ := account.New(params1)
 
-		//user_id取得
-		userid := models.GetUserID(UserInfo.UserId)
-
-		//stripeアカウント登録
-		models.AccountRegist(userid, result1.ID)
 		session.Set("StripeAccount", result1.ID)
 		session.Save()
 		log.Println()
@@ -451,7 +447,7 @@ func CreateAnExpressAccount(c *gin.Context) {
 		params2 := &stripe.AccountLinkParams{
 			Account:    stripe.String(result1.ID),
 			RefreshURL: stripe.String("http://localhost:8080/"),
-			ReturnURL:  stripe.String("http://localhost:8080/test"),
+			ReturnURL:  stripe.String("http://localhost:8080/ok-create-an-express-account"),
 			Type:       stripe.String("account_onboarding"),
 		}
 		result2, _ := accountlink.New(params2)
@@ -465,7 +461,20 @@ func CreateAnExpressAccount(c *gin.Context) {
 	}
 
 }
+func OkCreateAnExpressAccount(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.StripeAccount != nil && UserInfo.UserId != nil {
+		//user_id取得
+		userid := models.GetUserID(UserInfo.UserId)
 
+		//stripeアカウント登録
+		models.AccountRegist(userid, UserInfo.UserId)
+	} else {
+		c.Redirect(302, "/")
+	}
+}
 func test(c *gin.Context) {
 
 	session := sessions.Default(c)

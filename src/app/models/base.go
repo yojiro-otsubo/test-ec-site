@@ -165,7 +165,7 @@ func UserRegistration(username, email, hashpassword string) {
 }
 
 //accountsテーブルにuser_idとstripe_accountをINSERT
-func AccountRegist(userid int, stripeid string) {
+func AccountRegist(userid int, stripeid interface{}) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
