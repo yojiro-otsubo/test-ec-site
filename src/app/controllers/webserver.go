@@ -105,92 +105,6 @@ func registeredItems(c *gin.Context) {
 	}
 }
 
-//商品登録フォーム
-func SellItemsForm(c *gin.Context) {
-	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-
-	if UserInfo.UserId == nil {
-
-		c.Redirect(302, "/loginform")
-	} else {
-		c.HTML(200, "SellItems", gin.H{
-			"title":     "SellItems",
-			"login":     true,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
-		})
-	}
-}
-
-func ItemRegist(c *gin.Context) {
-
-	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	UserInfo.StripeAccount = session.Get("StripeAccount")
-
-	if UserInfo.UserId != nil && UserInfo.StripeAccount != nil {
-
-		//post data
-		item := c.PostForm("itemname")
-		description := c.PostForm("item-description")
-		amount := c.PostForm("price")
-		amountInt64, _ := strconv.ParseInt(amount, 10, 64)
-		file, header, err := c.Request.FormFile("image")
-		if err != nil {
-			c.HTML(http.StatusBadRequest, "SellItems", gin.H{})
-		}
-
-		filename := header.Filename
-		log.Println(filename)
-
-		//get user id
-		userid := models.GetUserID(UserInfo.UserId)
-		struserid := strconv.Itoa(userid)
-
-		//create img folder
-		out, err := os.Create("app/static/img/item/userid" + struserid + "/" + filename)
-		if err != nil {
-			log.Println(err)
-		}
-
-		defer out.Close()
-
-		//file copy
-		_, err = io.Copy(out, file)
-		if err != nil {
-			log.Println(err)
-		}
-
-		//create stripe product
-		stripe.Key = config.Config.StripeKey
-		params := &stripe.ProductParams{
-			Name:        stripe.String(item),
-			Description: stripe.String(description),
-		}
-		result, _ := product.New(params)
-
-		//create stripe price
-		params2 := &stripe.PriceParams{
-			Product:    stripe.String(result.ID),
-			UnitAmount: stripe.Int64(amountInt64),
-			Currency:   stripe.String("jpy"),
-		}
-		p, _ := price.New(params2)
-
-		//regist for productsdb
-		models.RegistProduct(userid, result.ID, p.ID)
-
-		c.Redirect(302, "/registered-items")
-
-	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
-		c.Redirect(302, "/create-an-express-account")
-	} else {
-		c.Redirect(302, "/loginform")
-	}
-
-}
-
 //-------------------------------------------------- AUTH --------------------------------------------------
 type SessionInfo struct {
 	UserId        interface{}
@@ -354,6 +268,187 @@ func SignupForm(c *gin.Context) {
 	}
 }
 
+//-------------------------------------------------- StripeAccountLink --------------------------------------------------
+//stripe連結アカウント作成、アカウント登録リンクへリダイレクト
+func CreateAnExpressAccount(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.UserId = session.Get("UserId")
+	log.Println("Username = ", UserInfo.UserId)
+	if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
+		//stripe連結アカウント作成
+		stripe.Key = config.Config.StripeKey
+		params1 := &stripe.AccountParams{Type: stripe.String("express")}
+		result1, _ := account.New(params1)
+
+		session.Set("StripeAccount", result1.ID)
+		session.Save()
+		log.Println()
+		UserInfo.StripeAccount = session.Get("StripeAccount")
+		log.Println("stripe_account_id = ", UserInfo.StripeAccount, "////username = ", UserInfo.UserId)
+
+		//アカウントリンク作成
+		params2 := &stripe.AccountLinkParams{
+			Account:    stripe.String(result1.ID),
+			RefreshURL: stripe.String("http://localhost:8080/refresh-create-an-express-account"),
+			ReturnURL:  stripe.String("http://localhost:8080/ok-create-an-express-account"),
+			Type:       stripe.String("account_onboarding"),
+		}
+		result2, _ := accountlink.New(params2)
+
+		c.Redirect(307, result2.URL)
+
+	} else if UserInfo.UserId == nil && UserInfo.StripeAccount == nil {
+		c.Redirect(302, "/loginform")
+	} else {
+		c.Redirect(302, "/")
+	}
+
+}
+
+func OkCreateAnExpressAccount(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.StripeAccount != nil && UserInfo.UserId != nil {
+		//user_id取得
+		userid := models.GetUserID(UserInfo.UserId)
+
+		//stripeアカウント登録
+		models.AccountRegist(userid, UserInfo.UserId)
+	} else {
+		c.Redirect(302, "/")
+	}
+}
+
+func RefreshCreateAnExpressAccount(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.StripeAccount != nil && UserInfo.UserId != nil {
+		session.Delete("StripeAccount")
+		c.Redirect(302, "/")
+	} else {
+		c.Redirect(302, "/")
+	}
+}
+
+//-------------------------------------------------- Regist Product --------------------------------------------------
+
+//商品登録フォーム
+func SellItemsForm(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	if UserInfo.UserId == nil {
+
+		c.Redirect(302, "/loginform")
+	} else {
+		c.HTML(200, "SellItems", gin.H{
+			"title":     "SellItems",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+		})
+	}
+}
+
+func ItemRegist(c *gin.Context) {
+
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+
+	if UserInfo.UserId != nil && UserInfo.StripeAccount != nil {
+
+		//post data
+		item := c.PostForm("itemname")
+		description := c.PostForm("item-description")
+		amount := c.PostForm("price")
+		amountInt64, _ := strconv.ParseInt(amount, 10, 64)
+		file, header, err := c.Request.FormFile("image")
+		if err != nil {
+			c.HTML(http.StatusBadRequest, "SellItems", gin.H{})
+		}
+
+		filename := header.Filename
+		log.Println(filename)
+
+		//get user id
+		userid := models.GetUserID(UserInfo.UserId)
+		struserid := strconv.Itoa(userid)
+
+		//create img folder
+		out, err := os.Create("app/static/img/item/userid" + struserid + "/" + filename)
+		if err != nil {
+			log.Println(err)
+		}
+
+		defer out.Close()
+
+		//file copy
+		_, err = io.Copy(out, file)
+		if err != nil {
+			log.Println(err)
+		}
+
+		//create stripe product
+		stripe.Key = config.Config.StripeKey
+		params := &stripe.ProductParams{
+			Name:        stripe.String(item),
+			Description: stripe.String(description),
+		}
+		result, _ := product.New(params)
+
+		//create stripe price
+		params2 := &stripe.PriceParams{
+			Product:    stripe.String(result.ID),
+			UnitAmount: stripe.Int64(amountInt64),
+			Currency:   stripe.String("jpy"),
+		}
+		p, _ := price.New(params2)
+
+		//regist for productsdb
+		models.RegistProduct(userid, result.ID, p.ID)
+
+		c.Redirect(302, "/registered-items")
+
+	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
+		c.Redirect(302, "/create-an-express-account")
+	} else {
+		c.Redirect(302, "/loginform")
+	}
+
+}
+
+//-------------------------------------------------- Test --------------------------------------------------
+func test(c *gin.Context) {
+
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	out, err := os.Create("app/static/img/item/test.txt")
+	if err != nil {
+		log.Println(err)
+	}
+	defer out.Close()
+
+	if UserInfo.UserId == nil {
+		c.HTML(200, "test", gin.H{
+			"title":     "test",
+			"login":     false,
+			"csrfToken": csrf.GetToken(c),
+		})
+	} else {
+		c.HTML(200, "test", gin.H{
+			"title":     "test",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+		})
+	}
+}
+
 //-------------------------------------------------- WebServer --------------------------------------------------
 
 //マルチテンプレート作成
@@ -404,6 +499,7 @@ func StartWebServer() {
 	//stripe処理
 	r.GET("/create-an-express-account", CreateAnExpressAccount)
 	r.GET("/ok-create-an-express-account", OkCreateAnExpressAccount)
+	r.GET("/refresh-create-an-express-account", RefreshCreateAnExpressAccount)
 
 	//ログインフォーム
 	r.GET("/loginform", LoginForm)
@@ -423,81 +519,4 @@ func StartWebServer() {
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))
 
-}
-
-//stripe連結アカウント作成、アカウント登録リンクへリダイレクト
-func CreateAnExpressAccount(c *gin.Context) {
-	session := sessions.Default(c)
-	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	log.Println("Username = ", UserInfo.UserId)
-	if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
-		//stripe連結アカウント作成
-		stripe.Key = config.Config.StripeKey
-		params1 := &stripe.AccountParams{Type: stripe.String("express")}
-		result1, _ := account.New(params1)
-
-		session.Set("StripeAccount", result1.ID)
-		session.Save()
-		log.Println()
-		UserInfo.StripeAccount = session.Get("StripeAccount")
-		log.Println("stripe_account_id = ", UserInfo.StripeAccount, "////username = ", UserInfo.UserId)
-
-		//アカウントリンク作成
-		params2 := &stripe.AccountLinkParams{
-			Account:    stripe.String(result1.ID),
-			RefreshURL: stripe.String("http://localhost:8080/"),
-			ReturnURL:  stripe.String("http://localhost:8080/ok-create-an-express-account"),
-			Type:       stripe.String("account_onboarding"),
-		}
-		result2, _ := accountlink.New(params2)
-
-		c.Redirect(307, result2.URL)
-
-	} else if UserInfo.UserId == nil && UserInfo.StripeAccount == nil {
-		c.Redirect(302, "/loginform")
-	} else {
-		c.Redirect(302, "/")
-	}
-
-}
-func OkCreateAnExpressAccount(c *gin.Context) {
-	session := sessions.Default(c)
-	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.StripeAccount != nil && UserInfo.UserId != nil {
-		//user_id取得
-		userid := models.GetUserID(UserInfo.UserId)
-
-		//stripeアカウント登録
-		models.AccountRegist(userid, UserInfo.UserId)
-	} else {
-		c.Redirect(302, "/")
-	}
-}
-func test(c *gin.Context) {
-
-	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-
-	out, err := os.Create("app/static/img/item/test.txt")
-	if err != nil {
-		log.Println(err)
-	}
-	defer out.Close()
-
-	if UserInfo.UserId == nil {
-		c.HTML(200, "test", gin.H{
-			"title":     "test",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-		})
-	} else {
-		c.HTML(200, "test", gin.H{
-			"title":     "test",
-			"login":     true,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
-		})
-	}
 }
