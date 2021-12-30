@@ -20,8 +20,22 @@
 
 
 # 環境
-Golang  
-js  
+コンテナ  
+    - docker  
+バックエンド  
+    - golang  
+フロントエンド  
+    - html  
+    - css  
+    - js  
+AWS  
+    - s3  
+    - ecs  
+    - ecr  
+    - rds  
+    - route53  
+CI/CD  
+    - CircleCI  
   
 # 決済システム
 stripe  
