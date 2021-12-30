@@ -387,10 +387,12 @@ func ItemRegist(c *gin.Context) {
 
 		//get user id
 		userid := models.GetUserID(UserInfo.UserId)
-		struserid := strconv.Itoa(userid)
+		//regist userid and get productid(pk)
+		productid := models.RegistUserIdAndGetProductId(userid)
+		strproductid := strconv.Itoa(productid)
 
 		//create img folder
-		filepath := []string{"app/static/img/item/userid" + struserid + "/" + filename}
+		filepath := []string{"app/static/img/item/productid" + strproductid + "/" + filename}
 		out, err := os.Create(filepath[0])
 		if err != nil {
 			log.Println("os.create err = ", err)
@@ -422,7 +424,7 @@ func ItemRegist(c *gin.Context) {
 			p, _ := price.New(params2)
 
 			//regist for productsdb
-			models.RegistProduct(userid, result.ID, p.ID)
+			models.RegistProduct(productid, result.ID, p.ID)
 		*/
 		c.Redirect(302, "/")
 

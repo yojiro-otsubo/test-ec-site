@@ -70,7 +70,7 @@ func TestDb() {
 
 	var id int
 
-	err = DbConnection.QueryRow("SELECT id FROM users WHERE username = $1", "admin").Scan(&id)
+	err = DbConnection.QueryRow("INSERT INTO test_db(test) VALUES($1) RETURNING id", "hoge").Scan(&id)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -219,21 +219,41 @@ func GetStripeAccountId(userid int) (string, bool) {
 	return stripeid, true
 }
 
-func RegistProduct(userid int, productid, priceid string) {
+func RegistProduct(pkid int, productid, priceid string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var id int
+	var user_id int
+	var stripe_product_id string
+	var stripe_price_id string
+	err = DbConnection.QueryRow("UPDATE products SET stripe_product_id = $2, stripe_price_id = $3 WHERE id = $1 RETURNING id, user_id, stripe_product_id, stripe_price_id").Scan(&id, &user_id, &stripe_product_id, &stripe_price_id)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("id = ", id, "\nuser_id = ", user_id, "\nstripe_product_id = ", stripe_product_id, "\nstripe_price_id = ", stripe_price_id)
+
+}
+
+func RegistUserIdAndGetProductId(userid int) int {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	cmd, err := DbConnection.Prepare("INSERT INTO products(user_id, stripe_product_id, stripe_price_id) VALUES($1, $2, $3) RETURNING id")
+	var id int
+
+	err = DbConnection.QueryRow("INSERT INTO products(user_id) VALUES($1) RETURNING id", userid).Scan(&id)
 	if err != nil {
 		log.Println(err)
 	}
-	_, err = cmd.Exec(userid, productid, priceid)
-	if err != nil {
-		log.Println(err)
-	}
+	log.Println("PRIMARY KEY = ", id)
+
+	return id
+
 }
 
 //accountsテーブルのuserid存在チェック
