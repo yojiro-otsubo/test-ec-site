@@ -18,6 +18,8 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
+	"github.com/stripe/stripe-go/v72/price"
+	"github.com/stripe/stripe-go/v72/product"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -358,22 +360,25 @@ func SellItemsForm(c *gin.Context) {
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
 		})
+	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
+		c.Redirect(302, "/")
+	} else {
+		c.Redirect(302, "/loginform")
 	}
 }
 
 func ItemRegist(c *gin.Context) {
-
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
 	if UserInfo.UserId != nil && UserInfo.StripeAccount != nil {
-
+		var err error
 		//post data
-		//item := c.PostForm("itemname")
-		//description := c.PostForm("item-description")
-		//amount := c.PostForm("price")
-		//amountInt64, _ := strconv.ParseInt(amount, 10, 64)
+		item := c.PostForm("itemname")
+		description := c.PostForm("item-description")
+		amount := c.PostForm("price")
+		amountInt64, _ := strconv.ParseInt(amount, 10, 64)
 
 		file, header, err := c.Request.FormFile("image")
 		if err != nil {
@@ -389,10 +394,20 @@ func ItemRegist(c *gin.Context) {
 		userid := models.GetUserID(UserInfo.UserId)
 		//regist userid and get productid(pk)
 		productid := models.RegistUserIdAndGetProductId(userid)
+		//change int to str
 		strproductid := strconv.Itoa(productid)
 
-		//create img folder
-		filepath := []string{"app/static/img/item/productid" + strproductid + "/" + filename}
+		create_path := "app/static/img/item/productid" + strproductid + "/" + filename
+		mkdir_path := "app/static/img/item/productid" + strproductid
+
+		// mkdir
+		err = os.Mkdir(mkdir_path, 0755)
+		if err != nil {
+			log.Println(err)
+		}
+
+		//create img file
+		filepath := []string{create_path}
 		out, err := os.Create(filepath[0])
 		if err != nil {
 			log.Println("os.create err = ", err)
@@ -405,27 +420,27 @@ func ItemRegist(c *gin.Context) {
 
 		}
 		defer out.Close()
-		/*
-			//create stripe product
-			stripe.Key = config.Config.StripeKey
-			params := &stripe.ProductParams{
-				Name:        stripe.String(item),
-				Description: stripe.String(description),
-				Images:      stripe.StringSlice(filepath),
-			}
-			result, _ := product.New(params)
 
-			//create stripe price
-			params2 := &stripe.PriceParams{
-				Product:    stripe.String(result.ID),
-				UnitAmount: stripe.Int64(amountInt64),
-				Currency:   stripe.String("jpy"),
-			}
-			p, _ := price.New(params2)
+		//create stripe product
+		stripe.Key = config.Config.StripeKey
+		params := &stripe.ProductParams{
+			Name:        stripe.String(item),
+			Description: stripe.String(description),
+			Images:      stripe.StringSlice(filepath),
+		}
+		result, _ := product.New(params)
 
-			//regist for productsdb
-			models.RegistProduct(productid, result.ID, p.ID)
-		*/
+		//create stripe price
+		params2 := &stripe.PriceParams{
+			Product:    stripe.String(result.ID),
+			UnitAmount: stripe.Int64(amountInt64),
+			Currency:   stripe.String("jpy"),
+		}
+		p, _ := price.New(params2)
+
+		//regist for productsdb
+		models.RegistProduct(productid, result.ID, p.ID)
+
 		c.Redirect(302, "/")
 
 	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
@@ -442,13 +457,19 @@ func test(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
 	log.Println(UserInfo.UserId)
-
-	out, err := os.Create("app/static/img/item/test.txt")
-	if err != nil {
-		log.Println(err)
-	}
-	defer out.Close()
-
+	/*
+		out, err := os.Create("app/static/img/item/test.txt")
+		if err != nil {
+			log.Println(err)
+		}
+		defer out.Close()
+	*/
+	/*
+		err := os.Mkdir("app/static/img/item/test", 0755)
+		if err != nil {
+			log.Println(err)
+		}
+	*/
 	if UserInfo.UserId == nil {
 		c.HTML(200, "test", gin.H{
 			"title":     "test",

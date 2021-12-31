@@ -229,7 +229,7 @@ func RegistProduct(pkid int, productid, priceid string) {
 	var user_id int
 	var stripe_product_id string
 	var stripe_price_id string
-	err = DbConnection.QueryRow("UPDATE products SET stripe_product_id = $2, stripe_price_id = $3 WHERE id = $1 RETURNING id, user_id, stripe_product_id, stripe_price_id").Scan(&id, &user_id, &stripe_product_id, &stripe_price_id)
+	err = DbConnection.QueryRow("UPDATE products SET stripe_product_id = $2, stripe_price_id = $3 WHERE id = $1 RETURNING id, user_id, stripe_product_id, stripe_price_id", pkid, productid, priceid).Scan(&id, &user_id, &stripe_product_id, &stripe_price_id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -245,6 +245,7 @@ func RegistUserIdAndGetProductId(userid int) int {
 	}
 
 	var id int
+	//temporary := "Temporary"
 
 	err = DbConnection.QueryRow("INSERT INTO products(user_id) VALUES($1) RETURNING id", userid).Scan(&id)
 	if err != nil {
