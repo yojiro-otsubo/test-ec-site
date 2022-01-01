@@ -38,7 +38,7 @@ func ConnectionDB() {
 	}
 
 	//productsテーブル作成
-	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255));"
+	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255), description VARCHAR(1000), amount INT);"
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
 		log.Fatalln(err)
@@ -237,7 +237,7 @@ func RegistProduct(pkid int, productid, priceid string) {
 
 }
 
-func RegistUserIdAndGetProductId(userid int) int {
+func RegistUserIdAndGetProductId(userid, amount int, description string) int {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
@@ -247,7 +247,7 @@ func RegistUserIdAndGetProductId(userid int) int {
 	var id int
 	//temporary := "Temporary"
 
-	err = DbConnection.QueryRow("INSERT INTO products(user_id) VALUES($1) RETURNING id", userid).Scan(&id)
+	err = DbConnection.QueryRow("INSERT INTO products(user_id, description, amount) VALUES($1, $2, $3) RETURNING id", userid, description, amount).Scan(&id)
 	if err != nil {
 		log.Println(err)
 	}

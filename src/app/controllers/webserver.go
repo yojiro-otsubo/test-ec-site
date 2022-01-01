@@ -393,7 +393,7 @@ func ItemRegist(c *gin.Context) {
 		//get user id
 		userid := models.GetUserID(UserInfo.UserId)
 		//regist userid and get productid(pk)
-		productid := models.RegistUserIdAndGetProductId(userid)
+		productid := models.RegistUserIdAndGetProductId(userid, int(amountInt64), description)
 		//change int to str
 		strproductid := strconv.Itoa(productid)
 
