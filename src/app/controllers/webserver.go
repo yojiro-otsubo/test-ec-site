@@ -90,17 +90,16 @@ func registeredItems(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 
 	if UserInfo.UserId == nil {
-		c.HTML(200, "registeredItems", gin.H{
-			"title":     "registeredItems",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-		})
+		c.Redirect(302, "/")
 	} else {
+		userid := models.GetUserID(UserInfo.UserId)
+		UserProduct := models.GetTheProductOfUserId(userid)
 		c.HTML(200, "registeredItems", gin.H{
 			"title":     "registeredItems",
 			"login":     true,
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
+			"products":  UserProduct,
 		})
 	}
 }
@@ -378,6 +377,7 @@ func ItemRegist(c *gin.Context) {
 		item := c.PostForm("itemname")
 		description := c.PostForm("item-description")
 		amount := c.PostForm("price")
+		amountInt, _ := strconv.Atoi(amount)
 		amountInt64, _ := strconv.ParseInt(amount, 10, 64)
 
 		file, header, err := c.Request.FormFile("image")
@@ -393,7 +393,7 @@ func ItemRegist(c *gin.Context) {
 		//get user id
 		userid := models.GetUserID(UserInfo.UserId)
 		//regist userid and get productid(pk)
-		productid := models.RegistUserIdAndGetProductId(userid, int(amountInt64), description)
+		productid := models.RegistUserIdAndGetProductId(userid, amountInt, item, description)
 		//change int to str
 		strproductid := strconv.Itoa(productid)
 
@@ -477,11 +477,15 @@ func test(c *gin.Context) {
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {
+		userid := models.GetUserID(UserInfo.UserId)
+		UserProduct := models.GetTheProductOfUserId(userid)
+		log.Println("Product = ", UserProduct)
 		c.HTML(200, "test", gin.H{
 			"title":     "test",
 			"login":     true,
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
+			"products":  UserProduct,
 		})
 	}
 }

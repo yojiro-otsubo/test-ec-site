@@ -38,7 +38,7 @@ func ConnectionDB() {
 	}
 
 	//productsテーブル作成
-	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255), description VARCHAR(1000), amount INT);"
+	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255), item_name VARCHAR(255), description VARCHAR(1000), amount INT);"
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
 		log.Fatalln(err)
@@ -225,19 +225,18 @@ func RegistProduct(pkid int, productid, priceid string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var id int
-	var user_id int
-	var stripe_product_id string
-	var stripe_price_id string
-	err = DbConnection.QueryRow("UPDATE products SET stripe_product_id = $2, stripe_price_id = $3 WHERE id = $1 RETURNING id, user_id, stripe_product_id, stripe_price_id", pkid, productid, priceid).Scan(&id, &user_id, &stripe_product_id, &stripe_price_id)
+	var id, user_id, amount int
+	var stripe_product_id, stripe_price_id, item_name, description string
+	err = DbConnection.QueryRow("UPDATE products SET stripe_product_id = $2, stripe_price_id = $3 WHERE id = $1 RETURNING id, user_id, stripe_product_id, stripe_price_id, item_name, description, amount", pkid, productid, priceid).Scan(&id, &user_id, &stripe_product_id, &stripe_price_id, &item_name, &description, &amount)
 	if err != nil {
 		log.Println(err)
 	}
 	log.Println("id = ", id, "\nuser_id = ", user_id, "\nstripe_product_id = ", stripe_product_id, "\nstripe_price_id = ", stripe_price_id)
+	log.Println("item_name = ", item_name, "\ndescription = ", description, "\namount = ", amount)
 
 }
 
-func RegistUserIdAndGetProductId(userid, amount int, description string) int {
+func RegistUserIdAndGetProductId(userid, amount int, item_name, description string) int {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
@@ -247,7 +246,7 @@ func RegistUserIdAndGetProductId(userid, amount int, description string) int {
 	var id int
 	//temporary := "Temporary"
 
-	err = DbConnection.QueryRow("INSERT INTO products(user_id, description, amount) VALUES($1, $2, $3) RETURNING id", userid, description, amount).Scan(&id)
+	err = DbConnection.QueryRow("INSERT INTO products(user_id, item_name, description, amount) VALUES($1, $2, $3, $4) RETURNING id", userid, item_name, description, amount).Scan(&id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -273,5 +272,40 @@ func UserIdCheck(userid int) bool {
 	} else {
 		return false
 	}
+
+}
+
+type Product struct {
+	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount string
+}
+
+func GetTheProductOfUserId(userid int) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE user_id = $1", userid)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
 
 }
