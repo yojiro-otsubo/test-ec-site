@@ -28,11 +28,14 @@ import (
 func top(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
+	products := models.GetProductTop()
+	log.Println(products)
 	if UserInfo.UserId == nil {
 		c.HTML(200, "top", gin.H{
 			"title":     "top",
 			"login":     false,
 			"csrfToken": csrf.GetToken(c),
+			"products":  products,
 		})
 	} else {
 		c.HTML(200, "top", gin.H{
@@ -40,6 +43,7 @@ func top(c *gin.Context) {
 			"login":     true,
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
+			"products":  products,
 		})
 	}
 }
@@ -490,6 +494,30 @@ func test(c *gin.Context) {
 	}
 }
 
+//-------------------------------------------------- ProductPage --------------------------------------------------
+func ProductPage(c *gin.Context) {
+	productNumber := c.Param("number")
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+	product := models.GetProduct(productNumber)
+	log.Println(product)
+
+	if UserInfo.UserId == nil {
+		c.HTML(200, "product", gin.H{
+			"title":     "product",
+			"login":     false,
+			"csrfToken": csrf.GetToken(c),
+		})
+	} else {
+		c.HTML(200, "product", gin.H{
+			"title":     "product",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+		})
+	}
+}
+
 //-------------------------------------------------- WebServer --------------------------------------------------
 
 //マルチテンプレート作成
@@ -503,6 +531,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("registeredItems", "app/views/base.html", "app/views/mypage/RegisteredItems.html")
 	render.AddFromFiles("SellItems", "app/views/base.html", "app/views/mypage/Sellitem.html")
 	render.AddFromFiles("test", "app/views/base.html", "app/views/test.html")
+	render.AddFromFiles("product", "app/views/base.html", "app/views/product.html")
 
 	return render
 }
@@ -537,10 +566,12 @@ func StartWebServer() {
 	//商品登録フォーム
 	r.GET("/sell-items-form", SellItemsForm)
 	r.POST("/itemregist", ItemRegist)
-	//stripe処理
+	//アカウントリンク
 	r.GET("/create-an-express-account", CreateAnExpressAccount)
 	r.GET("/ok-create-an-express-account", OkCreateAnExpressAccount)
 	r.GET("/refresh-create-an-express-account", RefreshCreateAnExpressAccount)
+	//商品ページ
+	r.GET("/product/:number", ProductPage)
 
 	//ログインフォーム
 	r.GET("/loginform", LoginForm)

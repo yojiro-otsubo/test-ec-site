@@ -309,3 +309,51 @@ func GetTheProductOfUserId(userid int) []Product {
 	return productResult
 
 }
+func GetProductTop() []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM products LIMIT 100")
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
+
+}
+
+func GetProduct(product_id string) [7]string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount string
+
+	err = DbConnection.QueryRow("SELECT * FROM products WHERE id = $1", product_id).Scan(&Id, &UserId, &StripeProductId, &StripePriceId, &ItemName, &Description, &Amount)
+	if err != nil {
+		log.Println(err)
+	}
+
+	arr := [...]string{Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount}
+	return arr
+}
