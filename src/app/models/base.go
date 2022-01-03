@@ -357,3 +357,20 @@ func GetProduct(product_id string) [7]string {
 	arr := [...]string{Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount}
 	return arr
 }
+
+func GetUserName(user_id string) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var username string
+	err = DbConnection.QueryRow("SELECT username FROM users WHERE id = $1", user_id).Scan(&username)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return username
+}

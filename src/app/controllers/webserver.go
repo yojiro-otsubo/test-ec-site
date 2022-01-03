@@ -501,19 +501,34 @@ func ProductPage(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 	product := models.GetProduct(productNumber)
 	log.Println(product)
+	username := models.GetUserName(product[1])
 
 	if UserInfo.UserId == nil {
 		c.HTML(200, "product", gin.H{
-			"title":     "product",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
+			"title":           "product",
+			"login":           false,
+			"csrfToken":       csrf.GetToken(c),
+			"ProductId":       product[0],
+			"ProductUsername": username,
+			"StripeProductId": product[2],
+			"StripePriceId":   product[3],
+			"ItemName":        product[4],
+			"Description":     product[5],
+			"Amount":          product[6],
 		})
 	} else {
 		c.HTML(200, "product", gin.H{
-			"title":     "product",
-			"login":     true,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
+			"title":           "product",
+			"login":           true,
+			"username":        UserInfo.UserId,
+			"csrfToken":       csrf.GetToken(c),
+			"ProductId":       product[0],
+			"ProductUsername": username,
+			"StripeProductId": product[2],
+			"StripePriceId":   product[3],
+			"ItemName":        product[4],
+			"Description":     product[5],
+			"Amount":          product[6],
 		})
 	}
 }

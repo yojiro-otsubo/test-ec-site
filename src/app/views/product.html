@@ -11,5 +11,18 @@
 {{end}}
 
 {{define "content"}}
-a
+<div class="product-content">
+    <div>販売者：{{.ProductUsername}}</div>
+    <div>{{.ItemName}}</div>
+    <div>{{.Description}}</div>
+    <div>価格：{{.Amount}}</div>
+
+    <form action="/buy" method="post">
+        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+        <input type="hidden" name="{{.StripeProductId}}">
+        <input type="hidden" name="{{.StripePriceId}}">
+        <input type="submit" value="購入">
+
+    </form>
+</div>
 {{end}}
