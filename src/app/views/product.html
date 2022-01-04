@@ -17,7 +17,7 @@
     <div>{{.Description}}</div>
     <div>価格：{{.Amount}}</div>
 
-    <form action="/cart" method="post">
+    <form action="/addcart" method="post">
         <input type="hidden" name="_csrf" value="{{.csrfToken}}">
         <input type="hidden" name="cart" value="{{.ProductId}}">
         <input type="submit" value="カートに追加">

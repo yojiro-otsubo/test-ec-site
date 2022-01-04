@@ -116,7 +116,9 @@ func AddCart(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 
 	if UserInfo.UserId != nil {
-		models.AddToCart(UserInfo.UserId, productid)
+		userid := models.GetUserID(UserInfo.UserId)
+		models.AddToCart(userid, productid)
+		c.Redirect(302, "/")
 	} else {
 		c.Redirect(302, "/loginform")
 	}
@@ -125,8 +127,16 @@ func AddCart(c *gin.Context) {
 func CartPage(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
-
+	userid := models.GetUserID(UserInfo.UserId)
+	products := models.GetProductFromCartDB(userid)
+	log.Println(products)
 	if UserInfo.UserId != nil {
+		c.HTML(200, "cart", gin.H{
+			"title":     "cart",
+			"login":     true,
+			"csrfToken": csrf.GetToken(c),
+			"products":  products,
+		})
 	} else {
 		c.Redirect(302, "/loginform")
 	}
@@ -580,6 +590,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("SellItems", "app/views/base.html", "app/views/mypage/Sellitem.html")
 	render.AddFromFiles("test", "app/views/base.html", "app/views/test.html")
 	render.AddFromFiles("product", "app/views/base.html", "app/views/product.html")
+	render.AddFromFiles("cart", "app/views/base.html", "app/views/mypage/cart.html")
 
 	return render
 }
@@ -623,7 +634,8 @@ func StartWebServer() {
 	//購入処理
 	r.POST("/buy", BuyProcess)
 	//カート
-	r.POST("/cart", AddCart)
+	r.POST("/addcart", AddCart)
+	r.GET("/mycart", CartPage)
 	//ログインフォーム
 	r.GET("/loginform", LoginForm)
 

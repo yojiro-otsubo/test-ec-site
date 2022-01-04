@@ -412,7 +412,7 @@ func GetProductFromCartDB(user_id interface{}) []Product {
 		log.Fatalln(err)
 	}
 
-	rows, err := DbConnection.Query("SELECT * FROM products WHERE IN (SELECT product_id FROM cart WHERE user_id = $1)", user_id)
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE id IN (SELECT product_id FROM cart WHERE user_id = $1)", user_id)
 	if err != nil {
 		log.Println(err)
 	}

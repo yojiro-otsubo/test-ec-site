@@ -1,0 +1,27 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+
+{{define "content"}}
+<div class="cart-product-flex-box">
+    {{range .products}}
+    <div class="cart-product-box">
+      <!--
+      <img src="../static/img/item/productid{{.Id}}/*" alt="">
+      -->
+      <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
+      <div class="cart-product-description">説明：{{.Description}}</div>
+      <div class="cart-product-amount">価格：{{.Amount}}円　＋　消費税</div>
+    </div>
+    {{end}}
+</div>
+  
+{{end}}
