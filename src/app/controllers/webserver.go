@@ -108,6 +108,30 @@ func registeredItems(c *gin.Context) {
 	}
 }
 
+//カート
+func AddCart(c *gin.Context) {
+	productid := c.PostForm("cart")
+	log.Println("product = ", productid)
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	if UserInfo.UserId != nil {
+		models.AddToCart(UserInfo.UserId, productid)
+	} else {
+		c.Redirect(302, "/loginform")
+	}
+}
+
+func CartPage(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	if UserInfo.UserId != nil {
+	} else {
+		c.Redirect(302, "/loginform")
+	}
+}
+
 //-------------------------------------------------- AUTH --------------------------------------------------
 type SessionInfo struct {
 	UserId        interface{}
@@ -502,6 +526,9 @@ func ProductPage(c *gin.Context) {
 	product := models.GetProduct(productNumber)
 	log.Println(product)
 	username := models.GetUserName(product[1])
+	if product[7] == "1" {
+		c.Redirect(302, "/")
+	}
 
 	if UserInfo.UserId == nil {
 		c.HTML(200, "product", gin.H{
@@ -531,6 +558,12 @@ func ProductPage(c *gin.Context) {
 			"Amount":          product[6],
 		})
 	}
+}
+
+//-------------------------------------------------- BuyProcess --------------------------------------------------
+
+func BuyProcess(c *gin.Context) {
+
 }
 
 //-------------------------------------------------- WebServer --------------------------------------------------
@@ -587,7 +620,10 @@ func StartWebServer() {
 	r.GET("/refresh-create-an-express-account", RefreshCreateAnExpressAccount)
 	//商品ページ
 	r.GET("/product/:number", ProductPage)
-
+	//購入処理
+	r.POST("/buy", BuyProcess)
+	//カート
+	r.POST("/cart", AddCart)
 	//ログインフォーム
 	r.GET("/loginform", LoginForm)
 

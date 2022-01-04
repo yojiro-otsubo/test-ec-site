@@ -38,7 +38,7 @@ func ConnectionDB() {
 	}
 
 	//productsテーブル作成
-	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255), item_name VARCHAR(255), description VARCHAR(1000), amount INT);"
+	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255), item_name VARCHAR(255), description VARCHAR(1000), amount INT, sold_out INT);"
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
 		log.Fatalln(err)
@@ -47,6 +47,18 @@ func ConnectionDB() {
 	//settlementテーブル作成
 	cmd3 := "CREATE TABLE IF NOT EXISTS settlement (id serial PRIMARY KEY, user_id INT, product_id INT);"
 	_, err = DbConnection.Exec(cmd3)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd4 := "CREATE TABLE IF NOT EXISTS purchase_history (id serial PRIMARY KEY, user_id INT, product_id INT, time VARCHAR(50));"
+	_, err = DbConnection.Exec(cmd4)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd5 := "CREATE TABLE IF NOT EXISTS cart (id serial PRIMARY KEY, user_id INT, product_id INT);"
+	_, err = DbConnection.Exec(cmd5)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -246,7 +258,7 @@ func RegistUserIdAndGetProductId(userid, amount int, item_name, description stri
 	var id int
 	//temporary := "Temporary"
 
-	err = DbConnection.QueryRow("INSERT INTO products(user_id, item_name, description, amount) VALUES($1, $2, $3, $4) RETURNING id", userid, item_name, description, amount).Scan(&id)
+	err = DbConnection.QueryRow("INSERT INTO products(user_id, item_name, description, amount, sold_out) VALUES($1, $2, $3, $4, $5) RETURNING id", userid, item_name, description, amount, "0").Scan(&id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -276,7 +288,7 @@ func UserIdCheck(userid int) bool {
 }
 
 type Product struct {
-	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount string
+	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut string
 }
 
 func GetTheProductOfUserId(userid int) []Product {
@@ -296,11 +308,11 @@ func GetTheProductOfUserId(userid int) []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
 		if err != nil {
 			log.Println(err)
 		}
-		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut != "" {
 			productResult = append(productResult, p)
 		}
 	}
@@ -326,11 +338,11 @@ func GetProductTop() []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
 		if err != nil {
 			log.Println(err)
 		}
-		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "0" {
 			productResult = append(productResult, p)
 		}
 	}
@@ -340,21 +352,21 @@ func GetProductTop() []Product {
 
 }
 
-func GetProduct(product_id string) [7]string {
+func GetProduct(product_id string) [8]string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount string
+	var Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut string
 
-	err = DbConnection.QueryRow("SELECT * FROM products WHERE id = $1", product_id).Scan(&Id, &UserId, &StripeProductId, &StripePriceId, &ItemName, &Description, &Amount)
+	err = DbConnection.QueryRow("SELECT * FROM products WHERE id = $1", product_id).Scan(&Id, &UserId, &StripeProductId, &StripePriceId, &ItemName, &Description, &Amount, &SoldOut)
 	if err != nil {
 		log.Println(err)
 	}
 
-	arr := [...]string{Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount}
+	arr := [...]string{Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut}
 	return arr
 }
 
@@ -373,4 +385,51 @@ func GetUserName(user_id string) string {
 	}
 
 	return username
+}
+
+func AddToCart(user_id interface{}, product_id string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd, err := DbConnection.Prepare("INSERT INTO cart(user_id, product_id) VALUES($1, $2) RETURNING id")
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = cmd.Exec(user_id, product_id)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func GetProductFromCartDB(user_id interface{}) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE IN (SELECT product_id FROM cart WHERE user_id = $1)", user_id)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "0" {
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
 }
