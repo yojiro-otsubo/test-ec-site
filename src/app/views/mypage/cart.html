@@ -12,6 +12,7 @@
 
 {{define "content"}}
 <div class="cart-product-flex-box">
+    {{ $csrfToken := .csrfToken }}
     {{range .products}}
     <div class="cart-product-box">
       <!--
@@ -20,6 +21,12 @@
       <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
       <div class="cart-product-description">説明：{{.Description}}</div>
       <div class="cart-product-amount">価格：{{.Amount}}円　＋　消費税</div>
+      <form action="/delete-cart" method="post">
+
+        <input type="hidden" name="_csrf" value="{{$csrfToken}}">
+        <input type="hidden" name="delete_item" value="{{.Id}}">
+        <input type="submit" value="カートから削除">
+      </form>
     </div>
     {{end}}
 </div>

@@ -433,3 +433,21 @@ func GetProductFromCartDB(user_id interface{}) []Product {
 
 	return productResult
 }
+
+func DeleteCartItem(user_id int, product_id string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd, err := DbConnection.Prepare("DELETE FROM cart WHERE user_id = $1 AND product_id = $2")
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = cmd.Exec(user_id, product_id)
+	if err != nil {
+		log.Println(err)
+	}
+}

@@ -134,11 +134,25 @@ func CartPage(c *gin.Context) {
 		c.HTML(200, "cart", gin.H{
 			"title":     "cart",
 			"login":     true,
-			"csrfToken": csrf.GetToken(c),
 			"products":  products,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
 		})
 	} else {
 		c.Redirect(302, "/loginform")
+	}
+}
+
+func DeleteItemsInCart(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId != nil {
+		userid := models.GetUserID(UserInfo.UserId)
+		productid := c.PostForm("delete_item")
+		models.DeleteCartItem(userid, productid)
+		c.Redirect(302, "/mycart")
+	} else {
+		c.Redirect(302, "/")
 	}
 }
 
@@ -636,6 +650,7 @@ func StartWebServer() {
 	//カート
 	r.POST("/addcart", AddCart)
 	r.GET("/mycart", CartPage)
+	r.POST("/delete-cart", DeleteItemsInCart)
 	//ログインフォーム
 	r.GET("/loginform", LoginForm)
 
