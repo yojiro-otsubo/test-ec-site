@@ -11,17 +11,20 @@
 {{end}}
 
 {{define "content"}}
-<div class="product-flex-box">
-  {{range .products}}
-    <div class="product-box">
-    <!--
-    <img src="../static/img/item/productid{{.Id}}/*" alt="">
-    -->
-    <div class="product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
-    <div class="product-description">説明：{{.Description}}</div>
-    <div class="product-amount">価格：{{.Amount}}円　＋　消費税</div>
+<div class="top-content">
+  <div class="product-flex-box">
+    {{range .products}}
+    <a href="/product/{{.Id}}">
+      <div class="product-box">
+        <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="300" height="200">
+        <div class="product-name"><p>タイトル：{{.ItemName}}</p></div>
+        <!--
+        <div class="product-description"><p>説明：{{.Description}}</p></div>
+        -->
+        <div class="product-amount"><p>税抜き価格：{{.Amount}}円</p></div>
+      </div>
+    </a>
+    {{end}}
   </div>
-  {{end}}
 </div>
-
 {{end}}

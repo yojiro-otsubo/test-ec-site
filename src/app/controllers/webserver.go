@@ -10,6 +10,7 @@ import (
 	"net/mail"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
@@ -441,6 +442,8 @@ func ItemRegist(c *gin.Context) {
 
 		filename := header.Filename
 		log.Println("filename =", filename)
+		pos := strings.LastIndex(filename, ".")
+		log.Println("pos =", filename[pos:])
 
 		//get user id
 		userid := models.GetUserID(UserInfo.UserId)
@@ -450,6 +453,7 @@ func ItemRegist(c *gin.Context) {
 		strproductid := strconv.Itoa(productid)
 
 		create_path := "app/static/img/item/productid" + strproductid + "/" + filename
+
 		mkdir_path := "app/static/img/item/productid" + strproductid
 
 		// mkdir
@@ -469,9 +473,22 @@ func ItemRegist(c *gin.Context) {
 		_, err = io.Copy(out, file)
 		if err != nil {
 			log.Println("io.copy err = ", err)
-
 		}
+
 		defer out.Close()
+
+		//newpathpng := "app/static/img/item/productid" + strproductid + "/" + "1.png"
+		newpathjpg := "app/static/img/item/productid" + strproductid + "/" + "1.jpg"
+
+		if filename[pos:] == ".png" {
+			if err := os.Rename(create_path, newpathjpg); err != nil {
+				log.Println(err)
+			}
+		} else {
+			if err := os.Rename(create_path, newpathjpg); err != nil {
+				log.Println(err)
+			}
+		}
 
 		//create stripe product
 		stripe.Key = config.Config.StripeKey

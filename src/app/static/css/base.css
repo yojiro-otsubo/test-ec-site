@@ -5,6 +5,7 @@
   padding-right: 1rem;
   margin-left: auto;
   margin-right: auto;
+  height: 50px;
 }
 
 *,
@@ -71,3 +72,23 @@ body {
   min-width: initial;
   padding: 0.5rem;
 }
+
+.content{
+  margin-top: 10px;
+  margin-bottom: 10px;
+  max-width: 1140px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.content__wrapper{
+  padding-top: 1rem;
+  padding-bottom: 1rem; }
+  @media (min-width: 800px) {
+    .content__wrapper {
+      padding-top: 0;
+      padding-bottom: 0; } 
+    }
