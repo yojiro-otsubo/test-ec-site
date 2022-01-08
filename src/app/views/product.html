@@ -11,17 +11,21 @@
 {{end}}
 
 {{define "content"}}
-<div class="product-content">
-    <div>販売者：{{.ProductUsername}}</div>
-    <div>{{.ItemName}}</div>
-    <div>{{.Description}}</div>
-    <div>価格：{{.Amount}}</div>
-
+<div class="product-content-flex">
+  <div class="product-img-box">
+    <img src="../static/img/item/productid{{.ProductId}}/1.jpg" alt="" class="product-img-content">
+  </div> 
+  <div class="product-detail">
+    <div class="item-page-detail item-name"><p>{{.ItemName}}</p></div>
+    <div class="item-page-detail item-description"><p>{{.Description}}</p></div>
+    <div class="item-page-detail item-amount"><p>価格：{{.Amount}}</p></div>
+    <div class="item-page-detail seller-name"><p>出品者：{{.ProductUsername}}</p></div>
     <form action="/addcart" method="post">
-        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-        <input type="hidden" name="cart" value="{{.ProductId}}">
-        <input type="submit" value="カートに追加">
-
+      <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+      <input type="hidden" name="cart" value="{{.ProductId}}">
+      <input type="submit" value="カートに追加" class="add-cart-submit">
     </form>
+  </div>
 </div>
 {{end}}
+

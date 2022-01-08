@@ -5,15 +5,23 @@
     <li class="nav__item"><a href="/logout">ログアウト</a></li>
     <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
   {{else}}
-  <li class="nav__item"><a href="/loginform">ログイン</a></li>
-  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+    <li class="nav__item"><a href="/loginform">ログイン</a></li>
+    <li class="nav__item"><a href="/signupform">会員登録</a></li>
   {{end}}
 {{end}}
 
 {{define "content"}}
-  <a href="/mycart">カート</a><br><br><br>
-  <a href="/purchase-history">購入履歴</a><br><br><br>
-  <a href="/registered-items">登録済商品一覧</a><br><br><br>
-  <a href="/sell-items-form">商品登録フォーム</a><br><br><br>
-  <a href="/create-an-express-account">Stripeアカウントリンク</a>
+  <div class="mypage-box-flex">
+    <div class="mypage-box mypage-flex-select">
+      <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
+      <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
+      <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録済商品一覧</p></div></a>
+      <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
+    </div>
+    <div class="mypage-box mypage-content">
+      <div class="mypage-title"><p>マイページ</p></div>
+    </div>
+  </div>
+  
+  
 {{end}}

@@ -1,0 +1,68 @@
+.mypage-box-flex {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.mypage-flex-select {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 250px;
+}
+
+.mypage-content {
+    width: 700;
+}
+
+.mypage-select{
+    height: 40px;
+    border: 1px solid rgb(214, 214, 214);
+    margin-bottom: -1px;
+}
+.mypage-select:hover{
+    background-color: rgb(240, 240, 240);
+}
+.mypage-select p{
+    font-size: 16px;
+    padding-top: 12px;
+    padding-left: 5px;
+}
+
+.mypage-content {
+    width: 700px;
+}
+
+.mypage-box {
+    margin: 0 10px 0 10px;
+}
+
+.mypage-title {
+    border-bottom: 1px solid rgb(214, 214, 214);
+}
+.mypage-title p{
+    font-size: 22px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}
+
+@media (max-width: 799px) {
+    .mypage-box-flex {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 0;
+    }
+    
+    .mypage-flex-select {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .mypage-content {
+        width: auto;
+        margin-top: 25px;
+    }
+}
