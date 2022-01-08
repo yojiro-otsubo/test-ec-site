@@ -16,12 +16,12 @@
     {{range .products}}
     <a href="/product/{{.Id}}">
       <div class="product-box">
-        <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="300" height="200">
-        <div class="product-name"><p>タイトル：{{.ItemName}}</p></div>
+        <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" class="product-img">
+        <div class="product-name"><p>{{.ItemName}}</p></div>
         <!--
         <div class="product-description"><p>説明：{{.Description}}</p></div>
         -->
-        <div class="product-amount"><p>税抜き価格：{{.Amount}}円</p></div>
+        <div class="product-amount"><p>￥{{.Amount}}</p></div>
       </div>
     </a>
     {{end}}
