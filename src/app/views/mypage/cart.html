@@ -11,24 +11,34 @@
 {{end}}
 
 {{define "content"}}
-<div class="cart-product-flex-box">
-    {{ $csrfToken := .csrfToken }}
-    {{range .products}}
-    <div class="cart-product-box">
-      <!--
-      <img src="../static/img/item/productid{{.Id}}/*" alt="">
-      -->
-      <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
-      <div class="cart-product-description">説明：{{.Description}}</div>
-      <div class="cart-product-amount">価格：{{.Amount}}円　＋　消費税</div>
-      <form action="/delete-cart" method="post">
-
-        <input type="hidden" name="_csrf" value="{{$csrfToken}}">
-        <input type="hidden" name="delete_item" value="{{.Id}}">
-        <input type="submit" value="カートから削除">
-      </form>
+<div class="mypage-box-flex">
+  <div class="mypage-box mypage-flex-select">
+    <a href="/mycart"><div class="mypage-select select-mycart" style="background-color: rgb(240, 240, 240);"><p>カート</p></div></a>
+    <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
+    <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録済商品一覧</p></div></a>
+    <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
+  </div>
+  <div class="mypage-box mypage-content">
+    <div class="mypage-title"><p>カート</p></div>
+    <div class="cart-product-flex-box">
+      {{ $csrfToken := .csrfToken }}
+      {{range .products}}
+      <div class="cart-product-box">
+        <div class="cart-img"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="120px" height="80px"> </div>
+        <div class="cart-p-detail">
+          <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
+          <div class="cart-product-amount">価格：{{.Amount}}円　＋　消費税</div>
+          <form action="/delete-cart" method="post">
+            <input type="hidden" name="_csrf" value="{{$csrfToken}}">
+            <input type="hidden" name="delete_item" value="{{.Id}}">
+            <input type="submit" value="カートから削除">
+          </form>
+        </div>
+      </div>
+      {{end}}
     </div>
-    {{end}}
+  </div>
 </div>
+
   
 {{end}}
