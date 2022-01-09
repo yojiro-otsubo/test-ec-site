@@ -11,5 +11,15 @@
 {{end}}
 
 {{define "content"}}
-購入履歴だお
+  <div class="mypage-box-flex">
+    <div class="mypage-box mypage-flex-select">
+      <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
+      <a href="/purchase-history"><div class="mypage-select select-purchase-history" style="background-color: rgb(240, 240, 240);"><p>購入履歴</p></div></a>
+      <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録済商品一覧</p></div></a>
+      <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
+    </div>
+    <div class="mypage-box mypage-content">
+      <div class="mypage-title"><p>購入履歴</p></div>
+    </div>
+  </div>
 {{end}}

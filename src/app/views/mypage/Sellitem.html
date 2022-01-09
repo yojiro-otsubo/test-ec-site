@@ -11,16 +11,36 @@
 {{end}}
 
 {{define "content"}}
-<h1>Signup</h1>
-<form action="/itemregist" method="post" enctype="multipart/form-data">
-  <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-  <div>
-    <p>商品名</p><input type="text" name="itemname" required="required" maxlength="100">
-    <p>商品説明</p><textarea name="item-description" cols="30" rows="10" maxlength="500" required="required"></textarea>
-    <p>商品価格</p><input type="number" name="price" required="required" maxlength="10"><p>円</p>
-    <p>商品画像</p><input type="file" name="image" accept=".png, .jpg" required="required">
-
+<div class="mypage-box-flex">
+  <div class="mypage-box mypage-flex-select">
+    <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
+    <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
+    <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録済商品一覧</p></div></a>
+    <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"  style="background-color: rgb(240, 240, 240);"><p>商品登録フォーム</p></div></a>
   </div>
-  <div><input type="submit" value="登録"></div>
-</form>
+  <div class="mypage-box mypage-content">
+    <div class="mypage-title"><p>商品登録</p></div>
+    <form action="/itemregist" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+      <div class="regist-item-form">
+        <div class="r-form ragist-form-item-name">
+          <p>商品名</p>
+          <input type="text" name="itemname" required="required" maxlength="100" style="width: 100%;">
+        </div>
+        <div class="r-form ragist-form-item-description">
+          <p>商品説明</p>
+          <textarea name="item-description" rows="10" maxlength="500" required="required" style="width: 100%;"></textarea>
+        </div>
+        <div class="r-form ragist-form-item-price">
+          <p>商品価格</p><input type="number" name="price" required="required" maxlength="10">円
+        </div>
+        <div class="r-form ragist-form-item-image">
+          <p>商品画像</p><input type="file" name="image" accept=".png, .jpg" required="required">
+        </div>        
+      </div>
+      <div class="ragist-item-submit"><input type="submit" value="登録"></div>
+    </form>
+  </div>
+</div>
+
 {{end}}
