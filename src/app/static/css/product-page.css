@@ -21,7 +21,7 @@ img.product-img-content {
 
 .item-page-detail {
     margin: 15px 0 5px 0;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid rgb(200, 200, 200);
 }
 
 .add-cart-submit {
@@ -42,5 +42,22 @@ img.product-img-content {
         width: 300px;
         height: 200px;
     }
+  
 }
 
+.product-p-title {
+    border-bottom: 2px solid gray;
+    width: auto;
+}
+
+.product-p-title p {
+    font-size: 24px;
+    margin-left: 10px;
+    margin-bottom: 2px;
+}
+
+.add-cart-box {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}

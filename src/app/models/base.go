@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"main/config"
+	"math"
+	"strconv"
 
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
@@ -404,7 +406,7 @@ func AddToCart(user_id interface{}, product_id string) {
 	}
 }
 
-func GetProductFromCartDB(user_id interface{}) []Product {
+func GetProductFromCartDB(user_id interface{}, tax float64) []Product {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 
@@ -426,6 +428,13 @@ func GetProductFromCartDB(user_id interface{}) []Product {
 			log.Println(err)
 		}
 		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "0" {
+			f, err := strconv.ParseFloat(p.Amount, 64)
+			if err != nil {
+				log.Println(err)
+			}
+			f = f * tax
+			taxamount := int(math.Round(f))
+			p.Amount = strconv.Itoa(taxamount)
 			productResult = append(productResult, p)
 		}
 	}

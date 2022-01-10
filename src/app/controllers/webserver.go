@@ -6,6 +6,7 @@ import (
 	"log"
 	"main/app/models"
 	"main/config"
+	"math"
 	"net/http"
 	"net/mail"
 	"os"
@@ -119,7 +120,8 @@ func AddCart(c *gin.Context) {
 	if UserInfo.UserId != nil {
 		userid := models.GetUserID(UserInfo.UserId)
 		models.AddToCart(userid, productid)
-		c.Redirect(302, "/")
+		redirecturl := "/product/" + productid
+		c.Redirect(302, redirecturl)
 	} else {
 		c.Redirect(302, "/loginform")
 	}
@@ -129,15 +131,26 @@ func CartPage(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
 	userid := models.GetUserID(UserInfo.UserId)
-	products := models.GetProductFromCartDB(userid)
+	products := models.GetProductFromCartDB(userid, 1.1)
 	log.Println(products)
+
+	var totalAmount int
+	for _, p := range products {
+		i, err := strconv.Atoi(p.Amount)
+		if err != nil {
+			log.Println(err)
+		}
+		totalAmount = totalAmount + i
+	}
+	log.Println(totalAmount)
 	if UserInfo.UserId != nil {
 		c.HTML(200, "cart", gin.H{
-			"title":     "cart",
-			"login":     true,
-			"products":  products,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
+			"title":       "cart",
+			"login":       true,
+			"products":    products,
+			"username":    UserInfo.UserId,
+			"csrfToken":   csrf.GetToken(c),
+			"totalAmount": totalAmount,
 		})
 	} else {
 		c.Redirect(302, "/loginform")
@@ -570,6 +583,13 @@ func ProductPage(c *gin.Context) {
 	if product[7] == "1" {
 		c.Redirect(302, "/")
 	}
+	f, err := strconv.ParseFloat(product[6], 64)
+	if err != nil {
+		log.Println(err)
+	}
+	f = f * 1.1
+	taxamount := int(math.Round(f))
+	log.Println(taxamount)
 
 	if UserInfo.UserId == nil {
 		c.HTML(200, "product", gin.H{
@@ -582,7 +602,7 @@ func ProductPage(c *gin.Context) {
 			"StripePriceId":   product[3],
 			"ItemName":        product[4],
 			"Description":     product[5],
-			"Amount":          product[6],
+			"Amount":          taxamount,
 		})
 	} else {
 		c.HTML(200, "product", gin.H{
@@ -596,7 +616,7 @@ func ProductPage(c *gin.Context) {
 			"StripePriceId":   product[3],
 			"ItemName":        product[4],
 			"Description":     product[5],
-			"Amount":          product[6],
+			"Amount":          taxamount,
 		})
 	}
 }

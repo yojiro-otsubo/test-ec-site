@@ -19,15 +19,15 @@
     <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
   </div>
   <div class="mypage-box mypage-content">
-    <div class="mypage-title"><p>カート</p></div>
+    <div class="mypage-title"><p>My カート</p></div>
     <div class="cart-product-flex-box">
       {{ $csrfToken := .csrfToken }}
       {{range .products}}
       <div class="cart-product-box">
-        <div class="cart-img"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="120px" height="80px"> </div>
+        <div class="cart-img"><a href="/product/{{.Id}}"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="120px" height="80px"></a></div>
         <div class="cart-p-detail">
           <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
-          <div class="cart-product-amount">価格：{{.Amount}}円　＋　消費税</div>
+          <div class="cart-product-amount">税込み価格：{{.Amount}}円</div>
           <form action="/delete-cart" method="post">
             <input type="hidden" name="_csrf" value="{{$csrfToken}}">
             <input type="hidden" name="delete_item" value="{{.Id}}">
@@ -36,6 +36,11 @@
         </div>
       </div>
       {{end}}
+    </div>
+    <div class="mypage-title"><p>小計</p></div>
+    <div class="mycart-subtotal">
+      <p>商品数：個</p>
+      <p>合計価格(税込)：￥{{.totalAmount}}</p>
     </div>
   </div>
 </div>
