@@ -1,6 +1,6 @@
 let element = document.getElementById('payment-form');
 const ClientSecret = element.dataset.secret;
-const stripe = Stripe(element.dataset.pk);
+const stripe = Stripe('pk_test_51K9kUPIj0H9ZSjos1StuamCJUmlBk8t479VkwW0BXgXRE4yxlmvRHGfrCvXm2jZNFCtx5KmWKpml4Kih48lDXFss009cxW6e0x');
 
 const options = {
   clientSecret: ClientSecret,

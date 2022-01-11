@@ -1,16 +1,23 @@
-<head>
-    <title>Checkout</title>
-    <script src="https://js.stripe.com/v3/"></script>
-    <link rel="stylesheet" href="../static/js/checkout.js" />
-    <link rel="stylesheet" href="../static/js/status.js" />
-</head>
-<form id="payment-form" data-secret="{{ .ClientSecret }}" data-pk="{{ .pk }}">
-    <div id="payment-element">
-      <!-- Elements will create form elements here -->
-    </div>
-  
-    <button id="submit">Submit</button>
-    <div id="error-message">
-        <!-- Display error message to your customers here -->
-    </div>
-</form>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Checkout</title>
+        <script src="https://js.stripe.com/v3/"></script>
+        <script src="../static/js/checkout.js"></script>
+        <script src="../static/js/status.js"></script>
+    </head>
+    <body>
+        <form id="payment-form" data-secret="{{ .ClientSecret }}">
+            <div id="payment-element">
+              <!-- Elements will create form elements here -->
+            </div>
+          
+            <button id="submit">Submit</button>
+            <div id="error-message">
+                <!-- Display error message to your customers here -->
+            </div>
+        </form>
+    </body>
+</html>
+

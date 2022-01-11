@@ -649,11 +649,8 @@ func CheckOutHandler(c *gin.Context) {
 		}
 		result, _ := paymentintent.New(params)
 
-		data := CheckoutData{
-			ClientSecret: result.ClientSecret,
-		}
 		c.HTML(200, "checkout", gin.H{
-			"ClientSecret": data,
+			"ClientSecret": result.ClientSecret,
 			"pk":           config.Config.PK,
 		})
 	} else {
