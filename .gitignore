@@ -1,5 +1,4 @@
-# メモ
 /memo.txt
 /db
 config.ini
-checkout.js
+/src/app/static/js/checkout.js
