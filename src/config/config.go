@@ -15,6 +15,7 @@ type ConfigList struct {
 	DBuser     string
 	DBpassword string
 	StripeKey  string
+	PK         string
 }
 
 var Config ConfigList
@@ -34,5 +35,6 @@ func init() {
 		DBuser:     cfg.Section("db").Key("user").String(),
 		DBpassword: cfg.Section("db").Key("password").String(),
 		StripeKey:  cfg.Section("stripe").Key("stripe_key").String(),
+		PK:         cfg.Section("stripe").Key("publish_key").String(),
 	}
 }

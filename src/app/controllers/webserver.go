@@ -20,6 +20,7 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
+	"github.com/stripe/stripe-go/v72/paymentintent"
 	"github.com/stripe/stripe-go/v72/price"
 	"github.com/stripe/stripe-go/v72/product"
 	csrf "github.com/utrack/gin-csrf"
@@ -621,9 +622,43 @@ func ProductPage(c *gin.Context) {
 	}
 }
 
-//-------------------------------------------------- BuyProcess --------------------------------------------------
+//-------------------------------------------------- CheckOut --------------------------------------------------
+type CheckoutData struct {
+	ClientSecret string
+}
 
-func BuyProcess(c *gin.Context) {
+func CheckOutHandler(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	//productid := c.PostForm("product_id")
+	amount := c.PostForm("amount")
+	amountInt64, err := strconv.ParseInt(amount, 10, 64)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if UserInfo.UserId != nil {
+		stripe.Key = config.Config.StripeKey
+		params := &stripe.PaymentIntentParams{
+			Amount:   stripe.Int64(amountInt64),
+			Currency: stripe.String(string(stripe.CurrencyJPY)),
+			AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+				Enabled: stripe.Bool(true),
+			},
+		}
+		result, _ := paymentintent.New(params)
+
+		data := CheckoutData{
+			ClientSecret: result.ClientSecret,
+		}
+		c.HTML(200, "checkout", gin.H{
+			"ClientSecret": data,
+			"pk":           config.Config.PK,
+		})
+	} else {
+		c.Redirect(302, "/loginform")
+	}
 
 }
 
@@ -639,9 +674,10 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("purchaseHistory", "app/views/base.html", "app/views/mypage/purchaseHistory.html")
 	render.AddFromFiles("registeredItems", "app/views/base.html", "app/views/mypage/RegisteredItems.html")
 	render.AddFromFiles("SellItems", "app/views/base.html", "app/views/mypage/Sellitem.html")
-	render.AddFromFiles("test", "app/views/base.html", "app/views/test.html")
+	render.AddFromFiles("test", "app/views/test.html")
 	render.AddFromFiles("product", "app/views/base.html", "app/views/product.html")
 	render.AddFromFiles("cart", "app/views/base.html", "app/views/mypage/cart.html")
+	render.AddFromFiles("checkout", "app/views/checkout.html")
 
 	return render
 }
@@ -683,7 +719,7 @@ func StartWebServer() {
 	//商品ページ
 	r.GET("/product/:number", ProductPage)
 	//購入処理
-	r.POST("/buy", BuyProcess)
+	r.POST("/checkout", CheckOutHandler)
 	//カート
 	r.POST("/addcart", AddCart)
 	r.GET("/mycart", CartPage)

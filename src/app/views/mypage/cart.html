@@ -42,6 +42,13 @@
       <p>商品数：個</p>
       <p>合計価格(税込)：￥{{.totalAmount}}</p>
     </div>
+    <form action="/" method="post">
+      <input type="hidden" name="_csrf" value="{{$csrfToken}}">
+      {{range .products}}
+        <input type="hidden" name="item" value="{{.Id}}">
+      {{end}}
+      <input type="submit" value="購入する">
+    </form>
   </div>
 </div>
 
