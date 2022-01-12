@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"main/app/models"
 	"main/config"
@@ -23,6 +24,7 @@ import (
 	"github.com/stripe/stripe-go/v72/paymentintent"
 	"github.com/stripe/stripe-go/v72/price"
 	"github.com/stripe/stripe-go/v72/product"
+	"github.com/stripe/stripe-go/webhook"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -659,6 +661,53 @@ func CheckOutHandler(c *gin.Context) {
 
 }
 
+//-------------------------------------------------- Payment Completion --------------------------------------------------
+func PaymentCompletion(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+	if UserInfo.UserId != nil {
+		c.HTML(200, "paymentCompletion", gin.H{
+			"title":     "paymentCompletion",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+		})
+	} else {
+		c.Redirect(302, "/")
+	}
+}
+
+func handleWebhook(c *gin.Context) {
+	const MaxBodyBytes = int64(65536)
+	var w http.ResponseWriter = c.Writer
+	c.Request.Body = http.MaxBytesReader(w, c.Request.Body, MaxBodyBytes)
+	payload, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading request body: %v\n", err)
+		w.WriteHeader(http.StatusServiceUnavailable)
+		return
+	}
+	endpointSecret := config.Config.EPS
+	event, err := webhook.ConstructEvent(payload, c.Request.Header.Get("Stripe-Signature"),
+		endpointSecret)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error verifying webhook signature: %v\n", err)
+		w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
+		return
+	}
+
+	log.Println("webhook")
+	switch event.Type {
+	case "payment_intent.succeeded":
+		//var paymentIntent stripe.PaymentIntent
+		log.Println("payment_intent.succeeded")
+	default:
+		fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
+	}
+
+}
+
 //-------------------------------------------------- WebServer --------------------------------------------------
 
 //マルチテンプレート作成
@@ -675,6 +724,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("product", "app/views/base.html", "app/views/product.html")
 	render.AddFromFiles("cart", "app/views/base.html", "app/views/mypage/cart.html")
 	render.AddFromFiles("checkout", "app/views/checkout.html")
+	render.AddFromFiles("paymentCompletion", "app/views/base.html", "app/views/mypage/cart.html")
 
 	return render
 }
@@ -717,6 +767,9 @@ func StartWebServer() {
 	r.GET("/product/:number", ProductPage)
 	//購入処理
 	r.POST("/checkout", CheckOutHandler)
+	//支払い完了
+	r.GET("/payment-completion", PaymentCompletion)
+	r.POST("/webhook", handleWebhook)
 	//カート
 	r.POST("/addcart", AddCart)
 	r.GET("/mycart", CartPage)
