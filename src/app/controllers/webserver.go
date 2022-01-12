@@ -724,7 +724,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("product", "app/views/base.html", "app/views/product.html")
 	render.AddFromFiles("cart", "app/views/base.html", "app/views/mypage/cart.html")
 	render.AddFromFiles("checkout", "app/views/checkout.html")
-	render.AddFromFiles("paymentCompletion", "app/views/base.html", "app/views/mypage/cart.html")
+	render.AddFromFiles("paymentCompletion", "app/views/base.html", "app/views/paymentCompletion.html")
 
 	return render
 }
