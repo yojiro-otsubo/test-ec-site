@@ -289,6 +289,23 @@ func UserIdCheck(userid int) bool {
 
 }
 
+func CheckStripeAccountId(stripe_account_id interface{}) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var stripeAccount string
+	err = DbConnection.QueryRow("SELECT stripe_account FROM accounts WHERE stripe_account = $1", stripe_account_id).Scan(&stripeAccount)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+}
+
 type Product struct {
 	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut string
 }

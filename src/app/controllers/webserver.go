@@ -442,7 +442,7 @@ func ItemRegist(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
-	if UserInfo.UserId != nil && UserInfo.StripeAccount != nil {
+	if UserInfo.UserId != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
 		var err error
 		//post data
 		item := c.PostForm("itemname")
@@ -636,59 +636,24 @@ func CheckOutHandler(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
 
-	//productid := c.PostForm("product_id")
-	amount := c.PostForm("amount")
-	amountInt64, err := strconv.ParseInt(amount, 10, 64)
-	if err != nil {
-		log.Println(err)
-	}
-
-	if UserInfo.UserId != nil {
-		stripe.Key = config.Config.StripeKey
-		params := &stripe.PaymentIntentParams{
-			Amount:   stripe.Int64(amountInt64),
-			Currency: stripe.String(string(stripe.CurrencyJPY)),
-			AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
-				Enabled: stripe.Bool(true),
-			},
-		}
-		result, _ := paymentintent.New(params)
-
-		c.HTML(200, "checkout", gin.H{
-			"ClientSecret": result.ClientSecret,
-			"pk":           config.Config.PK,
-		})
-	} else {
-		c.Redirect(302, "/loginform")
-	}
-
-}
-
-func CartCheckOutHandler(c *gin.Context) {
-	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-
 	productid := c.PostFormArray("item")
 	amount := c.PostForm("totalAmount")
 	amountInt64, err := strconv.ParseInt(amount, 10, 64)
 	if err != nil {
 		log.Println(err)
 	}
-	var transferGroup string
 
-	for {
-		transferGroup = ""
-		transferGroup = "tg_" + RandString(25)
-		if models.CheckTransferGroup(transferGroup) == true {
-			for i := 0; i < len(productid); i++ {
-				log.Println(productid[i])
-				models.AddTransferGroup(UserInfo.UserId, productid[i], transferGroup)
+	if UserInfo.UserId != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
+		userid := models.GetUserID(UserInfo.UserId)
+		var transferGroup string
+
+		for {
+			transferGroup = ""
+			transferGroup = "tg_" + RandString(25)
+			if models.CheckTransferGroup(transferGroup) == true {
+				break
 			}
-			break
 		}
-	}
-
-	if UserInfo.UserId != nil {
 		stripe.Key = config.Config.StripeKey
 		params := &stripe.PaymentIntentParams{
 			Amount:   stripe.Int64(amountInt64),
@@ -699,6 +664,11 @@ func CartCheckOutHandler(c *gin.Context) {
 			TransferGroup: stripe.String(transferGroup),
 		}
 		result, _ := paymentintent.New(params)
+
+		for i := 0; i < len(productid); i++ {
+			log.Println(productid[i])
+			models.AddTransferGroup(userid, productid[i], transferGroup)
+		}
 
 		c.HTML(200, "checkout", gin.H{
 			"ClientSecret": result.ClientSecret,
@@ -844,7 +814,6 @@ func StartWebServer() {
 	CSRFGroup.GET("/product/:number", ProductPage)
 	//購入処理
 	CSRFGroup.POST("/checkout", CheckOutHandler)
-	CSRFGroup.POST("/cartcheckout", CartCheckOutHandler)
 	//支払い完了
 	CSRFGroup.GET("/payment-completion", PaymentCompletion)
 	r.POST("/webhook", handleWebhook)
