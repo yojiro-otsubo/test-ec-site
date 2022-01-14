@@ -46,8 +46,8 @@ func ConnectionDB() {
 		log.Fatalln(err)
 	}
 
-	//settlementテーブル作成
-	cmd3 := "CREATE TABLE IF NOT EXISTS settlement (id serial PRIMARY KEY, user_id INT, product_id INT);"
+	//payment_history
+	cmd3 := "CREATE TABLE IF NOT EXISTS payment_history (id serial PRIMARY KEY, user_id INT, product_id INT, transfer_group VARCHAR(50));"
 	_, err = DbConnection.Exec(cmd3)
 	if err != nil {
 		log.Fatalln(err)
@@ -314,7 +314,7 @@ func GetTheProductOfUserId(userid int) []Product {
 		if err != nil {
 			log.Println(err)
 		}
-		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut != "" {
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
 			productResult = append(productResult, p)
 		}
 	}
@@ -323,6 +323,38 @@ func GetTheProductOfUserId(userid int) []Product {
 	return productResult
 
 }
+
+func GetSoldOutProductOfUserId(userid int) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE user_id = $1", userid)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "1" {
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
+
+}
+
 func GetProductTop() []Product {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
@@ -459,4 +491,87 @@ func DeleteCartItem(user_id int, product_id string) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func CheckTransferGroup(transferGroup string) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var transfergroup string
+	err = DbConnection.QueryRow("SELECT transfer_group FROM payment_history WHERE transfer_group = $1", transferGroup).Scan(&transfergroup)
+	if err != nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func AddTransferGroup(user_id interface{}, product_id, transferGroup string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd, err := DbConnection.Prepare("INSERT INTO payment_history(user_id, product_id, transfer_group) VALUES($1, $2, $3) RETURNING id")
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = cmd.Exec(user_id, product_id, transferGroup)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func UpdataSoldOutValue(productid, soldout string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var soldOutValue int
+	err = DbConnection.QueryRow("UPDATE products SET sold_out = $2, WHERE id = $1 RETURNING sold_out", productid, soldout).Scan(&soldOutValue)
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
+type ProductId struct {
+	productId string
+}
+
+func GetProductIdWithTg(transferGroup string) []string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT product_id FROM payment_history WHERE transfer_group = $1", transferGroup)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var pid []ProductId
+	for rows.Next() {
+		var p ProductId
+		err := rows.Scan(&p.productId)
+		if err != nil {
+			log.Println(err)
+		}
+		pid = append(pid, p)
+	}
+
+	var product_id []string
+	for _, pp := range pid {
+		product_id = append(product_id, pp.productId)
+	}
+	return product_id
 }

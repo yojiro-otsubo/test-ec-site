@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,7 +25,7 @@ import (
 	"github.com/stripe/stripe-go/v72/paymentintent"
 	"github.com/stripe/stripe-go/v72/price"
 	"github.com/stripe/stripe-go/v72/product"
-	"github.com/stripe/stripe-go/webhook"
+	"github.com/stripe/stripe-go/v72/webhook"
 	csrf "github.com/utrack/gin-csrf"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -103,12 +104,14 @@ func registeredItems(c *gin.Context) {
 	} else {
 		userid := models.GetUserID(UserInfo.UserId)
 		UserProduct := models.GetTheProductOfUserId(userid)
+		SoldOutProduct := models.GetSoldOutProductOfUserId(userid)
 		c.HTML(200, "registeredItems", gin.H{
-			"title":     "registeredItems",
-			"login":     true,
-			"username":  UserInfo.UserId,
-			"csrfToken": csrf.GetToken(c),
-			"products":  UserProduct,
+			"title":          "registeredItems",
+			"login":          true,
+			"username":       UserInfo.UserId,
+			"csrfToken":      csrf.GetToken(c),
+			"products":       UserProduct,
+			"SoldOutProduct": SoldOutProduct,
 		})
 	}
 }
@@ -541,7 +544,12 @@ func test(c *gin.Context) {
 
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
-	log.Println(UserInfo.UserId)
+	array := c.PostFormArray("item")
+
+	for i := 0; i < len(array); i++ {
+		log.Println(array[i])
+		log.Printf("%T", array[i])
+	}
 	/*
 		out, err := os.Create("app/static/img/item/test.txt")
 		if err != nil {
@@ -562,15 +570,11 @@ func test(c *gin.Context) {
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {
-		userid := models.GetUserID(UserInfo.UserId)
-		UserProduct := models.GetTheProductOfUserId(userid)
-		log.Println("Product = ", UserProduct)
 		c.HTML(200, "test", gin.H{
 			"title":     "test",
 			"login":     true,
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
-			"products":  UserProduct,
 		})
 	}
 }
@@ -661,6 +665,51 @@ func CheckOutHandler(c *gin.Context) {
 
 }
 
+func CartCheckOutHandler(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	productid := c.PostFormArray("item")
+	amount := c.PostForm("totalAmount")
+	amountInt64, err := strconv.ParseInt(amount, 10, 64)
+	if err != nil {
+		log.Println(err)
+	}
+	var transferGroup string
+
+	for {
+		transferGroup = ""
+		transferGroup = "tg_" + RandString(25)
+		if models.CheckTransferGroup(transferGroup) == true {
+			for i := 0; i < len(productid); i++ {
+				log.Println(productid[i])
+				models.AddTransferGroup(UserInfo.UserId, productid[i], transferGroup)
+			}
+			break
+		}
+	}
+
+	if UserInfo.UserId != nil {
+		stripe.Key = config.Config.StripeKey
+		params := &stripe.PaymentIntentParams{
+			Amount:   stripe.Int64(amountInt64),
+			Currency: stripe.String(string(stripe.CurrencyJPY)),
+			AutomaticPaymentMethods: &stripe.PaymentIntentAutomaticPaymentMethodsParams{
+				Enabled: stripe.Bool(true),
+			},
+			TransferGroup: stripe.String(transferGroup),
+		}
+		result, _ := paymentintent.New(params)
+
+		c.HTML(200, "checkout", gin.H{
+			"ClientSecret": result.ClientSecret,
+			"pk":           config.Config.PK,
+		})
+	} else {
+		c.Redirect(302, "/loginform")
+	}
+}
+
 //-------------------------------------------------- Payment Completion --------------------------------------------------
 func PaymentCompletion(c *gin.Context) {
 	session := sessions.Default(c)
@@ -678,33 +727,61 @@ func PaymentCompletion(c *gin.Context) {
 }
 
 func handleWebhook(c *gin.Context) {
+	stripe.Key = config.Config.StripeKey
 	const MaxBodyBytes = int64(65536)
 	var w http.ResponseWriter = c.Writer
 	c.Request.Body = http.MaxBytesReader(w, c.Request.Body, MaxBodyBytes)
 	payload, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading request body: %v\n", err)
+		log.Printf("Error reading request body: %v\n", err)
 		w.WriteHeader(http.StatusServiceUnavailable)
 		return
 	}
-	endpointSecret := config.Config.EPS
-	event, err := webhook.ConstructEvent(payload, c.Request.Header.Get("Stripe-Signature"),
-		endpointSecret)
 
+	event := stripe.Event{}
+
+	if err := json.Unmarshal(payload, &event); err != nil {
+		fmt.Fprintf(os.Stderr, "⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+		log.Printf("⚠️  Webhook error while parsing basic request. %v\n", err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	endpointSecret := config.Config.EPS
+	event, err = webhook.ConstructEvent(payload, c.Request.Header.Get("Stripe-Signature"), endpointSecret)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error verifying webhook signature: %v\n", err)
+		log.Printf("Error verifying webhook signature: %v\n", err)
 		w.WriteHeader(http.StatusBadRequest) // Return a 400 error on a bad signature
 		return
 	}
 
-	log.Println("webhook")
 	switch event.Type {
 	case "payment_intent.succeeded":
 		//var paymentIntent stripe.PaymentIntent
-		log.Println("payment_intent.succeeded")
+		var paymentIntent stripe.PaymentIntent
+		err := json.Unmarshal(event.Data.Raw, &paymentIntent)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing webhook JSON: %v\n", err)
+			log.Printf("Error parsing webhook JSON: %v\n", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		productid := models.GetProductIdWithTg(paymentIntent.TransferGroup)
+		for i := 0; i < len(productid); i++ {
+			models.UpdataSoldOutValue(productid[i], "1")
+		}
+
 	default:
 		fmt.Fprintf(os.Stderr, "Unhandled event type: %s\n", event.Type)
 	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+//-------------------------------------------------- BuyerInfo --------------------------------------------------
+func BuyerInfo(c *gin.Context) {
 
 }
 
@@ -730,64 +807,69 @@ func createMultitemplate() multitemplate.Renderer {
 }
 
 //スタートウェブサーバー（main.goから呼び出し)
+
 func StartWebServer() {
 
 	r := gin.Default()
 	r.HTMLRender = createMultitemplate()
 	r.Static("/static", "app/static")
-	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("mysession", store))
 
-	r.Use(csrf.Middleware(csrf.Options{
+	store := cookie.NewStore([]byte("secret"))
+	CSRFGroup := r.Group("/")
+	CSRFGroup.Use(sessions.Sessions("mysession", store))
+	CSRFGroup.Use(csrf.Middleware(csrf.Options{
 		Secret: RandString(10),
 		ErrorFunc: func(c *gin.Context) {
 			c.String(400, "CSRF token mismatch")
 			c.Abort()
 		},
 	}))
-
-	r.GET("/test", test)
+	CSRFGroup.POST("/test", test)
 
 	//topページ
-	r.GET("/", top)
+	CSRFGroup.GET("/", top)
 	//マイページ
-	r.GET("/mypage/:username", mypage)
+	CSRFGroup.GET("/mypage/:username", mypage)
 	//購入履歴一覧
-	r.GET("/purchase-history", purchaseHistory)
+	CSRFGroup.GET("/purchase-history", purchaseHistory)
 	//登録した自分のアイテム一覧
-	r.GET("/registered-items", registeredItems)
+	CSRFGroup.GET("/registered-items", registeredItems)
 	//商品登録フォーム
-	r.GET("/sell-items-form", SellItemsForm)
-	r.POST("/itemregist", ItemRegist)
+	CSRFGroup.GET("/sell-items-form", SellItemsForm)
+	CSRFGroup.POST("/itemregist", ItemRegist)
 	//アカウントリンク
-	r.GET("/create-an-express-account", CreateAnExpressAccount)
-	r.GET("/ok-create-an-express-account", OkCreateAnExpressAccount)
-	r.GET("/refresh-create-an-express-account", RefreshCreateAnExpressAccount)
+	CSRFGroup.GET("/create-an-express-account", CreateAnExpressAccount)
+	CSRFGroup.GET("/ok-create-an-express-account", OkCreateAnExpressAccount)
+	CSRFGroup.GET("/refresh-create-an-express-account", RefreshCreateAnExpressAccount)
 	//商品ページ
-	r.GET("/product/:number", ProductPage)
+	CSRFGroup.GET("/product/:number", ProductPage)
 	//購入処理
-	r.POST("/checkout", CheckOutHandler)
+	CSRFGroup.POST("/checkout", CheckOutHandler)
+	CSRFGroup.POST("/cartcheckout", CartCheckOutHandler)
 	//支払い完了
-	r.GET("/payment-completion", PaymentCompletion)
+	CSRFGroup.GET("/payment-completion", PaymentCompletion)
 	r.POST("/webhook", handleWebhook)
 	//カート
-	r.POST("/addcart", AddCart)
-	r.GET("/mycart", CartPage)
-	r.POST("/delete-cart", DeleteItemsInCart)
+	CSRFGroup.POST("/addcart", AddCart)
+	CSRFGroup.GET("/mycart", CartPage)
+	CSRFGroup.POST("/delete-cart", DeleteItemsInCart)
+	//購入者情報
+	CSRFGroup.POST("/buyer/:number", BuyerInfo)
+
 	//ログインフォーム
-	r.GET("/loginform", LoginForm)
+	CSRFGroup.GET("/loginform", LoginForm)
 
 	//ログイン処理
-	r.POST("/login", Login)
+	CSRFGroup.POST("/login", Login)
 
 	//ユーザー登録フォーム
-	r.GET("/signupform", SignupForm)
+	CSRFGroup.GET("/signupform", SignupForm)
 
 	//ユーザー登録処理
-	r.POST("/registration", registration)
+	CSRFGroup.POST("/registration", registration)
 
 	//ログアウト処理
-	r.GET("/logout", Logout)
+	CSRFGroup.GET("/logout", Logout)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))

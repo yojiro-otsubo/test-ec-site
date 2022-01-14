@@ -37,8 +37,8 @@
       <p style="font-size: 12px; color: rgb(100, 100, 100);">この商品のみ、購入</p>
       <form action="/checkout" method="post">
         <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-        <input type="hidden" name="product_id" value="{{.ProductId}}">
-        <input type="hidden" name="amount" value="{{.Amount}}">
+        <input type="hidden" name="item" value="{{.ProductId}}">
+        <input type="hidden" name="totalAmount" value="{{.Amount}}">
         <input type="submit" value="この商品を注文" class="add-cart-submit">
       </form>
     </div>
