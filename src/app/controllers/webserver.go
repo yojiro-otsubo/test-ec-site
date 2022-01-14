@@ -79,17 +79,16 @@ func purchaseHistory(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 
 	if UserInfo.UserId == nil {
-		c.HTML(200, "purchaseHistory", gin.H{
-			"title":     "purchaseHistory",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-		})
+		c.Redirect(302, "/loginform")
 	} else {
+		userid := models.GetUserID(UserInfo.UserId)
+		products := models.GetProductIdFromPaymentHistory(userid)
 		c.HTML(200, "purchaseHistory", gin.H{
 			"title":     "purchaseHistory",
 			"login":     true,
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
+			"products":  products,
 		})
 	}
 }

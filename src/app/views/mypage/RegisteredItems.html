@@ -14,7 +14,7 @@
   <div class="mypage-box mypage-flex-select">
     <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
     <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
-    <a href="/registered-items"><div class="mypage-select select-registered-items" style="background-color: rgb(240, 240, 240);"><p>登録済商品一覧</p></div></a>
+    <a href="/registered-items"><div class="mypage-select select-registered-items" style="background-color: rgb(240, 240, 240);"><p>登録した商品</p></div></a>
     <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
   </div>
 
@@ -59,6 +59,7 @@
     </div>
 
     <div class="mypage-title"><p>登録済商品</p></div>
+    <p style="margin: 5px 0 5px 5px; color: gray;">※まだ、購入されていない商品の一覧です。</p>
     <div class="user-product-flex-box">
       {{range .products}}
       <div class="user-product-box">
@@ -73,10 +74,6 @@
       </div>
       {{end}}
     </div>
-
-    
-
-
   </div>
 </div>
 

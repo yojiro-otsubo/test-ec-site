@@ -575,3 +575,34 @@ func GetProductIdWithTg(transferGroup string) []string {
 	}
 	return product_id
 }
+
+func GetProductIdFromPaymentHistory(user_id interface{}) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE id IN (SELECT product_id FROM payment_history WHERE user_id = $1)", user_id)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "1" {
+
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
+}

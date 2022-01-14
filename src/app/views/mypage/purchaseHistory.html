@@ -15,11 +15,27 @@
     <div class="mypage-box mypage-flex-select">
       <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
       <a href="/purchase-history"><div class="mypage-select select-purchase-history" style="background-color: rgb(240, 240, 240);"><p>購入履歴</p></div></a>
-      <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録済商品一覧</p></div></a>
+      <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録した商品</p></div></a>
       <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
     </div>
     <div class="mypage-box mypage-content">
-      <div class="mypage-title"><p>購入履歴</p></div>
+
+      <div class="mypage-title"><p>購入した商品</p></div>
+      <p style="margin: 5px 0 5px 5px; color: gray;">購入した商品</p>
+      <div class="user-product-flex-box">
+        {{range .products}}
+        <div class="user-product-box">
+          <div class="user-product-img"><img src="../static/img/item/productid{{.Id}}/1.jpg"  width="120px" height="80px" alt=""></div>
+          <div class="user-product-details">
+            <div class="user-product-name">{{.ItemName}}</div>
+            <!---
+            <div class="user-product-description">説明：{{.Description}}</div>
+            -->
+            <div class="user-product-amount">価格：{{.Amount}}円　＋　消費税</div>
+          </div>
+        </div>
+        {{end}}
+      </div>
     </div>
   </div>
 {{end}}
