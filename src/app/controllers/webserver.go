@@ -50,54 +50,73 @@ func StartWebServer() {
 			c.Abort()
 		},
 	}))
+
+	//--------------------test.go--------------------
 	CSRFGroup.GET("/test", test)
 
+	//--------------------top.go--------------------
 	//topページ
 	CSRFGroup.GET("/", top)
+
+	//--------------------mypage.go--------------------
 	//マイページ
 	CSRFGroup.GET("/mypage/:username", mypage)
+
+	//----------purchase-history.go----------
 	//購入履歴一覧
 	CSRFGroup.GET("/purchase-history", purchaseHistory)
+
+	//--------------------regist-item.go--------------------
 	//登録した自分のアイテム一覧
 	CSRFGroup.GET("/registered-items", registeredItems)
 	//商品登録フォーム
 	CSRFGroup.GET("/sell-items-form", SellItemsForm)
+	//登録処理
 	CSRFGroup.POST("/itemregist", ItemRegist)
-	//アカウントリンク
+
+	//--------------------stripe-account-link.go--------------------
+	//アカウントリンク登録処理
 	CSRFGroup.GET("/create-an-express-account", CreateAnExpressAccount)
+	//完了後処理
 	CSRFGroup.GET("/ok-create-an-express-account", OkCreateAnExpressAccount)
+	//リフレッシュ処理
 	CSRFGroup.GET("/refresh-create-an-express-account", RefreshCreateAnExpressAccount)
+
+	//--------------------product-page.go--------------------
 	//商品ページ
 	CSRFGroup.GET("/product/:number", ProductPage)
+
+	//--------------------checkout.go--------------------
 	//購入処理
 	CSRFGroup.POST("/checkout", CheckOutHandler)
 	//支払い完了
 	CSRFGroup.GET("/payment-completion", PaymentCompletion)
 	r.POST("/webhook", handleWebhook)
 
+	//--------------------cart.go--------------------
+	//カートに追加
+	CSRFGroup.POST("/addcart", AddCart)
+	//カートページ
+	CSRFGroup.GET("/mycart", CartPage)
+	//カート削除
+	CSRFGroup.POST("/delete-cart", DeleteItemsInCart)
+
+	//--------------------auth.go--------------------
+	//ログインフォーム
+	CSRFGroup.GET("/loginform", LoginForm)
+	//ログイン処理
+	CSRFGroup.POST("/login", Login)
+	//ユーザー登録フォーム
+	CSRFGroup.GET("/signupform", SignupForm)
+	//ユーザー登録処理
+	CSRFGroup.POST("/registration", registration)
+	//ログアウト処理
+	CSRFGroup.GET("/logout", Logout)
+
 	//発送
 	//CSRFGroup.POST("/sipping-success", SippingSuccess)
 	//顧客情報
 	//CSRFGroup.POST("/buyer-information", BuyerInformation)
-	//カート
-	CSRFGroup.POST("/addcart", AddCart)
-	CSRFGroup.GET("/mycart", CartPage)
-	CSRFGroup.POST("/delete-cart", DeleteItemsInCart)
-
-	//ログインフォーム
-	CSRFGroup.GET("/loginform", LoginForm)
-
-	//ログイン処理
-	CSRFGroup.POST("/login", Login)
-
-	//ユーザー登録フォーム
-	CSRFGroup.GET("/signupform", SignupForm)
-
-	//ユーザー登録処理
-	CSRFGroup.POST("/registration", registration)
-
-	//ログアウト処理
-	CSRFGroup.GET("/logout", Logout)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))
