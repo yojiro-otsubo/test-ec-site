@@ -32,11 +32,6 @@
           <div class="user-product-description">説明：{{.Description}}</div>
           -->
           <div class="user-product-amount">価格：{{.Amount}}円　＋　消費税</div>
-          <form action="/" method="post">
-            <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-            <input type="hidden" name="item" value="{{.ProductId}}">
-            <input type="submit" value="購入者情報">
-          </form>
         </div>
       </div>
       {{end}}
