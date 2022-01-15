@@ -13,13 +13,6 @@ import (
 )
 
 //-------------------------------------------------- AUTH --------------------------------------------------
-type SessionInfo struct {
-	UserId        interface{}
-	StripeAccount interface{}
-	provisional   interface{}
-}
-
-var UserInfo SessionInfo
 
 //ユーザー登録
 func registration(c *gin.Context) {

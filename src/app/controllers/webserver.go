@@ -12,6 +12,13 @@ import (
 )
 
 //-------------------------------------------------- WebServer --------------------------------------------------
+type SessionInfo struct {
+	UserId        interface{}
+	StripeAccount interface{}
+	provisional   interface{}
+}
+
+var UserInfo SessionInfo
 
 //マルチテンプレート作成
 func createMultitemplate() multitemplate.Renderer {
@@ -28,6 +35,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("cart", "app/views/base.html", "app/views/mypage/cart.html")
 	render.AddFromFiles("checkout", "app/views/checkout.html")
 	render.AddFromFiles("paymentCompletion", "app/views/base.html", "app/views/paymentCompletion.html")
+	render.AddFromFiles("buyerInfo", "app/views/base.html", "app/views/buyer-information.html")
 
 	return render
 }
@@ -113,10 +121,13 @@ func StartWebServer() {
 	//ログアウト処理
 	CSRFGroup.GET("/logout", Logout)
 
+	//--------------------delivery-status.go--------------------
 	//発送
 	//CSRFGroup.POST("/sipping-success", SippingSuccess)
-	//顧客情報
-	//CSRFGroup.POST("/buyer-information", BuyerInformation)
+
+	//--------------------buyer-information.go--------------------
+	//購入者情報ページ
+	CSRFGroup.POST("/buyer-information", BuyerInformation)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))
