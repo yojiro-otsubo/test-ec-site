@@ -10,6 +10,7 @@ import (
 	"github.com/stripe/stripe-go/v72"
 	"github.com/stripe/stripe-go/v72/account"
 	"github.com/stripe/stripe-go/v72/accountlink"
+	"github.com/stripe/stripe-go/v72/customer"
 )
 
 //-------------------------------------------------- StripeAccountLink --------------------------------------------------
@@ -27,7 +28,7 @@ func CreateAnExpressAccount(c *gin.Context) {
 
 		session.Set("provisional", result1.ID)
 		session.Save()
-		log.Println()
+		log.Println(result1.ID)
 
 		//アカウントリンク作成
 		params2 := &stripe.AccountLinkParams{
@@ -58,6 +59,11 @@ func OkCreateAnExpressAccount(c *gin.Context) {
 		if models.UserIdCheck(userid) == true {
 			//stripeアカウント登録
 			models.AccountRegist(userid, UserInfo.provisional)
+			stripeid, _ := models.GetStripeAccountId(userid)
+			cp := &stripe.CustomerParams{}
+			cp.SetStripeAccount(stripeid)
+			customer.New(cp)
+
 			session.Set("StripeAccount", UserInfo.provisional)
 			session.Delete("provisional")
 			session.Save()
