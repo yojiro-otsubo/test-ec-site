@@ -36,6 +36,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("checkout", "app/views/checkout.html")
 	render.AddFromFiles("paymentCompletion", "app/views/base.html", "app/views/paymentCompletion.html")
 	render.AddFromFiles("buyerInfo", "app/views/base.html", "app/views/buyer-information.html")
+	render.AddFromFiles("personalInformation", "app/views/base.html", "app/views/mypage/personal-information.html")
 
 	return render
 }
@@ -128,6 +129,9 @@ func StartWebServer() {
 	//--------------------buyer-information.go--------------------
 	//購入者情報ページ
 	CSRFGroup.POST("/buyer-information", BuyerInformation)
+
+	//--------------------personal-information.go--------------------
+	CSRFGroup.GET("/personal-information", PersonalInformation)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))

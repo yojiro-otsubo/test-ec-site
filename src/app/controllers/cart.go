@@ -16,14 +16,17 @@ func AddCart(c *gin.Context) {
 	log.Println("product = ", productid)
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
+	userid := models.GetUserID(UserInfo.UserId)
+	struserid := strconv.Itoa(userid)
+	product := models.GetProduct(productid)
 
-	if UserInfo.UserId != nil {
+	if UserInfo.UserId != nil && struserid != product[1] {
 		userid := models.GetUserID(UserInfo.UserId)
 		models.AddToCart(userid, productid)
 		redirecturl := "/product/" + productid
 		c.Redirect(302, redirecturl)
 	} else {
-		c.Redirect(302, "/loginform")
+		c.Redirect(302, "/")
 	}
 }
 

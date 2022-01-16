@@ -67,8 +67,10 @@ func CheckOutHandler(c *gin.Context) {
 			"ClientSecret": result.ClientSecret,
 			"pk":           config.Config.PK,
 		})
-	} else {
+	} else if UserInfo.UserId != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == false {
 		c.Redirect(302, "/create-an-express-account")
+	} else {
+		c.Redirect(302, "/loginform")
 	}
 }
 

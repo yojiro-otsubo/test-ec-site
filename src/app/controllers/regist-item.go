@@ -33,7 +33,7 @@ func SellItemsForm(c *gin.Context) {
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
-		c.Redirect(302, "/")
+		c.Redirect(302, "/create-an-express-account")
 	} else {
 		c.Redirect(302, "/loginform")
 	}
