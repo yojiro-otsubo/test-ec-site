@@ -39,7 +39,16 @@ func ConnectionDB() {
 	}
 
 	//productsテーブル作成
-	cmd2 := "CREATE TABLE IF NOT EXISTS products (id serial PRIMARY KEY, user_id INT, stripe_product_id VARCHAR(255), stripe_price_id VARCHAR(255), item_name VARCHAR(255), description VARCHAR(1000), amount INT, sold_out INT);"
+	cmd2 := `CREATE TABLE IF NOT EXISTS products (
+			id serial PRIMARY KEY, 
+			user_id INT, 
+			stripe_product_id VARCHAR(255), 
+			stripe_price_id VARCHAR(255), 
+			item_name VARCHAR(255), 
+			description VARCHAR(1000), 
+			amount INT, 
+			sold_out INT
+		);`
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
 		log.Fatalln(err)
@@ -51,15 +60,35 @@ func ConnectionDB() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
+	//配送状況
 	cmd4 := "CREATE TABLE IF NOT EXISTS shipping (id serial PRIMARY KEY, product_id INT, shipping INT, arrives INT);"
 	_, err = DbConnection.Exec(cmd4)
 	if err != nil {
 		log.Fatalln(err)
 	}
-
+	//カート
 	cmd5 := "CREATE TABLE IF NOT EXISTS cart (id serial PRIMARY KEY, user_id INT, product_id INT);"
 	_, err = DbConnection.Exec(cmd5)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	//Personal
+	cmd6 := `CREATE TABLE IF NOT EXISTS personal_info (
+			id serial PRIMARY KEY, 
+			user_id INT,
+			kanji_f_name VARCHAR(255), 
+			kanji_l_name VARCHAR(255), 
+			kana_f_name VARCHAR(255), 
+			kana_l_name VARCHAR(255),
+			postal_code VARCHAR(255),
+			address_level1 VARCHAR(255),
+			address_level2 VARCHAR(255),
+			address_line1 VARCHAR(255),
+			address_line2 VARCHAR(255),
+			organization VARCHAR(255)
+		);`
+	_, err = DbConnection.Exec(cmd6)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -20,9 +20,20 @@
       <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
     </div>
     <div class="mypage-box mypage-content">
-      <div class="mypage-title"><p>個人情報</p></div>
-
       <div class="mypage-title"><p>お届け先</p></div>
+      <div class="personal-info-box">
+        <div><p>{{.kanji_f_name}}{{.kanji_l_name}}</p></div>
+        <div><p>{{.kana_f_name}}{{.kana_l_name}}</p></div>
+        <div><p>{{.postal_code}}</p></div>
+        <div><p>{{.address_level1}}</p></div>
+        <div><p>{{.address_level2}}</p></div>
+        <div><p>{{.address_line1}}</p></div>
+        <div><p>{{.address_line2}}</p></div>
+        <div><p>{{.organization}}</p></div>
+      </div>
+      <form action="/personal-information-input">
+        <input type="submit" value="編集">
+      </form>
     </div>
   </div>
   

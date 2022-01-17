@@ -19,36 +19,37 @@
                 完了ボタンを押すと、マイページの個人情報確認へリダイレクトされます。
             </p>
             <form action="/personal-information-input-post" method="post">
+                <input type="hidden" name="_csrf" value="{{.csrfToken}}">
                 <div class="p-i-i-flex">
                     <div class="input-address-flex kanji-f-name">
-                        <p>お名前（姓）</p><input type="text" name="kanji-f-name" class="input-address" required="required">
+                        <p>お名前（姓）</p><input type="text" name="kanji-f-name" class="input-address" required="required" value="{{.kanji_f_name}}">
                     </div>
                     <div class="input-address-flex kanji-l-name">
-                        <p>お名前（名）</p><input type="text" name="kanji-l-name" class="inut-address" required="required">
+                        <p>お名前（名）</p><input type="text" name="kanji-l-name" class="inut-address" required="required" value="{{.kanji_l_name}}">
                     </div>
                     <div class="input-address-flex kana-f-name">
-                        <p>フリガナ（姓）</p><input type="text" name="kana-f-name" class="input-address" required="required">
+                        <p>フリガナ（姓）</p><input type="text" name="kana-f-name" class="input-address" required="required" value="{{.kana_f_name}}">
                     </div>
                     <div class="input-address-flex kana-l-name">
-                        <p>フリガナ（名）</p><input type="text" name="kana-l-name" class="input-address" required="required">
+                        <p>フリガナ（名）</p><input type="text" name="kana-l-name" class="input-address" required="required" value="{{.kana_l_name}}">
                     </div>
                     <div class="input-address-flex postal-code">
-                        <p>郵便番号 </p><input type="text" name="postal-code" class="input-address" required="required">
+                        <p>郵便番号 </p><input type="text" name="postal-code" class="input-address" required="required" value="{{.postal_code}}">
                     </div>
                     <div class="input-address-flex address-level1">
-                        <p>都道府県 </p><input type="text" name="address-level1" class="input-address" required="required">
+                        <p>都道府県 </p><input type="text" name="address-level1" class="input-address" required="required" value="{{.address_level1}}">
                     </div>
                     <div class="input-address-flex address-level2">
-                        <p>市区町村 </p><input type="text" name="address-level2" class="input-address" required="required">
+                        <p>市区町村 </p><input type="text" name="address-level2" class="input-address" required="required" value="{{.address_level2}}">
                     </div>
                     <div class="input-address-flex address-line1">
-                        <p>番地 </p><input type="text" name="address-line1" class="input-address" required="required">
+                        <p>番地 </p><input type="text" name="address-line1" class="input-address" required="required" value="{{.address_line1}}">
                     </div>
                     <div class="input-address-flex address-line2">
-                        <p>建物名・部屋番号 </p><input type="text" name="address-line2" class="input-address" >
+                        <p>建物名・部屋番号 </p><input type="text" name="address-line2" class="input-address" value="{{.address_line2}}">
                     </div>
                     <div class="input-address-flex organization">
-                        <p>会社名 </p><input type="text" name="organization" class="input-address">
+                        <p>会社名 </p><input type="text" name="organization" class="input-address" value="{{.organization}}">
                     </div>
                     <div class="input-address-flex p-i-submit">
                         <input type="submit" value="完了">
