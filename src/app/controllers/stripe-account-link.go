@@ -23,7 +23,14 @@ func CreateAnExpressAccount(c *gin.Context) {
 	if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
 		//stripe連結アカウント作成
 		stripe.Key = config.Config.StripeKey
-		params1 := &stripe.AccountParams{Type: stripe.String("express")}
+		params1 := &stripe.AccountParams{
+			Country:      stripe.String("JP"),
+			Type:         stripe.String("express"),
+			BusinessType: stripe.String("individual"),
+			BusinessProfile: &stripe.AccountBusinessProfileParams{
+				URL: stripe.String("https://www.google.com/"),
+			},
+		}
 		result1, _ := account.New(params1)
 
 		session.Set("provisional", result1.ID)
@@ -41,7 +48,7 @@ func CreateAnExpressAccount(c *gin.Context) {
 
 		c.Redirect(307, result2.URL)
 
-	} else if UserInfo.UserId == nil && UserInfo.StripeAccount == nil {
+	} else if UserInfo.UserId == nil {
 		c.Redirect(302, "/loginform")
 	} else {
 		c.Redirect(302, "/")

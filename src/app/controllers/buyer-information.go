@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"log"
 	"main/app/models"
 	"main/config"
@@ -26,17 +25,12 @@ func BuyerInformation(c *gin.Context) {
 		product_userid := models.GetProduct(productid)
 		int_product_userid, _ := strconv.Atoi(product_userid[1])
 		stripe_id, _ := models.GetStripeAccountId(int_product_userid)
-		log.Println(stripe_id)
 
-		a, _ := account.GetByID(
-			stripe_id,
-			nil,
-		)
-		var Account stripe.Account
-		err := json.Unmarshal(a.LastResponse.RawJSON, &Account)
+		a, err := account.GetByID(stripe_id, nil)
 		if err != nil {
 			log.Println(err)
 		}
+		log.Println("body = ", string(a.LastResponse.RawJSON))
 
 		c.HTML(200, "buyerInfo", gin.H{
 			"title":       "BuyerInformation",

@@ -1,0 +1,60 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+
+{{define "content"}}
+    <div class="input-box">
+        <div class="p-i-i-c">
+            <div class="p-i-i-t"><p>お届け先情報入力</p></div>
+            <p style="margin: 10px 10px 3px 10px; color: rgba(34, 34, 34, 0.5);">
+                商品を購入するには、お届け先情報を入力する必要があります。
+                完了ボタンを押すと、マイページの個人情報確認へリダイレクトされます。
+            </p>
+            <form action="/personal-information-input-post" method="post">
+                <div class="p-i-i-flex">
+                    <div class="input-address-flex kanji-f-name">
+                        <p>お名前（姓）</p><input type="text" name="kanji-f-name" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex kanji-l-name">
+                        <p>お名前（名）</p><input type="text" name="kanji-l-name" class="inut-address" required="required">
+                    </div>
+                    <div class="input-address-flex kana-f-name">
+                        <p>フリガナ（姓）</p><input type="text" name="kana-f-name" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex kana-l-name">
+                        <p>フリガナ（名）</p><input type="text" name="kana-l-name" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex postal-code">
+                        <p>郵便番号 </p><input type="text" name="postal-code" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex address-level1">
+                        <p>都道府県 </p><input type="text" name="address-level1" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex address-level2">
+                        <p>市区町村 </p><input type="text" name="address-level2" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex address-line1">
+                        <p>番地 </p><input type="text" name="address-line1" class="input-address" required="required">
+                    </div>
+                    <div class="input-address-flex address-line2">
+                        <p>建物名・部屋番号 </p><input type="text" name="address-line2" class="input-address" >
+                    </div>
+                    <div class="input-address-flex organization">
+                        <p>会社名 </p><input type="text" name="organization" class="input-address">
+                    </div>
+                    <div class="input-address-flex p-i-submit">
+                        <input type="submit" value="完了">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{{end}}
