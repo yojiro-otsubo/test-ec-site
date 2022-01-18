@@ -22,7 +22,22 @@ func CheckTransferGroup(transferGroup string) bool {
 		return false
 	}
 }
+func GetTransferGroup(productid string) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var transfergroup string
+	err = DbConnection.QueryRow("SELECT transfer_group FROM payment_history WHERE product_id = $1", productid).Scan(&transfergroup)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return transfergroup
+}
 func AddTransferGroup(user_id interface{}, product_id, transferGroup string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
