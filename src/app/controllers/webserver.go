@@ -125,7 +125,7 @@ func StartWebServer() {
 
 	//--------------------delivery-status.go--------------------
 	//発送
-	//CSRFGroup.POST("/sipping-success", SippingSuccess)
+	CSRFGroup.POST("/sipping-success", SippingSuccess)
 
 	//--------------------buyer-information.go--------------------
 	//購入者情報ページ

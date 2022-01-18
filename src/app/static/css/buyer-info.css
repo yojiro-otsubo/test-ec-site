@@ -1,0 +1,44 @@
+.buyer-info-box{
+    margin: 10px 10px 10px 10px;
+    background-color: rgb(250, 250, 250);
+}
+
+.buyer-info-personal {
+    margin: 5px 10px 5px 10px;
+    border: 1px solid gainsboro;
+    background-color: rgb(255, 255, 255);
+}
+
+.b-i-p {
+    margin: 5px 10px 5px 10px;
+}
+.b-i-p-t{
+    padding: 10px 0px 5px 5px;
+    margin: 0 6px 0 6px;
+    border-bottom: 1px solid rgb(170, 170, 170);
+}
+.b-i-p-t p{
+    font-size: 20px;
+}
+
+@media (max-width: 799px) {
+    .buyer-info-box{
+        margin: 0 0 0 0 ;
+        background-color: rgb(250, 250, 250);
+    }
+  
+}
+
+.sipping-ok-button-box {
+    padding: 20px 10px 20px 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sipping-ok-button {
+    background-color: white;
+    width: 150px;
+    height: 40px;
+    font-size: large;
+}
+

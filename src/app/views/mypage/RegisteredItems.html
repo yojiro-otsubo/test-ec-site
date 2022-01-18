@@ -22,7 +22,7 @@
   <div class="mypage-box mypage-content">
 
     <div class="mypage-title"><p style="color: rgb(255, 0, 0);">未発送の購入された商品</p></div>
-    <p style="margin: 5px 0 5px 5px; color: gray;">アイテムをクリックし、購入者情報を取得してください。</p>
+    <p style="margin: 5px 0 5px 5px; color: gray;">アイテムをクリックし、購入者情報を取得して発送してください。</p>
     <div class="user-product-flex-box">
       {{ $csrfToken := .csrfToken }}
       {{range .SoldOutProduct}}
@@ -37,7 +37,7 @@
           <form action="/buyer-information" method="post">
             <input type="hidden" name="_csrf" value="{{$csrfToken}}">
             <input type="hidden" name="productid" value="{{.Id}}">
-            <input type="submit" value="購入者情報">
+            <input type="submit" value="発送する">
           </form>
         </div>
       </div>
@@ -46,7 +46,7 @@
 
     <div class="mypage-title"><p>発送済商品</p></div>
     <div class="user-product-flex-box">
-      {{range .SoldOutProduct}}
+      {{range .SippingOkProduct}}
       <div class="user-product-box">
         <div class="user-product-img"><img src="../static/img/item/productid{{.Id}}/1.jpg"  width="120px" height="80px" alt=""></div>
         <div class="user-product-details">

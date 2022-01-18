@@ -35,9 +35,9 @@ func CheckOutHandler(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
+	userid := models.GetUserID(UserInfo.UserId)
+	if UserInfo.UserId != nil && models.PersonalUserIdCheck(userid) == "あり" {
 
-	if UserInfo.UserId != nil {
-		userid := models.GetUserID(UserInfo.UserId)
 		var transferGroup string
 
 		for {
@@ -68,6 +68,8 @@ func CheckOutHandler(c *gin.Context) {
 			"pk":           config.Config.PK,
 		})
 
+	} else if UserInfo.UserId != nil && models.PersonalUserIdCheck(userid) == "なし" {
+		c.Redirect(302, "/personal-information-input")
 	} else {
 		c.Redirect(302, "/loginform")
 	}

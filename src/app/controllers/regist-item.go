@@ -151,13 +151,15 @@ func registeredItems(c *gin.Context) {
 		userid := models.GetUserID(UserInfo.UserId)
 		UserProduct := models.GetTheProductOfUserId(userid)
 		SoldOutProduct := models.GetSoldOutProductOfUserId(userid)
+		SippingOkProduct := models.GetSippingOkProductOfUserId(userid)
 		c.HTML(200, "registeredItems", gin.H{
-			"title":          "registeredItems",
-			"login":          true,
-			"username":       UserInfo.UserId,
-			"csrfToken":      csrf.GetToken(c),
-			"products":       UserProduct,
-			"SoldOutProduct": SoldOutProduct,
+			"title":            "registeredItems",
+			"login":            true,
+			"username":         UserInfo.UserId,
+			"csrfToken":        csrf.GetToken(c),
+			"products":         UserProduct,
+			"SoldOutProduct":   SoldOutProduct,
+			"SippingOkProduct": SippingOkProduct,
 		})
 	}
 }

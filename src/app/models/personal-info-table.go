@@ -62,7 +62,7 @@ func PersonalUpdate(userid int, kanji_f_name, kanji_l_name, kana_f_name, kana_l_
 
 }
 
-func PersonalUserIdCheck(userid int) bool {
+func PersonalUserIdCheck(userid int) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 
@@ -73,9 +73,9 @@ func PersonalUserIdCheck(userid int) bool {
 	var id string
 	err = DbConnection.QueryRow("SELECT user_id FROM personal_info WHERE user_id = $1", userid).Scan(&id)
 	if err != nil {
-		return true
+		return "なし"
 	} else {
-		return false
+		return "あり"
 	}
 
 }

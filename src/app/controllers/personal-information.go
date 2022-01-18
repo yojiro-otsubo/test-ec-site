@@ -83,7 +83,7 @@ func PersonalInformationInputPost(c *gin.Context) {
 
 		userid := models.GetUserID(UserInfo.UserId)
 
-		if models.PersonalUserIdCheck(userid) == true {
+		if models.PersonalUserIdCheck(userid) == "なし" {
 			models.PersonalInsert(userid, kanji_f_name, kanji_l_name, kana_f_name, kana_l_name, postal_code, address_level1, address_level2, address_line1, address_line2, organization)
 		} else {
 			models.PersonalUpdate(userid, kanji_f_name, kanji_l_name, kana_f_name, kana_l_name, postal_code, address_level1, address_level2, address_line1, address_line2, organization)

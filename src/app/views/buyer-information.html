@@ -11,5 +11,34 @@
 {{end}}
 
 {{define "content"}}
+  <div class="buyer-info-box">
+    <div class="shipping-method">
 
+    </div>
+    <div class="b-i-p-t"><p>購入者情報</p></div>
+    <p style="margin: 5px 10px 5px 10px; color: rgb(51, 51, 51);">購入者情報の住所へ購入されたアイテムを発送してください。発送後、「発送完了」ボタンを押してください。</p>
+    <div class="buyer-info-personal">
+      <div class="b-i-p"><p>お名前：{{.kanji_f_name}}{{.kanji_l_name}}</p></div>
+      <div class="b-i-p"><p>フリガナ：{{.kana_f_name}}{{.kana_l_name}}</p></div>
+      <div class="b-i-p"><p>郵便番号：{{.postal_code}}</p></div>
+      <div class="b-i-p"><p>都道府県：{{.address_level1}}</p></div>
+      <div class="b-i-p"><p>市区町村：{{.address_level2}}</p></div>
+      <div class="b-i-p"><p>番地：{{.address_line1}}</p></div>
+      <div class="b-i-p"><p>建物名・部屋番号：{{.address_line2}}</p></div>
+      <div class="b-i-p"><p>会社名：{{.organization}}</p></div>
+    </div>
+
+    <div class="sipping-ok-button-box">
+      <form action="/registered-items">
+        <input type="submit" value="戻る" class="sipping-ok-button">
+      </form>
+      <form action="/sipping-success" method="post">
+        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+        <input type="hidden" name="productid" value="{{.productid}}">
+        <input type="submit" value="発送完了" class="sipping-ok-button">
+      </form>
+    </div>
+
+  </div>
+  
 {{end}}

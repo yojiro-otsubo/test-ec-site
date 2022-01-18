@@ -22,14 +22,14 @@
     <div class="mypage-box mypage-content">
       <div class="mypage-title"><p>お届け先</p></div>
       <div class="personal-info-box">
-        <div><p>{{.kanji_f_name}}{{.kanji_l_name}}</p></div>
-        <div><p>{{.kana_f_name}}{{.kana_l_name}}</p></div>
-        <div><p>{{.postal_code}}</p></div>
-        <div><p>{{.address_level1}}</p></div>
-        <div><p>{{.address_level2}}</p></div>
-        <div><p>{{.address_line1}}</p></div>
-        <div><p>{{.address_line2}}</p></div>
-        <div><p>{{.organization}}</p></div>
+        <div class="personal-info"><p>お名前：{{.kanji_f_name}}{{.kanji_l_name}}</p></div>
+        <div class="personal-info"><p>フリガナ：{{.kana_f_name}}{{.kana_l_name}}</p></div>
+        <div class="personal-info"><p>郵便番号：{{.postal_code}}</p></div>
+        <div class="personal-info"><p>都道府県：{{.address_level1}}</p></div>
+        <div class="personal-info"><p>市区町村：{{.address_level2}}</p></div>
+        <div class="personal-info"><p>番地：{{.address_line1}}</p></div>
+        <div class="personal-info"><p>建物名・部屋番号：{{.address_line2}}</p></div>
+        <div class="personal-info"><p>会社名：{{.organization}}</p></div>
       </div>
       <form action="/personal-information-input">
         <input type="submit" value="編集">

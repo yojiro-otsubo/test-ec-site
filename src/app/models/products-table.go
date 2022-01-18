@@ -102,7 +102,42 @@ func GetSoldOutProductOfUserId(userid int) []Product {
 			log.Println(err)
 		}
 		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "1" {
-			productResult = append(productResult, p)
+			if CheckDeliveryStatusProductId(p.Id) == "なし" {
+				productResult = append(productResult, p)
+			}
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
+
+}
+
+func GetSippingOkProductOfUserId(userid int) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE user_id = $1", userid)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "1" {
+			if CheckDeliveryStatusProductId(p.Id) == "あり" {
+				productResult = append(productResult, p)
+			}
 		}
 	}
 	//log.Println(productResult)
@@ -238,8 +273,8 @@ func UpdataSoldOutValue(productid, soldout string) {
 	var soldOutValue int
 	err = DbConnection.QueryRow("UPDATE products SET sold_out = $2 WHERE id = $1 RETURNING sold_out", productid, soldout).Scan(&soldOutValue)
 	if err != nil {
-		log.Println("UpdataSoldOutValue = ")
 		log.Println(err)
 	}
 
+	log.Println("UpdataSoldOutValue = ", soldOutValue)
 }

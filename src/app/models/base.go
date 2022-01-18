@@ -61,7 +61,7 @@ func ConnectionDB() {
 		log.Fatalln(err)
 	}
 	//配送状況
-	cmd4 := "CREATE TABLE IF NOT EXISTS shipping (id serial PRIMARY KEY, product_id INT, shipping INT, arrives INT);"
+	cmd4 := "CREATE TABLE IF NOT EXISTS delivery_status (id serial PRIMARY KEY, product_id INT, shipping INT, arrives INT);"
 	_, err = DbConnection.Exec(cmd4)
 	if err != nil {
 		log.Fatalln(err)
