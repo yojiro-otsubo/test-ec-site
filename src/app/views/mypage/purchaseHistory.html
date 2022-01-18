@@ -22,8 +22,11 @@
     <div class="mypage-box mypage-content">
 
       <div class="mypage-title"><p>購入した商品</p></div>
-      <p style="margin: 5px 0 5px 5px; color: gray;">購入した商品</p>
+      <p style="margin: 5px 0 5px 5px; color: gray;">
+        商品が到着したら、「到着完了」ボタンを押してください。
+      </p>
       <div class="user-product-flex-box">
+        {{ $csrfToken := .csrfToken }}
         {{range .products}}
         <div class="user-product-box">
           <div class="user-product-img"><img src="../static/img/item/productid{{.Id}}/1.jpg"  width="120px" height="80px" alt=""></div>
@@ -32,7 +35,16 @@
             <!---
             <div class="user-product-description">説明：{{.Description}}</div>
             -->
-            <div class="user-product-amount">価格：{{.Amount}}円　＋　消費税</div>
+            <div class="user-product-amount">価格：{{.Amount}}円＋消費税</div>
+            {{if .Arrival}}
+              <p>到着済</p>
+            {{else}}
+              <form action="/arrival-success" method="post">
+                <input type="hidden" name="_csrf" value="{{$csrfToken}}">
+                <input type="hidden" name="productid" value="{{.Id}}">
+                <input type="submit" value="到着完了">
+              </form>
+            {{end}}
           </div>
         </div>
         {{end}}

@@ -113,7 +113,7 @@ func GetSoldOutProductOfUserId(userid int) []Product {
 
 }
 
-func GetSippingOkProductOfUserId(userid int) []Product {
+func GetSippingOkProductOfUserId(userid int) []ProductArrival {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 
@@ -127,16 +127,21 @@ func GetSippingOkProductOfUserId(userid int) []Product {
 	}
 	defer rows.Close()
 
-	var productResult []Product
+	var productResult []ProductArrival
 	for rows.Next() {
-		var p Product
+		var p ProductArrival
 		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
 		if err != nil {
 			log.Println(err)
 		}
 		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "1" {
 			if CheckDeliveryStatusProductId(p.Id) == "あり" {
-				productResult = append(productResult, p)
+				if CheckArrives(p.Id) == "1" {
+					p.Arrival = "1"
+					productResult = append(productResult, p)
+				} else {
+					productResult = append(productResult, p)
+				}
 			}
 		}
 	}
@@ -233,7 +238,11 @@ func GetProductFromCartDB(user_id interface{}, tax float64) []Product {
 	return productResult
 }
 
-func GetProductIdFromPaymentHistory(user_id interface{}) []Product {
+type ProductArrival struct {
+	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut, Arrival string
+}
+
+func GetProductIdFromPaymentHistory(user_id interface{}) []ProductArrival {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 
@@ -247,16 +256,21 @@ func GetProductIdFromPaymentHistory(user_id interface{}) []Product {
 	}
 	defer rows.Close()
 
-	var productResult []Product
+	var productResult []ProductArrival
 	for rows.Next() {
-		var p Product
+		var p ProductArrival
 		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
 		if err != nil {
 			log.Println(err)
 		}
 		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "1" {
-
-			productResult = append(productResult, p)
+			if CheckArrives(p.Id) == "1" {
+				p.Arrival = "1"
+				log.Println(p.Arrival)
+				productResult = append(productResult, p)
+			} else {
+				productResult = append(productResult, p)
+			}
 		}
 	}
 	//log.Println(productResult)
