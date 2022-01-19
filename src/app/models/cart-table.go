@@ -13,6 +13,7 @@ func AddToCart(user_id int, product_id string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	cmd, err := DbConnection.Prepare("INSERT INTO cart(user_id, product_id) VALUES($1, $2) RETURNING id")
 	if err != nil {
@@ -28,6 +29,7 @@ func AddToCart(user_id int, product_id string) {
 func DeleteCartItem(user_id int, product_id string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)

@@ -31,6 +31,7 @@ func UserCheck(username string) bool {
 func EmailCheck(email string) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -50,6 +51,7 @@ func EmailCheck(email string) bool {
 func LoginCheck(username, password string) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -81,6 +83,8 @@ func LoginCheck(username, password string) bool {
 func UserRegistration(username, email, hashpassword string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -99,6 +103,8 @@ func UserRegistration(username, email, hashpassword string) {
 func GetUserID(username interface{}) int {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -117,6 +123,7 @@ func GetUserID(username interface{}) int {
 func GetUserName(user_id string) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)

@@ -12,16 +12,17 @@
 }
 
 .mypage-content {
-    width: 700;
+    width: 700px;
 }
 
 .mypage-select{
     height: 40px;
     border: 1px solid rgb(214, 214, 214);
     margin-bottom: -1px;
+    background-color: white;
 }
 .mypage-select:hover{
-    background-color: rgb(240, 240, 240);
+    background-color: rgb(255, 244, 223);
 }
 .mypage-select p{
     font-size: 16px;

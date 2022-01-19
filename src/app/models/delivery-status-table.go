@@ -12,6 +12,7 @@ func InsertSipping(productid string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	cmd, err := DbConnection.Prepare("INSERT INTO delivery_status(product_id, shipping) VALUES($1, $2) RETURNING id")
 	if err != nil {
@@ -30,6 +31,7 @@ func InsertArrives(productid string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	cmd, err := DbConnection.Prepare("INSERT INTO delivery_status(product_id, arrives) VALUES($1, $2)")
 	if err != nil {
@@ -45,6 +47,7 @@ func InsertArrives(productid string) {
 func CheckDeliveryStatusProductId(productid string) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -62,6 +65,7 @@ func CheckDeliveryStatusProductId(productid string) string {
 func CheckSipping(productid string) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -79,6 +83,7 @@ func CheckSipping(productid string) string {
 func CheckArrives(productid string) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -96,6 +101,8 @@ func CheckArrives(productid string) string {
 func UpdateArrives(productid string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -14,7 +14,7 @@
 <div class="mypage-box-flex">
   <div class="mypage-box mypage-flex-select">
     <a href="/personal-information"><div class="mypage-select select-personal-information"><p>個人情報</p></div></a>
-    <a href="/mycart"><div class="mypage-select select-mycart" style="background-color: rgb(240, 240, 240);"><p>カート</p></div></a>
+    <a href="/mycart"><div class="mypage-select select-mycart" style="background-color: rgb(255, 231, 185);"><p>カート</p></div></a>
     <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
     <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録した商品</p></div></a>
     <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
@@ -28,7 +28,7 @@
         <div class="cart-img"><a href="/product/{{.Id}}"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="120px" height="80px"></a></div>
         <div class="cart-p-detail">
           <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
-          <div class="cart-product-amount">税込み価格：{{.Amount}}円</div>
+          <div class="cart-product-amount"><p>税込み価格：{{.Amount}}円</p></div>
           <form action="/delete-cart" method="post">
             <input type="hidden" name="_csrf" value="{{$csrfToken}}">
             <input type="hidden" name="delete_item" value="{{.Id}}">

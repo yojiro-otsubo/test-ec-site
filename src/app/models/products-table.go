@@ -14,6 +14,8 @@ func RegistProduct(pkid int, productid, priceid string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
+
 	var id, user_id, amount int
 	var stripe_product_id, stripe_price_id, item_name, description string
 	err = DbConnection.QueryRow("UPDATE products SET stripe_product_id = $2, stripe_price_id = $3 WHERE id = $1 RETURNING id, user_id, stripe_product_id, stripe_price_id, item_name, description, amount", pkid, productid, priceid).Scan(&id, &user_id, &stripe_product_id, &stripe_price_id, &item_name, &description, &amount)
@@ -31,6 +33,7 @@ func RegistUserIdAndGetProductId(userid, amount int, item_name, description stri
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	var id int
 	//temporary := "Temporary"
@@ -52,6 +55,7 @@ type Product struct {
 func GetTheProductOfUserId(userid int) []Product {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -83,6 +87,7 @@ func GetTheProductOfUserId(userid int) []Product {
 func GetSoldOutProductOfUserId(userid int) []Product {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -116,6 +121,7 @@ func GetSoldOutProductOfUserId(userid int) []Product {
 func GetSippingOkProductOfUserId(userid int) []ProductArrival {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -154,6 +160,7 @@ func GetSippingOkProductOfUserId(userid int) []ProductArrival {
 func GetProductTop() []Product {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -185,6 +192,7 @@ func GetProductTop() []Product {
 func GetProduct(product_id string) [8]string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -204,6 +212,7 @@ func GetProduct(product_id string) [8]string {
 func GetProductFromCartDB(user_id interface{}, tax float64) []Product {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -245,6 +254,7 @@ type ProductArrival struct {
 func GetProductIdFromPaymentHistory(user_id interface{}) []ProductArrival {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -281,6 +291,8 @@ func GetProductIdFromPaymentHistory(user_id interface{}) []ProductArrival {
 func UpdataSoldOutValue(productid, soldout string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
 	if err != nil {
 		log.Fatalln(err)
 	}

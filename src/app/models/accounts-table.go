@@ -13,6 +13,7 @@ func AccountRegist(userid int, stripeid interface{}) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	cmd, err := DbConnection.Prepare("INSERT INTO accounts(user_id, stripe_account) VALUES($1, $2) RETURNING id")
 	if err != nil {
@@ -32,6 +33,7 @@ func GetStripeAccountId(userid int) (string, bool) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	var stripeid string
 	err = DbConnection.QueryRow("SELECT stripe_account FROM accounts WHERE user_id = $1", userid).Scan(&stripeid)
@@ -47,6 +49,7 @@ func GetStripeAccountId(userid int) (string, bool) {
 func UserIdCheck(userid int) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -65,6 +68,7 @@ func UserIdCheck(userid int) bool {
 func CheckStripeAccountId(stripe_account_id interface{}) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)

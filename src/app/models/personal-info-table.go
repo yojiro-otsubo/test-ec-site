@@ -12,6 +12,7 @@ func PersonalInsert(userid int, kanji_f_name, kanji_l_name, kana_f_name, kana_l_
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	cmd, err := DbConnection.Prepare(`INSERT INTO personal_info(
 		user_id, 
@@ -42,6 +43,7 @@ func PersonalUpdate(userid int, kanji_f_name, kanji_l_name, kana_f_name, kana_l_
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	var id string
 	err = DbConnection.QueryRow(`UPDATE personal_info SET 
@@ -65,6 +67,7 @@ func PersonalUpdate(userid int, kanji_f_name, kanji_l_name, kana_f_name, kana_l_
 func PersonalUserIdCheck(userid int) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -82,6 +85,7 @@ func PersonalUserIdCheck(userid int) string {
 func GetPersonal(userid int) [12]string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)

@@ -1,6 +1,5 @@
 .input-box{
     position: relative;
-    height: 900px;
 }
 
 .input-address-flex {
@@ -30,7 +29,7 @@
     top: 50%;
     left: 50%;
     margin-right: -50%;
-    transform: translate(-50%, -50%)
+    transform: translate(-50%, 0%)
 }
 
 .p-i-i-t {
@@ -55,7 +54,7 @@
         top: 50%;
         left: 50%;
         margin-right: -50%;
-        transform: translate(-50%, -50%)
+        transform: translate(-50%, 0%)
     
     }
     .input-address-flex {

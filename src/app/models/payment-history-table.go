@@ -9,6 +9,7 @@ import (
 func CheckTransferGroup(transferGroup string) bool {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -25,6 +26,7 @@ func CheckTransferGroup(transferGroup string) bool {
 func GetTransferGroup(productid string) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -44,6 +46,7 @@ func AddTransferGroup(user_id interface{}, product_id, transferGroup string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	var Transfer_Group string
 	err = DbConnection.QueryRow("INSERT INTO payment_history(user_id, product_id, transfer_group) VALUES($1, $2, $3) RETURNING transfer_group", user_id, product_id, transferGroup).Scan(&Transfer_Group)
@@ -61,6 +64,7 @@ type ProductId struct {
 func GetProductIdWithTg(transferGroup string) []string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)

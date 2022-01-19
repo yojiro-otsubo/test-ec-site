@@ -12,6 +12,7 @@ func TestDb() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer DbConnection.Close()
 
 	var id int
 
