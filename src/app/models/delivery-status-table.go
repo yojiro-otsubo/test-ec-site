@@ -59,6 +59,23 @@ func CheckDeliveryStatusProductId(productid string) string {
 	}
 }
 
+func CheckSipping(productid string) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var arrives string
+	err = DbConnection.QueryRow("SELECT shipping FROM delivery_status WHERE product_id = $1", productid).Scan(&arrives)
+	if err != nil {
+		log.Println("CheckArrives", err)
+		return "0"
+	}
+	return arrives
+}
+
 func CheckArrives(productid string) string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())

@@ -41,6 +41,7 @@ func ProductPage(c *gin.Context) {
 			"StripePriceId":   product[3],
 			"ItemName":        product[4],
 			"Description":     product[5],
+			"username":        UserInfo.UserId,
 			"Amount":          taxamount,
 		})
 	} else {

@@ -22,7 +22,7 @@
     <div class="mypage-box mypage-content">
 
       <div class="mypage-title"><p>購入した商品</p></div>
-      <p style="margin: 5px 0 5px 5px; color: gray;">
+      <p style="margin: 5px 0 5px 5px; color: gray">
         商品が到着したら、「到着完了」ボタンを押してください。
       </p>
       <div class="user-product-flex-box">
@@ -37,7 +37,7 @@
             -->
             <div class="user-product-amount">価格：{{.Amount}}円＋消費税</div>
             {{if .Arrival}}
-              <p>到着済</p>
+              <p style="color: red;">到着済</p>
             {{else}}
               <form action="/arrival-success" method="post">
                 <input type="hidden" name="_csrf" value="{{$csrfToken}}">

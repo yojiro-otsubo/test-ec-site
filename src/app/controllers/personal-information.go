@@ -30,6 +30,7 @@ func PersonalInformation(c *gin.Context) {
 			"address_line1":  personal[9],
 			"address_line2":  personal[10],
 			"organization":   personal[11],
+			"username":       session.Get("UserId"),
 			"csrfToken":      csrf.GetToken(c),
 		})
 	} else {

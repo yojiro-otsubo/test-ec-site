@@ -38,6 +38,7 @@ func BuyerInformation(c *gin.Context) {
 			"address_line1":  personal[9],
 			"address_line2":  personal[10],
 			"organization":   personal[11],
+			"username":       UserInfo.UserId,
 			"productid":      productid,
 		})
 	} else {

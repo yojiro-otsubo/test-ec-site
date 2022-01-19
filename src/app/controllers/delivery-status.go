@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"main/app/models"
+	"main/config"
 	"math"
 	"strconv"
 
@@ -34,7 +35,7 @@ func ArrivalSuccess(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	productid := c.PostForm("productid")
-	if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "あり" {
+	if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "あり" && models.CheckArrives(productid) != "1" {
 		log.Println("あり")
 		models.UpdateArrives(productid)
 		transferGroup := models.GetTransferGroup(productid)
@@ -44,6 +45,8 @@ func ArrivalSuccess(c *gin.Context) {
 		log.Println(payamount)
 		productuserid, _ := strconv.Atoi(product[1])
 		stripe_account, _ := models.GetStripeAccountId(productuserid)
+
+		stripe.Key = config.Config.StripeKey
 
 		transferParams := &stripe.TransferParams{
 			Amount:        stripe.Int64(payamount),
