@@ -25,7 +25,7 @@
       {{ $csrfToken := .csrfToken }}
       {{range .products}}
       <div class="cart-product-box">
-        <div class="cart-img"><a href="/product/{{.Id}}"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" width="120px" height="80px"></a></div>
+        <div class="cart-img"><a href="/product/{{.Id}}"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" ></a></div>
         <div class="cart-p-detail">
           <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
           <div class="cart-product-amount"><p>税込み価格：{{.Amount}}円</p></div>

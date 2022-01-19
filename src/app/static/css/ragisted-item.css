@@ -3,7 +3,7 @@
     flex-wrap: nowrap;
     flex-direction: row;
     margin-top: 5px;
-    background-color: rgb(250, 250, 250);
+    background-color: rgb(255, 255, 255);
     width: 100%;
 }
 
@@ -20,4 +20,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.user-product-img {
+    width: 120px;
+    height: 80px;
+    background-color: white;
+    flex-shrink: 0;
+}
+.user-product-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
