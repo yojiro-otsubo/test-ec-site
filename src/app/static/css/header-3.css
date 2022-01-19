@@ -8,7 +8,7 @@
   
   .site-header {
     position: relative;
-    background-color: #d9e0f7;
+    background-color: #ffc23d;
     height: 50px;
     border-bottom: 1px solid rgb(230, 230, 230);
     
@@ -50,11 +50,13 @@
       transition: transform 0.3s ease-out, opacity 0.3s ease-out; */}
       .nav__wrapper.active {
         visibility: visible;
-        opacity: 0.9;
+        opacity: 0.8;
+        background-color: #ffedc7;
         transform: translateY(0); } }
   
   .nav__item a {
     display: block;
+    color: rgb(0, 0, 0);
     padding: 1rem 1rem; }
   
   .nav__toggle {

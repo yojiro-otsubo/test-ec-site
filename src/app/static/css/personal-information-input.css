@@ -1,5 +1,6 @@
 .input-box{
-    width: auto;
+    position: relative;
+    height: 900px;
 }
 
 .input-address-flex {
@@ -25,7 +26,11 @@
     padding: 20px 0 20px 0;
     border: 1px solid rgb(216, 216, 216);
     background-color: rgb(252, 252, 252);
-    margin: 0 100px 0 100px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
 }
 
 .p-i-i-t {
@@ -47,7 +52,10 @@
         padding: 30px 0 30px 0;
         border: 1px solid rgb(216, 216, 216);
         background-color: rgb(252, 252, 252);
-        margin: 0;
+        top: 50%;
+        left: 50%;
+        margin-right: -50%;
+        transform: translate(-50%, -50%)
     
     }
     .input-address-flex {

@@ -20,6 +20,10 @@ func AddCart(c *gin.Context) {
 	struserid := strconv.Itoa(userid)
 	product := models.GetProduct(productid)
 
+	if product[7] == "1" {
+		c.Redirect(302, "/")
+	}
+
 	if UserInfo.UserId != nil && struserid != product[1] {
 		userid := models.GetUserID(UserInfo.UserId)
 		models.AddToCart(userid, productid)

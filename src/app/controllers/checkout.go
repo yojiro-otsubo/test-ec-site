@@ -30,6 +30,13 @@ func CheckOutHandler(c *gin.Context) {
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
 	productid := c.PostFormArray("item")
+	for i := 0; i < len(productid); i++ {
+		product := models.GetProduct(productid[i])
+		if product[7] == "1" {
+			c.Redirect(302, "/")
+		}
+	}
+
 	amount := c.PostForm("totalAmount")
 	amountInt64, err := strconv.ParseInt(amount, 10, 64)
 	if err != nil {

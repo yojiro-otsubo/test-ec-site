@@ -12,11 +12,22 @@
 
 {{define "content"}}
 <div class="top-content">
+  <div class="top-content-title"><p>新着</p></div>
   <div class="product-flex-box">
+    {{ $soldout := "1" }}
     {{range .products}}
     <a href="/product/{{.Id}}">
       <div class="product-box">
-        <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" class="product-img">
+        {{if eq .SoldOut $soldout}}
+          <div class="product-img-box-top">
+            <img src="../static/img/SOLD OUTのラベルアイコン素材 2.svg" alt="" class="soldout-img">
+            <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" class="product-img">
+          </div>
+        {{else}}
+          <div class="product-img-box-top">
+            <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" class="product-img">
+          </div>
+        {{end}}
         <div class="product-name"><p>{{.ItemName}}</p></div>
         <!--
         <div class="product-description"><p>説明：{{.Description}}</p></div>

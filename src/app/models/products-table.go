@@ -159,7 +159,7 @@ func GetProductTop() []Product {
 		log.Fatalln(err)
 	}
 
-	rows, err := DbConnection.Query("SELECT * FROM products LIMIT 100")
+	rows, err := DbConnection.Query("SELECT * FROM products LIMIT 21")
 	if err != nil {
 		log.Println(err)
 	}
@@ -172,7 +172,7 @@ func GetProductTop() []Product {
 		if err != nil {
 			log.Println(err)
 		}
-		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" && p.SoldOut == "0" {
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
 			productResult = append(productResult, p)
 		}
 	}

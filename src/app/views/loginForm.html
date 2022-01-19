@@ -9,14 +9,17 @@
   {{end}}
 {{end}}
 {{define "content"}}
-  <h1>Login</h1>
-  <form action="/login" method="post">
-    <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-
-    <div>
-        <p>username</p><input type="text" name="username">
-        <p>password</p><input type="password" name="password">
-    </div>
-    <div><input type="submit" value="LOGIN"></div>
-  </form>
+<div class="auth-box">
+  <div class="auth-form-box">
+    <form action="/login" method="post">
+      <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+  
+      <div class="auth-input-box">
+        <div class="auth-input"><p>username</p><input type="text" name="username" class="a-input"></div>
+        <div class="auth-input"><p>password</p><input type="password" name="password" class="a-input"></div>
+      </div>
+      <div class="auth-button"><input type="submit" value="LOGIN"></div>
+    </form>
+  </div>
+</div>
 {{end}}

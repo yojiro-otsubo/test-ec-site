@@ -9,15 +9,18 @@
   {{end}}
 {{end}}
 {{define "content"}}
-  <h1>商品登録</h1>
-  <form action="/registration" method="post">
-    <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-
-    <div>
-      <p>username</p><input type="text" name="username" required="required" maxlength="30">{{.username}}{{.username_status}}
-      <p>email</p><input type="text" name="email" required="required" maxlength="255">{{.email}}{{.bad_email}}{{.email_status}}
-      <p>password</p><input type="password" name="password" required="required" maxlength="30">        
-    </div>
-    <div><input type="submit" value="signup"></div>
-</form>
+<div class="auth-box">
+  <div class="auth-form-box">
+    <form action="/registration" method="post">
+      <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+  
+      <div class="auth-input-box">
+        <div class="auth-input"><p>username</p><input type="text" name="username" required="required" maxlength="30" class="a-input">{{.username}}{{.username_status}}</div>
+        <div class="auth-input"><p>email</p><input type="text" name="email" required="required" maxlength="255" class="a-input">{{.email}}{{.bad_email}}{{.email_status}}</div>
+        <div class="auth-input"><p>password</p><input type="password" name="password" required="required" maxlength="30" class="a-input"></div>
+      </div>
+      <div class="auth-button"><input type="submit" value="signup"></div>
+    </form>
+  </div>
+</div>
 {{end}}
