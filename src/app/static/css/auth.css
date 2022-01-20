@@ -43,7 +43,12 @@
     border: 0.5px solid orange;
     background-color: rgb(255, 234, 196);
 }
-
+.auth-button button{
+    width: 90px;
+    height: 30px;
+    border: 0.5px solid orange;
+    background-color: rgb(255, 234, 196);
+}
 
 
 @media (max-width: 799px) {

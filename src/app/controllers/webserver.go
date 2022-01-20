@@ -3,7 +3,10 @@ package controllers
 import (
 	"fmt"
 	"main/config"
+	"net/http"
+	"time"
 
+	ginrecaptcha "github.com/codenoid/gin-recaptcha"
 	"github.com/gin-contrib/multitemplate"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -61,6 +64,16 @@ func StartWebServer() {
 		},
 	}))
 
+	captcha, err := ginrecaptcha.InitRecaptchaV3(config.Config.Recaptcha, 10*time.Second)
+	if err != nil {
+		panic(err)
+	}
+
+	captcha.SetErrResponse(func(c *gin.Context) {
+		c.String(http.StatusUnprocessableEntity, "captcha error: "+c.GetString("recaptcha_error"))
+		c.Abort()
+	})
+
 	//--------------------test.go--------------------
 	CSRFGroup.GET("/test", test)
 
@@ -115,7 +128,7 @@ func StartWebServer() {
 	//ログインフォーム
 	CSRFGroup.GET("/loginform", LoginForm)
 	//ログイン処理
-	CSRFGroup.POST("/login", Login)
+	CSRFGroup.POST("/login", captcha.UseCaptcha, Login)
 	//ユーザー登録フォーム
 	CSRFGroup.GET("/signupform", SignupForm)
 	//ユーザー登録処理

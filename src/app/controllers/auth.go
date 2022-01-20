@@ -111,6 +111,7 @@ func Login(c *gin.Context) {
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
+
 	if UserInfo.UserId != nil {
 		session.Clear()
 		session.Save()

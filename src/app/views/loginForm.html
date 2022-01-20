@@ -11,15 +11,29 @@
 {{define "content"}}
 <div class="auth-box">
   <div class="auth-form-box">
-    <form action="/login" method="post">
+    <form action="/login" method="post" id="auth-form">
       <input type="hidden" name="_csrf" value="{{.csrfToken}}">
   
       <div class="auth-input-box">
-        <div class="auth-input"><p>username</p><input type="text" name="username" class="a-input"></div>
-        <div class="auth-input"><p>password</p><input type="password" name="password" class="a-input"></div>
+        <div class="auth-input">
+          <p>username</p>
+          <input type="text" name="username" class="a-input" required="required">
+        </div>
+        <div class="auth-input">
+          <p>password</p>
+          <input type="password" name="password" class="a-input" required="required">
+        </div>
       </div>
-      <div class="auth-button"><input type="submit" value="LOGIN"></div>
+      <div class="auth-button">
+        <button class="g-recaptcha" data-sitekey="6LdLLCQeAAAAAC4bR8OJRuLuLoRUSR5nHSHxbFrw" data-callback='onSubmit' data-action='submit'>Submit</button>
+        <script>
+          function onSubmit(token) {
+            document.getElementById("auth-form").submit();
+          }
+        </script>
+      </div>
     </form>
+  
   </div>
 </div>
 {{end}}

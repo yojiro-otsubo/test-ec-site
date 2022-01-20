@@ -17,6 +17,7 @@ type ConfigList struct {
 	StripeKey  string
 	PK         string
 	EPS        string
+	Recaptcha  string
 }
 
 var Config ConfigList
@@ -38,5 +39,6 @@ func init() {
 		StripeKey:  cfg.Section("stripe").Key("stripe_key").String(),
 		PK:         cfg.Section("stripe").Key("publish_key").String(),
 		EPS:        cfg.Section("stripe").Key("eps").String(),
+		Recaptcha:  cfg.Section("recaptcha").Key("pk").String(),
 	}
 }

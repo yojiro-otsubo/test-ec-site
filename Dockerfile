@@ -17,3 +17,4 @@ RUN go get github.com/utrack/gin-csrf
 RUN go get -u github.com/stripe/stripe-go/v72
 RUN go get github.com/stripe/stripe-go/v72/account
 RUN go get github.com/stripe/stripe-go/v72/accountlink
+RUN go get github.com/codenoid/gin-recaptcha
