@@ -1,0 +1,29 @@
+{{define "title"}}入力確認{{end}}
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+{{define "content"}}
+<div class="auth-box">
+  <div class="auth-form-box">
+      <h1 style="text-align: center; margin: 10px 10px 10px 10px; font-size: 20px;">仮登録完了</h1>
+      <p style="margin: 0 10px 0 10px;">「メール送信」ボタンから自身のアドレスにメールを送信します。メールに添付されたURLから本登録を完了してください。</p>
+      <div class="auth-input-box">
+        <div class="auth-input"><p>username</p><p style="border-bottom: 1px solid orange;">{{.username}}</p></div>
+        <div class="auth-input"><p>email</p><p style="border-bottom: 1px solid orange;">{{.email}}</p></div>
+      </div>
+      <form action="" method="post">
+        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+
+        <input type="hidden" name="username" value="{{.username}}">
+        <input type="hidden" name="email" value="{{.email}}">
+        <div class="auth-button"><input type="submit" value="メール送信"></div>
+      </form>
+  </div>
+</div>
+{{end}}

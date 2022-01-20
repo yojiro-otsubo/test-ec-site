@@ -14,12 +14,23 @@ import (
 
 //-------------------------------------------------- AUTH --------------------------------------------------
 
+func SignupInputCheck(c *gin.Context) {
+	karinumber := c.Param("karinumber")
+	username, email := models.KariUserCheck(karinumber)
+	c.HTML(200, "SignupInputCheck", gin.H{
+		"email":     email,
+		"username":  username,
+		"csrfToken": csrf.GetToken(c),
+		"login":     false,
+	})
+
+}
+
 //ユーザー登録
-func registration(c *gin.Context) {
+func kari_registration(c *gin.Context) {
 	username := c.PostForm("username")
 	email := c.PostForm("email")
 	password := c.PostForm("password")
-
 	//emailチェック
 	e, err := mail.ParseAddress(email)
 	if err != nil {
@@ -41,8 +52,9 @@ func registration(c *gin.Context) {
 	//usernameとemail存在チェック
 	if models.UserCheck(username) == true && models.EmailCheck(e.Address) == true {
 		//登録
-		models.UserRegistration(username, e.Address, string(hash))
-		c.Redirect(302, "/")
+		pk := models.KariUserRegistration(username, e.Address, string(hash))
+		redirectURL := "/signupinputcheck/" + pk
+		c.Redirect(302, redirectURL)
 	} else if models.UserCheck(username) == false && models.EmailCheck(e.Address) == true {
 		c.HTML(http.StatusBadRequest, "signupform", gin.H{
 			"username_status": "は既に使われたユーザーネーム",

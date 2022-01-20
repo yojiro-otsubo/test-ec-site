@@ -41,6 +41,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("buyerInfo", "app/views/base.html", "app/views/buyer-information.html")
 	render.AddFromFiles("personalInformation", "app/views/base.html", "app/views/mypage/personal-information.html")
 	render.AddFromFiles("PersonalInformationInput", "app/views/base.html", "app/views/personal-information-input.html")
+	render.AddFromFiles("SignupInputCheck", "app/views/base.html", "app/views/signup-input-check.html")
 
 	return render
 }
@@ -132,9 +133,10 @@ func StartWebServer() {
 	//ユーザー登録フォーム
 	CSRFGroup.GET("/signupform", SignupForm)
 	//ユーザー登録処理
-	CSRFGroup.POST("/registration", registration)
+	CSRFGroup.POST("/kari-registration", kari_registration)
 	//ログアウト処理
 	CSRFGroup.GET("/logout", Logout)
+	CSRFGroup.GET("/signupinputcheck/:karinumber", SignupInputCheck)
 
 	//--------------------delivery-status.go--------------------
 	//発送
