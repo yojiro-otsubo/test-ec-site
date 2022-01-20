@@ -1,8 +1,14 @@
 # 開発
 12/24~開発中  
 メルカリのようなサイト
-
+top  
 ![](/src/app/static/img/ui/top.png)
+product-page  
+![](/src/app/static/img/ui/product.png)
+マイページいろいろ  
+![](/src/app/static/img/ui/hist.png)
+
+
 
 # 機能
 ユーザー認証  
