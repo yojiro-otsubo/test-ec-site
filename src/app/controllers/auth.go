@@ -3,8 +3,10 @@ package controllers
 import (
 	"log"
 	"main/app/models"
+	"main/config"
 	"net/http"
 	"net/mail"
+	"net/smtp"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -14,14 +16,82 @@ import (
 
 //-------------------------------------------------- AUTH --------------------------------------------------
 
+type email_detail struct {
+	from     string
+	username string
+	password string
+	to       string
+	sub      string
+	msg      string
+}
+
+func gmailSend(m email_detail) error {
+	smtpSvr := "smtp.gmail.com:587"
+	auth := smtp.PlainAuth("", m.username, m.password, "smtp.gmail.com")
+	if err := smtp.SendMail(smtpSvr, auth, m.from, []string{m.to}, []byte(m.msg)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func SendMail(c *gin.Context) {
+
+	emailaddr := c.PostForm("email")
+	username := c.PostForm("username")
+	pk := c.PostForm("pk")
+	url := "http://localhost:8080/registration/" + pk
+	msg := username + " 様 \n" + "仮登録が完了しました。\n" + "下記URLから本登録を完了してください。\n" + url
+	sub := "【サービス名】本会員登録"
+
+	log.Println("from:", config.Config.GmailAddr, "username:", config.Config.GmailUser, "password", config.Config.GmailPass)
+	m := email_detail{
+		from:     config.Config.GmailAddr,
+		username: config.Config.GmailUser,
+		password: config.Config.GmailPass,
+		to:       emailaddr,
+		sub:      sub,
+		msg:      msg,
+	}
+
+	if err := gmailSend(m); err != nil {
+		log.Println(err)
+	}
+
+	c.HTML(200, "SignupInputCheck", gin.H{
+		"email":     emailaddr,
+		"username":  username,
+		"csrfToken": csrf.GetToken(c),
+		"login":     false,
+		"sendok":    true,
+	})
+
+}
+
+func SignupSuccess(c *gin.Context) {
+	c.HTML(200, "SignupSuccess", gin.H{
+		"csrfToken": csrf.GetToken(c),
+		"login":     false,
+		"sendok":    true,
+	})
+}
+
+func Registration(c *gin.Context) {
+	pk := c.Param("pk")
+	username, email, pass := models.GetKariUserALL(pk)
+	models.UserRegistration(username, email, pass)
+	models.DeleteKariUser(pk)
+	c.Redirect(302, "/signup-success")
+}
+
 func SignupInputCheck(c *gin.Context) {
 	karinumber := c.Param("karinumber")
 	username, email := models.KariUserCheck(karinumber)
 	c.HTML(200, "SignupInputCheck", gin.H{
-		"email":     email,
-		"username":  username,
-		"csrfToken": csrf.GetToken(c),
-		"login":     false,
+		"email":      email,
+		"username":   username,
+		"karinumber": karinumber,
+		"csrfToken":  csrf.GetToken(c),
+		"login":      false,
 	})
 
 }

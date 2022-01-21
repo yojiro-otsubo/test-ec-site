@@ -17,13 +17,17 @@
         <div class="auth-input"><p>username</p><p style="border-bottom: 1px solid orange;">{{.username}}</p></div>
         <div class="auth-input"><p>email</p><p style="border-bottom: 1px solid orange;">{{.email}}</p></div>
       </div>
-      <form action="" method="post">
+      <form action="/sendmail" method="post">
         <input type="hidden" name="_csrf" value="{{.csrfToken}}">
 
         <input type="hidden" name="username" value="{{.username}}">
         <input type="hidden" name="email" value="{{.email}}">
+        <input type="hidden" name="pk" value="{{.karinumber}}">
         <div class="auth-button"><input type="submit" value="メール送信"></div>
       </form>
+      {{if .sendok}}
+       <div><p style="margin: 10px 10px 10px 10px;">メールを送信しました。</p></div>
+      {{end}}
   </div>
 </div>
 {{end}}

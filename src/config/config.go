@@ -18,6 +18,9 @@ type ConfigList struct {
 	PK         string
 	EPS        string
 	Recaptcha  string
+	GmailAddr  string
+	GmailUser  string
+	GmailPass  string
 }
 
 var Config ConfigList
@@ -40,5 +43,8 @@ func init() {
 		PK:         cfg.Section("stripe").Key("publish_key").String(),
 		EPS:        cfg.Section("stripe").Key("eps").String(),
 		Recaptcha:  cfg.Section("recaptcha").Key("pk").String(),
+		GmailAddr:  cfg.Section("email").Key("addr").String(),
+		GmailUser:  cfg.Section("email").Key("username").String(),
+		GmailPass:  cfg.Section("email").Key("password").String(),
 	}
 }

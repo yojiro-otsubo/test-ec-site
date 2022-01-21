@@ -1,0 +1,22 @@
+{{define "title"}}本登録完了{{end}}
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+{{define "content"}}
+<div class="auth-box">
+    <div class="auth-form-box">
+    <div style="text-align: center; margin: 10px 10px 10px 10px ;"><p>会員登録完了しました！</p></div>
+
+        <form action="/loginform">
+            <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+            <div class="auth-button"><input type="submit" value="ログインする"></div>
+        </form>
+    </div>
+</div>
+{{end}}

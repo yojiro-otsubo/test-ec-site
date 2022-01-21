@@ -27,8 +27,8 @@ var UserInfo SessionInfo
 func createMultitemplate() multitemplate.Renderer {
 	render := multitemplate.NewRenderer()
 	render.AddFromFiles("top", "app/views/base.html", "app/views/top.html")
-	render.AddFromFiles("loginform", "app/views/base.html", "app/views/loginForm.html")
-	render.AddFromFiles("signupform", "app/views/base.html", "app/views/signupForm.html")
+	render.AddFromFiles("loginform", "app/views/base.html", "app/views/auth/loginForm.html")
+	render.AddFromFiles("signupform", "app/views/base.html", "app/views/auth/signupForm.html")
 	render.AddFromFiles("mypage", "app/views/base.html", "app/views/mypage/mypage.html")
 	render.AddFromFiles("purchaseHistory", "app/views/base.html", "app/views/mypage/purchaseHistory.html")
 	render.AddFromFiles("registeredItems", "app/views/base.html", "app/views/mypage/RegisteredItems.html")
@@ -41,7 +41,8 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("buyerInfo", "app/views/base.html", "app/views/buyer-information.html")
 	render.AddFromFiles("personalInformation", "app/views/base.html", "app/views/mypage/personal-information.html")
 	render.AddFromFiles("PersonalInformationInput", "app/views/base.html", "app/views/personal-information-input.html")
-	render.AddFromFiles("SignupInputCheck", "app/views/base.html", "app/views/signup-input-check.html")
+	render.AddFromFiles("SignupInputCheck", "app/views/base.html", "app/views/auth/signup-input-check.html")
+	render.AddFromFiles("SignupSuccess", "app/views/base.html", "app/views/auth/signup-success.html")
 
 	return render
 }
@@ -132,11 +133,17 @@ func StartWebServer() {
 	CSRFGroup.POST("/login", captcha.UseCaptcha, Login)
 	//ユーザー登録フォーム
 	CSRFGroup.GET("/signupform", SignupForm)
-	//ユーザー登録処理
+	//ユーザー仮登録処理
 	CSRFGroup.POST("/kari-registration", kari_registration)
 	//ログアウト処理
 	CSRFGroup.GET("/logout", Logout)
 	CSRFGroup.GET("/signupinputcheck/:karinumber", SignupInputCheck)
+	//メール送信
+	CSRFGroup.POST("/sendmail", SendMail)
+	//ユーザー本登録処理
+	CSRFGroup.GET("/registration/:pk", Registration)
+	//完了ページ
+	CSRFGroup.GET("/signup-success", SignupSuccess)
 
 	//--------------------delivery-status.go--------------------
 	//発送
