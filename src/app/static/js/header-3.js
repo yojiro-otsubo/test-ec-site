@@ -25,3 +25,7 @@ function showSearch() {
   navToggle.setAttribute("aria-label", "menu");
   navWrapper.classList.remove("active");
 }
+
+$(".openbtn1").click(function () {
+  $(this).toggleClass('active');
+});

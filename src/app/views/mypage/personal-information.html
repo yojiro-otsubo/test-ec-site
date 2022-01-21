@@ -20,7 +20,8 @@
       <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
     </div>
     <div class="mypage-box mypage-content">
-      <div class="mypage-title"><p>お届け先</p></div>
+      <div class="mypage-title"><p>Myお届け先</p></div>
+      <div class="p-i-description"><p>このお届け先に購入した商品が届きます。</p></div>
       <div class="personal-info-box">
         <div class="personal-info"><p>お名前：{{.kanji_f_name}}{{.kanji_l_name}}</p></div>
         <div class="personal-info"><p>フリガナ：{{.kana_f_name}}{{.kana_l_name}}</p></div>
@@ -31,8 +32,24 @@
         <div class="personal-info"><p>建物名・部屋番号：{{.address_line2}}</p></div>
         <div class="personal-info"><p>会社名：{{.organization}}</p></div>
       </div>
-      <form action="/personal-information-input">
+      <form action="/personal-information-input" class="p-i-b">
         <input type="submit" value="編集">
+      </form>
+      <div class="mypage-title"><p>My返品先情報</p></div>
+      <div class="p-i-description"><p>あなたの商品の購入者が返品をしたい場合、この情報に問い合わせます。</p></div>
+      <div class="personal-info-box">
+        <div class="personal-info"><p>お名前：{{.r_kanji_f_name}}{{.r_kanji_l_name}}</p></div>
+        <div class="personal-info"><p>フリガナ：{{.r_kana_f_name}}{{.r_kana_l_name}}</p></div>
+        <div class="personal-info"><p>電話番号：{{.r_phone_number}}</p></div>
+        <div class="personal-info"><p>郵便番号：{{.r_postal_code}}</p></div>
+        <div class="personal-info"><p>都道府県：{{.r_address_level1}}</p></div>
+        <div class="personal-info"><p>市区町村：{{.r_address_level2}}</p></div>
+        <div class="personal-info"><p>番地：{{.r_address_line1}}</p></div>
+        <div class="personal-info"><p>建物名・部屋番号：{{.r_address_line2}}</p></div>
+        <div class="personal-info"><p>会社名：{{.r_organization}}</p></div>
+      </div>
+      <form action="return-personal-information-input"class="p-i-b">
+        <input type="submit" value="編集" >
       </form>
     </div>
   </div>

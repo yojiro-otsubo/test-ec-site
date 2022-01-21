@@ -1,6 +1,32 @@
 .personal-info-box{
     margin: 5px 10px 5px 10px;
+    background-color: white;
+    border: 1px solid orange;
 }
 .personal-info {
     margin: 5px 0 5px 0;
+}
+.personal-info p{
+    padding: 0 5px 0 5px;
+}
+
+.p-i-b {
+    margin: 0 10px 20px 10px;
+    text-align: right;
+}
+
+.p-i-b input{
+    width: 90px;
+    height: 30px;
+    border: 0.5px solid orange;
+    background-color: rgb(255, 234, 196);
+}
+
+
+.p-i-description {
+    margin: 10px 10px 10px 10px;
+}
+
+.p-i-description p{
+    color: rgb(51, 51, 51);
 }

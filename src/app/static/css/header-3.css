@@ -52,7 +52,9 @@
         visibility: visible;
         opacity: 0.8;
         background-color: #ffedc7;
-        transform: translateY(0); } }
+        transform: translateY(0); 
+  
+      } }
   
   .nav__item a {
     display: block;
@@ -112,3 +114,5 @@
       @media (max-width: 799px) {
         .search__form input {
           border-bottom: 1px solid #979797; } }
+
+

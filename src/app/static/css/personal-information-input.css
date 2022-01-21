@@ -20,6 +20,8 @@
     width: 400px;
     height: 30px;
     font-size: 100%;
+    border: 0.5px solid orange;
+
 }
 .p-i-i-c{
     padding: 20px 0 20px 0;
@@ -42,7 +44,7 @@
 }
 .p-i-submit input{
     margin-top: 20px;
-    background-color:lightskyblue;
+    background-color: rgb(255, 234, 196);
     height: 40px;
 
 }
@@ -74,7 +76,8 @@
     }
     .p-i-submit input{
         margin-top: 20px;
-        background-color:lightskyblue;
+        background-color: rgb(255, 234, 196);
+
         height: 40px;
     }
 }
