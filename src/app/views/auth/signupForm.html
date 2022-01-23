@@ -11,6 +11,8 @@
 {{define "content"}}
 <div class="auth-box">
   <div class="auth-form-box">
+    <div style="margin: 10px; text-align: center;"><p style="font-size: 20px;">ユーザー登録フォーム</p></div>
+
     <form action="/kari-registration" method="post">
       <input type="hidden" name="_csrf" value="{{.csrfToken}}">
   
@@ -19,7 +21,7 @@
         <div class="auth-input"><p>email</p><input type="text" name="email" required="required" maxlength="255" class="a-input">{{.email}}{{.bad_email}}{{.email_status}}</div>
         <div class="auth-input"><p>password</p><input type="password" name="password" required="required" maxlength="30" class="a-input"></div>
       </div>
-      <div class="auth-button"><input type="submit" value="signup"></div>
+      <div class="auth-button"><input type="submit" value="登録"></div>
     </form>
   </div>
 </div>

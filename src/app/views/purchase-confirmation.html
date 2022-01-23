@@ -1,0 +1,52 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+
+{{define "content"}}
+<div class="input-box">
+    <div class="p-c-c">
+        <div class="p-c-t"><p>購入情報</p></div>
+        <p style="margin: 10px 10px 3px 10px; color: rgba(34, 34, 34, 0.5);">
+            
+        </p>
+        <form action="" method="post">
+            <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+            <div class="p-c-flex">
+                <div class="p-c-products">
+                    {{ $csrfToken := .csrfToken }}
+                    {{range .products}}
+                        <input type="hidden" name="item" value="{{.Id}}">
+                        <div class="p-c-product-flex-box">
+                            <div class="p-c-img"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" style="vertical-align: top;" ></div>
+                            <div class="p-c-details">
+                                <div class="p-c-p-name">
+                                    <p>商品名：{{.ItemName}}</p>
+                                </div>
+                                <div class="p-c-p-amount">
+                                    <p>税込価格：￥{{.Amount}}</p>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    {{end}}
+                </div>
+                <div class="p-c-totalamount">
+                    <p>合計価格：税込み￥{{.totalAmount}}</p>
+                </div>
+                <input type="hidden" name="totalAmount" value="{{.totalAmount}}">
+                <div class=" p-c-submit">
+                    <input type="submit" value="購入">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{{end}}

@@ -24,6 +24,17 @@
     <form action="/itemregist" method="post" enctype="multipart/form-data">
       <input type="hidden" name="_csrf" value="{{.csrfToken}}">
       <div class="regist-item-form">
+        <div style="margin-bottom: 10px;"><p style="color: gray;">商品を登録するには、返品先情報と売上の振込先情報を登録する必要があります。</p></div>
+        {{if .stripeid}}
+          <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">振込先情報は登録済です。</p></div>
+        {{else}}
+        <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">振込先情報は未登録です。</p><a href="/create-an-express-account">登録する</a></div>
+        {{end}}
+        {{if .personal}}
+          <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">返品先情報は登録済です。</p></div>
+        {{else}}
+        <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">返品先情報は未登録です。</p><a href="/return-personal-information-input">登録する</a></div>
+        {{end}}
         <div class="r-form ragist-form-item-name">
           <p>商品名</p>
           <input type="text" name="itemname" required="required" maxlength="100" style="width: 100%;">
@@ -35,11 +46,12 @@
         <div class="r-form ragist-form-item-price">
           <p>商品価格</p><input type="number" name="price" required="required" max="99999999">円
         </div>
-        <div class="r-form ragist-form-item-image">
+        <div class="ragist-form-item-image">
           <p>商品画像</p><input type="file" name="image" accept=".png, .jpg" required="required">
-        </div>        
+        </div>
+        <div class="ragist-item-submit"><input type="submit" value="登録"></div>
+
       </div>
-      <div class="ragist-item-submit"><input type="submit" value="登録"></div>
     </form>
   </div>
 </div>

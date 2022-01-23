@@ -44,3 +44,21 @@ func DeleteCartItem(user_id int, product_id string) {
 		log.Println(err)
 	}
 }
+func CheckCart(userid int, productid string) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var id string
+	err = DbConnection.QueryRow("SELECT id FROM cart WHERE user_id = $1 AND product_id = $2", userid, productid).Scan(&id)
+	if err != nil {
+		log.Println(err)
+		return false
+	} else {
+		return true
+	}
+}

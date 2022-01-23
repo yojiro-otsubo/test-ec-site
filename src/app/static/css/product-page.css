@@ -33,6 +33,10 @@ img.product-img-content {
     margin: 5px 0 5px 0;
 }
 
+.item-page-detail p{
+    overflow-wrap: break-word;
+}
+
 @media (max-width: 799px) {
     .product-content-flex {
         display: flex;

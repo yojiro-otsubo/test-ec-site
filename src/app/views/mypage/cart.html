@@ -27,8 +27,12 @@
       <div class="cart-product-box">
         <div class="cart-img"><a href="/product/{{.Id}}"><img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" style="vertical-align: top;" ></a></div>
         <div class="cart-p-detail">
-          <div class="cart-product-name"><a href="/product/{{.Id}}">{{.ItemName}}</a></div>
-          <div class="cart-product-amount"><p>税込み価格：{{.Amount}}円</p></div>
+          <div class="cart-product-name">
+            <p>{{.ItemName}}</p>
+          </div>
+          <div class="cart-product-amount">
+            <p>税込み価格：{{.Amount}}円</p>
+          </div>
           <form action="/delete-cart" method="post">
             <input type="hidden" name="_csrf" value="{{$csrfToken}}">
             <input type="hidden" name="delete_item" value="{{.Id}}">
@@ -43,12 +47,8 @@
       <p>商品数：個</p>
       <p>合計価格(税込)：￥{{.totalAmount}}</p>
     </div>
-    <form action="/checkout" method="post">
+    <form action="/purchase-confirmation-cart" method="post">
       <input type="hidden" name="_csrf" value="{{$csrfToken}}">
-      <input type="hidden" name="totalAmount" value="{{.totalAmount}}">
-      {{range .products}}
-        <input type="hidden" name="item" value="{{.Id}}">
-      {{end}}
       <input type="submit" value="まとめて購入">
     </form>
   </div>

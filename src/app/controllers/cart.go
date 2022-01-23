@@ -30,7 +30,7 @@ func AddCart(c *gin.Context) {
 		redirecturl := "/product/" + productid
 		c.Redirect(302, redirecturl)
 	} else {
-		c.Redirect(302, "/")
+		c.Redirect(302, "/loginform")
 	}
 }
 

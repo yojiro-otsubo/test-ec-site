@@ -45,18 +45,38 @@ func ProductPage(c *gin.Context) {
 			"Amount":          taxamount,
 		})
 	} else {
-		c.HTML(200, "product", gin.H{
-			"title":           "product",
-			"login":           true,
-			"username":        UserInfo.UserId,
-			"csrfToken":       csrf.GetToken(c),
-			"ProductId":       product[0],
-			"ProductUsername": username,
-			"StripeProductId": product[2],
-			"StripePriceId":   product[3],
-			"ItemName":        product[4],
-			"Description":     product[5],
-			"Amount":          taxamount,
-		})
+		userid := models.GetUserID(UserInfo.UserId)
+		if models.CheckCart(userid, product[0]) == true {
+			c.HTML(200, "product", gin.H{
+				"title":           "product",
+				"login":           true,
+				"username":        UserInfo.UserId,
+				"csrfToken":       csrf.GetToken(c),
+				"ProductId":       product[0],
+				"ProductUsername": username,
+				"StripeProductId": product[2],
+				"StripePriceId":   product[3],
+				"ItemName":        product[4],
+				"Description":     product[5],
+				"Amount":          taxamount,
+				"cart":            true,
+			})
+		} else {
+			c.HTML(200, "product", gin.H{
+				"title":           "product",
+				"login":           true,
+				"username":        UserInfo.UserId,
+				"csrfToken":       csrf.GetToken(c),
+				"ProductId":       product[0],
+				"ProductUsername": username,
+				"StripeProductId": product[2],
+				"StripePriceId":   product[3],
+				"ItemName":        product[4],
+				"Description":     product[5],
+				"Amount":          taxamount,
+				"cart":            false,
+			})
+		}
+
 	}
 }

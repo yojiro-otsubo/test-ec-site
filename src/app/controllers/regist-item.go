@@ -25,17 +25,47 @@ func SellItemsForm(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
-	if UserInfo.UserId != nil && UserInfo.StripeAccount != nil {
+	userid := models.GetUserID(UserInfo.UserId)
+	stripeid, _ := models.GetStripeAccountId(userid)
+
+	if UserInfo.UserId != nil && UserInfo.StripeAccount == stripeid && models.ReturnPersonalUserIdCheck(userid) == "あり" {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     true,
 			"username":  UserInfo.UserId,
 			"csrfToken": csrf.GetToken(c),
+			"stripeid":  true,
+			"personal":  true,
 		})
-	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
-		c.Redirect(302, "/create-an-express-account")
+	} else if UserInfo.UserId != nil && UserInfo.StripeAccount != stripeid && models.ReturnPersonalUserIdCheck(userid) == "あり" {
+		c.HTML(200, "SellItems", gin.H{
+			"title":     "SellItems",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+			"stripeid":  false,
+			"personal":  true,
+		})
+	} else if UserInfo.UserId != nil && UserInfo.StripeAccount == stripeid && models.ReturnPersonalUserIdCheck(userid) == "なし" {
+		c.HTML(200, "SellItems", gin.H{
+			"title":     "SellItems",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+			"stripeid":  true,
+			"personal":  false,
+		})
+	} else if UserInfo.UserId != nil && UserInfo.StripeAccount != stripeid && models.ReturnPersonalUserIdCheck(userid) == "なし" {
+		c.HTML(200, "SellItems", gin.H{
+			"title":     "SellItems",
+			"login":     true,
+			"username":  UserInfo.UserId,
+			"csrfToken": csrf.GetToken(c),
+			"stripeid":  false,
+			"personal":  false,
+		})
 	} else {
-		c.Redirect(302, "/loginform")
+		c.Redirect(302, "loginform")
 	}
 }
 

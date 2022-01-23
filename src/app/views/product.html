@@ -26,22 +26,19 @@
     <div class="item-page-detail seller-name"><p>出品者：{{.ProductUsername}}</p></div>
     
     <div class="item-page-detail add-cart-box">
-      <p style="font-size: 12px; color: rgb(100, 100, 100);">カートに追加後、まとめて購入</p>
-      <form action="/addcart" method="post">
-        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-        <input type="hidden" name="cart" value="{{.ProductId}}">
-        <input type="submit" value="カートに追加" class="add-cart-submit">
-      </form>
+      <p style="font-size: 12px; color: rgb(100, 100, 100);">カートに追加後、<a href="/mycart" style="color: dodgerblue;">カートページ</a>でまとめて購入できます。</p>
+      {{if .cart}}
+        <p style="font-size: 12px; color: rgb(255, 0, 0); margin: 10px 0;">カートに追加済です。</p>
+      {{else}}
+        <form action="/addcart" method="post">
+          <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+          <input type="hidden" name="cart" value="{{.ProductId}}">
+          <input type="submit" value="カートに追加" class="add-cart-submit">
+        </form>
+      {{end}}
+      
     </div>
-    <div class="item-page-detail buy-only-one-box">
-      <p style="font-size: 12px; color: rgb(100, 100, 100);">この商品のみ、購入</p>
-      <form action="/checkout" method="post">
-        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
-        <input type="hidden" name="item" value="{{.ProductId}}">
-        <input type="hidden" name="totalAmount" value="{{.Amount}}">
-        <input type="submit" value="この商品を注文" class="add-cart-submit">
-      </form>
-    </div>
+    
   </div>
 </div>
 {{end}}
