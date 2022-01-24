@@ -45,6 +45,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("SignupSuccess", "app/views/base.html", "app/views/auth/signup-success.html")
 	render.AddFromFiles("ReturnPersonalInformationInput", "app/views/base.html", "app/views/return-personal-information-input.html")
 	render.AddFromFiles("PurchaseConfirmation", "app/views/base.html", "app/views/purchase-confirmation.html")
+	render.AddFromFiles("ReturnPersonalInformation", "app/views/base.html", "app/views/return-personal-information.html")
 
 	return render
 }
@@ -162,6 +163,7 @@ func StartWebServer() {
 	CSRFGroup.POST("/personal-information-input-post", PersonalInformationInputPost)
 	CSRFGroup.GET("/return-personal-information-input", ReturnPersonalInformationInput)
 	CSRFGroup.POST("/return-personal-information-input-post", ReturnPersonalInformationInputPost)
+	CSRFGroup.POST("/return-personal-information", ReturnPersonalInformation)
 	//--------------------purchase-confirmation.go--------------------
 	CSRFGroup.POST("/purchase-confirmation-cart", PurchaseConfirmationCart)
 

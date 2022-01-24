@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"main/app/models"
+	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -116,7 +117,7 @@ func ReturnPersonalInformationInput(c *gin.Context) {
 		userid := models.GetUserID(UserInfo.UserId)
 		personal := models.GetReturnPersonal(userid)
 		c.HTML(200, "ReturnPersonalInformationInput", gin.H{
-			"title":                 "お届け先入力",
+			"title":                 "返品先情報",
 			"login":                 true,
 			"username":              session.Get("UserId"),
 			"return_kanji_f_name":   personal[2],
@@ -164,5 +165,38 @@ func ReturnPersonalInformationInputPost(c *gin.Context) {
 		c.Redirect(302, "/personal-information")
 	} else {
 		c.Redirect(302, "/")
+	}
+}
+
+func ReturnPersonalInformation(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.UserId = session.Get("UserId")
+	productid := c.PostForm("productid")
+	product_userid := c.PostForm("product_userid")
+	product_userid_int, _ := strconv.Atoi(product_userid)
+	if UserInfo.UserId != nil && models.CheckArrives(productid) == "1" {
+		personal := models.GetReturnPersonal(product_userid_int)
+		product := models.GetProduct(productid)
+		uname := models.GetUserName(product_userid)
+		c.HTML(200, "ReturnPersonalInformation", gin.H{
+			"title":                 "返品先情報",
+			"login":                 true,
+			"username":              session.Get("UserId"),
+			"uname":                 uname,
+			"ItemName":              product[4],
+			"return_kanji_f_name":   personal[2],
+			"return_kanji_l_name":   personal[3],
+			"return_kana_f_name":    personal[4],
+			"return_kana_l_name":    personal[5],
+			"return_phone_number":   personal[6],
+			"return_postal_code":    personal[7],
+			"return_address_level1": personal[8],
+			"return_address_level2": personal[9],
+			"return_address_line1":  personal[10],
+			"return_address_line2":  personal[11],
+			"return_organization":   personal[12],
+			"csrfToken":             csrf.GetToken(c),
+		})
 	}
 }

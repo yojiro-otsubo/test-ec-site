@@ -1,0 +1,69 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "navitem"}}
+  {{if .login}}
+    <li class="nav__item"><a href="/logout">ログアウト</a></li>
+    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+  {{else}}
+  <li class="nav__item"><a href="/loginform">ログイン</a></li>
+  <li class="nav__item"><a href="/signupform">会員登録</a></li>
+  {{end}}
+{{end}}
+
+{{define "content"}}
+    <div class="input-box">
+        <div class="p-i-i-c">
+            <div class="p-i-i-t"><p>返品先情報</p></div>
+            <p style="margin: 10px 10px 3px 10px; color: rgba(34, 34, 34, 0.5);">
+                
+            </p>
+            <form action="/purchase-history" style="margin: 10px;">
+                <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+                <div class="p-i-i-flex">
+                    <div class="input-address-flex uname">
+                        <p>商品名：{{.uname}}</p>
+                    </div>
+                    <div class="input-address-flex item-name">
+                        <p>商品名：{{.ItemName}}</p>
+                    </div>
+                    <div class="input-address-flex kanji-f-name">
+                        <p>お名前（姓）：{{.return_kanji_f_name}}</p>
+                    </div>
+                    <div class="input-address-flex kanji-l-name">
+                        <p>お名前（名）：{{.return_kanji_l_name}}</p>
+                    </div>
+                    <div class="input-address-flex kana-f-name">
+                        <p>フリガナ（姓）{{.return_kana_f_name}}</p>
+                    </div>
+                    <div class="input-address-flex kana-l-name">
+                        <p>フリガナ（名）：{{.return_kana_l_name}}</p>
+                    </div>
+                    <div class="input-address-flex kana-l-name">
+                        <p>電話番号：{{.return_phone_number}}</p>
+                    </div>
+                    <div class="input-address-flex postal-code">
+                        <p>郵便番号：{{.return_postal_code}}</p>
+                    </div>
+                    <div class="input-address-flex address-level1">
+                        <p>都道府県：{{.return_address_level1}}</p>
+                    </div>
+                    <div class="input-address-flex address-level2">
+                        <p>市区町村：{{.return_address_level2}}</p>
+                    </div>
+                    <div class="input-address-flex address-line1">
+                        <p>番地：{{.return_address_line1}}</p>
+                    </div>
+                    <div class="input-address-flex address-line2">
+                        <p>建物名・部屋番号：{{.return_address_line2}}</p>
+                    </div>
+                    <div class="input-address-flex organization">
+                        <p>会社名：{{.return_organization}}</p>
+                    </div>
+                    <div class="input-address-flex p-i-submit">
+                        <input type="submit" value="戻る">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{{end}}

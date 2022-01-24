@@ -38,6 +38,12 @@
             <div class="user-product-amount"><p>価格：{{.Amount}}円＋消費税</p></div>
             {{if .Arrival}}
               <p style="color: red;">到着済</p>
+              <form action="/return-personal-information" method="post">
+                <input type="hidden" name="_csrf" value="{{$csrfToken}}">
+                <input type="hidden" name="productid" value="{{.Id}}">
+                <input type="hidden" name="product_userid" value="{{.UserId}}">
+                <input type="submit" value="販売者情報表示">
+              </form>
             {{else}}
               <form action="/arrival-success" method="post">
                 <input type="hidden" name="_csrf" value="{{$csrfToken}}">
