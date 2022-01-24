@@ -17,11 +17,9 @@
         <p style="margin: 10px 10px 3px 10px; color: rgba(34, 34, 34, 0.5);">
             
         </p>
-        <form action="" method="post">
-            <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+        <form action="/checkout" method="post">
             <div class="p-c-flex">
                 <div class="p-c-products">
-                    {{ $csrfToken := .csrfToken }}
                     {{range .products}}
                         <input type="hidden" name="item" value="{{.Id}}">
                         <div class="p-c-product-flex-box">
@@ -38,9 +36,18 @@
                         </div>
                     {{end}}
                 </div>
-                <div class="p-c-totalamount">
-                    <p>合計価格：税込み￥{{.totalAmount}}</p>
+                <div class="p-c-totalamount" style="border-bottom: 1px solid gainsboro;">
+                    <p style="margin-bottom: 2px;">合計価格：税込み￥{{.totalAmount}}</p>
                 </div>
+                <div style="margin: 10px 10px 0 10px;"><p>規約</p></div>
+                <div class="agreement" style="margin: 0 10px 10px 10px; border: 1px solid gainsboro;">
+                    <object data="../static/txt/agreement.txt" type="text/plain" style="width: 100%;"></object>
+                </div>
+                <div class="p-c-checkbox">
+                    <p>規約に同意</p>
+                    <input type="checkbox" required="required">
+                </div>
+                <input type="hidden" name="_csrf" value="{{.csrfToken}}">
                 <input type="hidden" name="totalAmount" value="{{.totalAmount}}">
                 <div class=" p-c-submit">
                     <input type="submit" value="購入">

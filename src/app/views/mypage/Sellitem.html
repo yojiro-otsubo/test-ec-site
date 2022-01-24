@@ -41,7 +41,7 @@
         </div>
         <div class="r-form ragist-form-item-description">
           <p>商品説明</p>
-          <textarea name="item-description" rows="10" maxlength="500" required="required" style="width: 100%;"></textarea>
+          <textarea name="item-description" rows="10" maxlength="800" required="required" style="width: 100%;"></textarea>
         </div>
         <div class="r-form ragist-form-item-price">
           <p>商品価格</p><input type="number" name="price" required="required" max="99999999">円
@@ -49,7 +49,14 @@
         <div class="ragist-form-item-image">
           <p>商品画像</p><input type="file" name="image" accept=".png, .jpg" required="required">
         </div>
-        <div class="ragist-item-submit"><input type="submit" value="登録"></div>
+        <div class="agreement" style="margin: 10px 5px 10px 5px; border: 1px solid orange;">
+          <object data="../static/txt/agreement.txt" type="text/plain" style="width: 100%;"></object>
+        </div>
+        <div class="p-c-checkbox">
+            <p>規約に同意</p>
+            <input type="checkbox" required="required">
+        </div>
+        <div class="ragist-item-submit" style="margin-top: 10px;"><input type="submit" value="登録"></div>
 
       </div>
     </form>

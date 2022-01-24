@@ -86,6 +86,17 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+.p-c-checkbox {
+    display: flex;
+    margin: 0 10px;
+    justify-content: right;
+}
+.p-c-checkbox p{
+    display: flex;
+    font-size: 14px;
+
+    padding: 2px 0 0 0;
+}
 @media (max-width: 799px) {
     .p-c-c{
         padding: 30px 0 30px 0;
