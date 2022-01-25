@@ -41,7 +41,7 @@
           <form action="/buyer-information" method="post">
             <input type="hidden" name="_csrf" value="{{$csrfToken}}">
             <input type="hidden" name="productid" value="{{.Id}}">
-            <input type="submit" value="発送する">
+            <input type="submit" value="発送する" class="all-input">
           </form>
         </div>
       </div>
@@ -89,6 +89,12 @@
           <div class="user-product-amount">
             <p>価格：{{.Amount}}円＋消費税</p>
           </div>
+
+          <form action="/itemdelete" method="post">
+            <input type="hidden" name="_csrf" value="{{$csrfToken}}">
+            <input type="hidden" name="productid" value="{{.Id}}">
+            <input type="submit" value="登録取り消し" class="all-input">
+          </form>
         </div>
       </div>
       {{end}}

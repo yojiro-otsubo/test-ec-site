@@ -336,3 +336,22 @@ func GetProductPurchaseConfirmation(productid []int) []Product {
 
 	return productResult
 }
+
+func DeleteProduct(userid int, productid string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd, err := DbConnection.Prepare("DELETE FROM products WHERE user_id = $1 AND id = $2")
+	if err != nil {
+		log.Println(err)
+	}
+	_, err = cmd.Exec(userid, productid)
+	if err != nil {
+		log.Println(err)
+	}
+}

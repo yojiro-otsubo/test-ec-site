@@ -101,6 +101,7 @@ func StartWebServer() {
 	CSRFGroup.GET("/sell-items-form", SellItemsForm)
 	//登録処理
 	CSRFGroup.POST("/itemregist", ItemRegist)
+	CSRFGroup.POST("/itemdelete", ItemDelete)
 
 	//--------------------stripe-account-link.go--------------------
 	//アカウントリンク登録処理

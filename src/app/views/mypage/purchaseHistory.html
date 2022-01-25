@@ -42,13 +42,13 @@
                 <input type="hidden" name="_csrf" value="{{$csrfToken}}">
                 <input type="hidden" name="productid" value="{{.Id}}">
                 <input type="hidden" name="product_userid" value="{{.UserId}}">
-                <input type="submit" value="販売者情報表示">
+                <input type="submit" value="販売者情報表示" class="all-input">
               </form>
             {{else}}
               <form action="/arrival-success" method="post">
                 <input type="hidden" name="_csrf" value="{{$csrfToken}}">
                 <input type="hidden" name="productid" value="{{.Id}}">
-                <input type="submit" value="到着完了">
+                <input type="submit" value="到着完了" class="all-input">
               </form>
             {{end}}
           </div>

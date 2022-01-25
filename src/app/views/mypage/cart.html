@@ -36,7 +36,7 @@
           <form action="/delete-cart" method="post">
             <input type="hidden" name="_csrf" value="{{$csrfToken}}">
             <input type="hidden" name="delete_item" value="{{.Id}}">
-            <input type="submit" value="カートから削除">
+            <input type="submit" value="カートから削除" class="all-input">
           </form>
         </div>
       </div>
@@ -49,7 +49,7 @@
     </div>
     <form action="/purchase-confirmation-cart" method="post">
       <input type="hidden" name="_csrf" value="{{$csrfToken}}">
-      <input type="submit" value="まとめて購入">
+      <input type="submit" value="まとめて購入" class="all-input">
     </form>
   </div>
 </div>

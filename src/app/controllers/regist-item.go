@@ -193,3 +193,15 @@ func registeredItems(c *gin.Context) {
 		})
 	}
 }
+func ItemDelete(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+	UserInfo.StripeAccount = session.Get("StripeAccount")
+	productid := c.PostForm("productid")
+	userid := models.GetUserID(UserInfo.UserId)
+	if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "なし" {
+		models.DeleteProduct(userid, productid)
+		c.Redirect(302, "/registered-items")
+	}
+	c.Redirect(302, "/")
+}
