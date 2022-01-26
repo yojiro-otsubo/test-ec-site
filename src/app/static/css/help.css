@@ -1,75 +1,68 @@
-.mypage-box-flex {
+.help-box-flex {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
     margin-top: 25px;
 }
 
-.mypage-flex-select {
+.help-flex-select {
     display: flex;
     flex-direction: column;
     width: 250px;
 }
 
-.mypage-content {
+.help-content {
     width: 700px;
 }
 
-.mypage-select{
+.help-select{
     height: 40px;
     border: 1px solid rgb(214, 214, 214);
     margin-bottom: -1px;
     background-color: white;
 }
-.mypage-select:hover{
+.help-select:hover{
     background-color: rgb(255, 244, 223);
 }
-.mypage-select p{
+.help-select p{
     font-size: 16px;
     padding-top: 12px;
     padding-left: 5px;
 }
 
-.mypage-content {
+.help-content {
     width: 700px;
 }
 
-.mypage-box {
+.help-box {
     margin: 0 10px 0 10px;
 }
 
-.mypage-title {
+.help-title {
     border-bottom: 1px solid rgb(214, 214, 214);
 }
-.mypage-title p{
+.help-title p{
     font-size: 22px;
     margin-bottom: 5px;
     margin-left: 5px;
 }
 
-.user-info-mypage {
-    margin: 10px;
-}
-.my-user-info {
-    margin: 10px 0 10px 0;
-}
-
 @media (max-width: 799px) {
-    .mypage-box-flex {
+    .help-box-flex {
         display: flex;
         flex-direction: column;
         justify-content: center;
         margin-top: 0;
     }
     
-    .mypage-flex-select {
+    .help-flex-select {
         display: flex;
         flex-direction: column;
         justify-content: center;
         width: auto;
     }
 
-    .mypage-content {
+    .help-content {
         width: auto;
         margin-top: 25px;
     }

@@ -80,3 +80,13 @@ func ProductPage(c *gin.Context) {
 
 	}
 }
+
+func ProductImage(c *gin.Context) {
+	productNumber := c.Param("number")
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+
+	c.HTML(200, "image", gin.H{
+		"productid": productNumber,
+	})
+}

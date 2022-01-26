@@ -1,20 +1,12 @@
 {{define "title"}}{{.title}}{{end}}
 
-{{define "navitem"}}
-  {{if .login}}
-    <li class="nav__item"><a href="/logout">ログアウト</a></li>
-    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
-  {{else}}
-  <li class="nav__item"><a href="/loginform">ログイン</a></li>
-  <li class="nav__item"><a href="/signupform">会員登録</a></li>
-  {{end}}
-{{end}}
-
 {{define "content"}}
 <div class="product-p-title"><p>商品</p></div>
 <div class="product-content-flex">
   <div class="p-page-detail product-img-box" id="">
-    <img src="../static/img/item/productid{{.ProductId}}/1.jpg"  alt="" class="product-img-content" style="vertical-align: top;" id="product-img-c">
+    <a href="/image/{{.ProductId}}">
+      <img src="../static/img/item/productid{{.ProductId}}/1.jpg"  alt="" class="product-img-content" style="vertical-align: top;" id="product-img-c">
+    </a>
   </div> 
   <div class="p-page-detail product-detail">
     <div class="item-page-detail item-name"><p style="font-size: 22px;">{{.ItemName}}</p></div>

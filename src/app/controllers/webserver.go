@@ -46,6 +46,8 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("ReturnPersonalInformationInput", "app/views/base.html", "app/views/return-personal-information-input.html")
 	render.AddFromFiles("PurchaseConfirmation", "app/views/base.html", "app/views/purchase-confirmation.html")
 	render.AddFromFiles("ReturnPersonalInformation", "app/views/base.html", "app/views/return-personal-information.html")
+	render.AddFromFiles("image", "app/views/image.html")
+	render.AddFromFiles("helpTop", "app/views/base.html", "app/views/help/helpTop.html")
 
 	return render
 }
@@ -114,6 +116,7 @@ func StartWebServer() {
 	//--------------------product-page.go--------------------
 	//商品ページ
 	CSRFGroup.GET("/product/:number", ProductPage)
+	CSRFGroup.GET("/image/:number", ProductImage)
 
 	//--------------------checkout.go--------------------
 	//購入処理
@@ -167,6 +170,9 @@ func StartWebServer() {
 	CSRFGroup.POST("/return-personal-information", ReturnPersonalInformation)
 	//--------------------purchase-confirmation.go--------------------
 	CSRFGroup.POST("/purchase-confirmation-cart", PurchaseConfirmationCart)
+
+	//--------------------help.go--------------------
+	CSRFGroup.GET("/help", helpTop)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))

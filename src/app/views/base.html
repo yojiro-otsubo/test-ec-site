@@ -18,13 +18,10 @@
     <link rel="stylesheet" href="../static/css/buyer-info.css" />
     <link rel="stylesheet" href="../static/css/auth.css" />
     <link rel="stylesheet" href="../static/css/purchase-confirmation.css" />
-    <link rel="stylesheet" href="../static/css/others.css" />
-
-    
+    <link rel="stylesheet" href="../static/css/help.css" />    
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://unpkg.com/js-image-zoom@0.7.0/js-image-zoom.js" type="application/javascript"></script>
   </head>
   <body>
     <header class="site-header">
@@ -38,7 +35,15 @@
               メニュー
             </button>
             <ul class="nav__wrapper">
-              {{template "navitem" .}}
+              {{if .login}}
+                <li class="nav__item"><a href="/logout">ログアウト</a></li>
+                <li class="nav__item"><a href="/help">ヘルプ</a></li>
+                <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
+              {{else}}
+                <li class="nav__item"><a href="/help">ヘルプ</a></li>
+                <li class="nav__item"><a href="/loginform">ログイン</a></li>
+                <li class="nav__item"><a href="/signupform">会員登録</a></li>
+              {{end}}
             </ul>
           </nav>
         </div>
@@ -51,21 +56,9 @@
       </div>
     </div>
 
-    <div id="overlay-product">
-      <div id="overlay">
-        
-        <div class="overlay-content-box overlay-inner">
-          <div class="ol-header">
-            <p class="ol-close">×</p>
-          </div>
-          <img src="../static/img/item/productid{{.ProductId}}/1.jpg" alt="" style="vertical-align: top;">
-        </div>
-      </div>
-    </div>
+    
 
     <script src="../static/js/header-3.js"></script>
-    <script src="../static/js/overlay.js"></script>
-    <script src="../static/js/img-zoom.js"></script>
 
   </body>
 </html>

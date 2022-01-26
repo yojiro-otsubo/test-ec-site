@@ -137,3 +137,20 @@ func GetUserName(user_id string) string {
 
 	return username
 }
+func GetUserEmail(user_id int) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var email string
+	err = DbConnection.QueryRow("SELECT email FROM users WHERE id = $1", user_id).Scan(&email)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return email
+}

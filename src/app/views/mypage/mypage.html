@@ -1,15 +1,5 @@
 {{define "title"}}{{.title}}{{end}}
 
-{{define "navitem"}}
-  {{if .login}}
-    <li class="nav__item"><a href="/logout">ログアウト</a></li>
-    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
-  {{else}}
-    <li class="nav__item"><a href="/loginform">ログイン</a></li>
-    <li class="nav__item"><a href="/signupform">会員登録</a></li>
-  {{end}}
-{{end}}
-
 {{define "content"}}
   <div class="mypage-box-flex">
     <div class="mypage-box mypage-flex-select">
@@ -20,8 +10,11 @@
       <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>商品登録フォーム</p></div></a>
     </div>
     <div class="mypage-box mypage-content">
-      <div class="mypage-title"><p>マイページ</p></div>
-      <p>{{.username}}</p>
+      <div class="mypage-title"><p>ユーザー情報</p></div>
+      <div class="user-info-mypage">
+        <div class="my-username my-user-info"><p>ユーザー名：{{.username}}</p></div>
+        <div class="my-email my-user-info"><p>Eメール：{{.email}}</p></div>
+      </div>
     </div>
   </div>
   

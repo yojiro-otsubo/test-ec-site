@@ -1,13 +1,4 @@
 {{define "title"}}本登録完了{{end}}
-{{define "navitem"}}
-  {{if .login}}
-    <li class="nav__item"><a href="/logout">ログアウト</a></li>
-    <li class="nav__item"><a href="/mypage/{{.username}}">マイページ</a></li>
-  {{else}}
-  <li class="nav__item"><a href="/loginform">ログイン</a></li>
-  <li class="nav__item"><a href="/signupform">会員登録</a></li>
-  {{end}}
-{{end}}
 {{define "content"}}
 <div class="auth-box">
     <div class="auth-form-box">

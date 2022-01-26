@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"main/app/models"
+
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -12,10 +14,13 @@ func mypage(c *gin.Context) {
 	UserInfo.UserId = session.Get("UserId")
 
 	if UserInfo.UserId == uname {
+		userid := models.GetUserID(UserInfo.UserId)
+		email := models.GetUserEmail(userid)
 		c.HTML(200, "mypage", gin.H{
-			"title":    uname,
+			"title":    "マイページ",
 			"login":    true,
-			"username": session.Get("UserId"),
+			"username": UserInfo.UserId,
+			"email":    email,
 		})
 	} else {
 		c.Redirect(302, "/")
