@@ -48,6 +48,11 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("ReturnPersonalInformation", "app/views/base.html", "app/views/return-personal-information.html")
 	render.AddFromFiles("image", "app/views/image.html")
 	render.AddFromFiles("helpTop", "app/views/base.html", "app/views/help/helpTop.html")
+	render.AddFromFiles("helpSellItemGuide", "app/views/base.html", "app/views/help/helpSellItemGuide.html")
+	render.AddFromFiles("helpBuyItemGuide", "app/views/base.html", "app/views/help/helpBuyItemGuide.html")
+	render.AddFromFiles("helpRulesAndManners", "app/views/base.html", "app/views/help/helpRulesAndManners.html")
+	render.AddFromFiles("helpReturnGuide", "app/views/base.html", "app/views/help/helpReturnGuide.html")
+	render.AddFromFiles("helpInquiry", "app/views/base.html", "app/views/help/helpInquiry.html")
 
 	return render
 }
@@ -173,6 +178,11 @@ func StartWebServer() {
 
 	//--------------------help.go--------------------
 	CSRFGroup.GET("/help", helpTop)
+	CSRFGroup.GET("/help/sell-item-guide", helpSellItemGuide)
+	CSRFGroup.GET("/help/buy-item-guide", helpBuyItemGuide)
+	CSRFGroup.GET("/help/rules-and-manners", helpRulesAndManners)
+	CSRFGroup.GET("/help/return-guide", helpReturnGuide)
+	CSRFGroup.GET("/help/inquiry", helpInquiry)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))
