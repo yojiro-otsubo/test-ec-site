@@ -39,7 +39,7 @@ product-page
     - docker  
 バックエンド  
     - golang  
-    - postgresql
+    - postgresql  
 フロントエンド  
     - html  
     - css  
