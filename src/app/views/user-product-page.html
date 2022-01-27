@@ -1,8 +1,38 @@
 {{define "title"}}{{.title}}{{end}}
 
 {{define "content"}}
-<div class="top-content">
-  <div class="top-content-title"><p>{{.title}}</p></div>
+<div class="top-content" style="margin-top: 20px;">
+  <div class="top-content-title"><p>出品者情報</p></div>
+  <div class="seller-info-flex-box">
+    <div class="seller-info-flex">
+      <div class="seller-icon"></div>
+      <div class="seller-info-d-flex">
+        <div class="seller-username"><p>{{.productUsername}} さん</p></div>
+        <div class="seller-follow-info-flex">
+          <p>フォロワー：{{.countFollower}}</p><div class="wall"></div><p>出品数：{{.countProduct}}</p>
+        </div>
+      </div>
+    </div>
+    <div class="follow-form-box">
+      {{if .follow}}
+        <form action="/delete-follow" method="post">
+          <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+          <input type="hidden" name="user_id" value="{{.productUserId}}">
+          <input type="hidden" name="redirect_url" value="/userproduct/{{.productUserId}}">
+          <input type="submit" value="フォロー解除" class="follow-submit">
+        </form>
+      {{else}}
+        <form action="/follow" method="post">
+          <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+          <input type="hidden" name="user_id" value="{{.productUserId}}">
+          <input type="submit" value="フォローする" class="follow-submit">
+        </form>
+      {{end}}
+    </div>
+  </div>
+  <div class="user-self-introductio"><p>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest</p></div>
+
+  <div class="top-content-title"><p>出品した商品</p></div>
   <div class="product-flex-box">
     {{ $soldout := "1" }}
     {{range .products}}

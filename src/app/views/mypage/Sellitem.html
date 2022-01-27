@@ -7,14 +7,14 @@
     <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
     <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
     <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録した商品</p></div></a>
-    <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"  style="background-color: rgb(255, 231, 185);"><p>商品登録フォーム</p></div></a>
+    <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"  style="background-color: rgb(255, 231, 185);"><p>出品登録フォーム</p></div></a>
   </div>
   <div class="mypage-box mypage-content">
     <div class="mypage-title"><p>商品登録</p></div>
     <form action="/itemregist" method="post" enctype="multipart/form-data">
       <input type="hidden" name="_csrf" value="{{.csrfToken}}">
       <div class="regist-item-form">
-        <div style="margin-bottom: 10px;"><p style="color: gray;">商品を登録するには、返品先情報と売上の振込先情報を登録する必要があります。</p></div>
+        <div style="margin-bottom: 10px;"><p style="color: gray;">商品を登録(出品)には、返品先情報と売上の振込先情報を登録する必要があります。</p></div>
         {{if .stripeid}}
           <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">振込先情報は登録済です。</p></div>
         {{else}}

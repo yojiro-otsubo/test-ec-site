@@ -387,3 +387,22 @@ func DeleteProduct(userid int, productid string) {
 		log.Println(err)
 	}
 }
+
+func CountProduct(user_id int) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var count string
+	err = DbConnection.QueryRow("SELECT COUNT( * ) FROM products WHERE user_id = $1", user_id).Scan(&count)
+	if err != nil {
+		return "0"
+	} else {
+		log.Println("count = ", count)
+		return count
+	}
+}

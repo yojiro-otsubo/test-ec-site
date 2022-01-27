@@ -95,28 +95,55 @@ func ProductImage(c *gin.Context) {
 
 func UserProductPage(c *gin.Context) {
 	user_id := c.Param("number")
+	int_user_id, _ := strconv.Atoi(user_id)
 	session := sessions.Default(c)
 	UserInfo.UserId = session.Get("UserId")
 	products := models.GetAllProductOfUserId(user_id)
 	product_username := models.GetUserName(user_id)
 	title := product_username + "さんのアイテム"
+	count_follower := models.CountFollower(int_user_id)
+	my_user_id := models.GetUserID(UserInfo.UserId)
+	count_product := models.CountProduct(int_user_id)
 	if UserInfo.UserId == nil {
 		c.HTML(200, "UserProductPage", gin.H{
 			"title":           title,
 			"login":           false,
 			"csrfToken":       csrf.GetToken(c),
 			"products":        products,
-			"productUsername": title,
+			"productUserId":   user_id,
+			"productUsername": product_username,
+			"countFollower":   count_follower,
+			"countProduct":    count_product,
 		})
 	} else {
-		c.HTML(200, "UserProductPage", gin.H{
-			"title":           title,
-			"login":           true,
-			"username":        UserInfo.UserId,
-			"csrfToken":       csrf.GetToken(c),
-			"products":        products,
-			"productUsername": title,
-		})
+		if models.CheckFollow(my_user_id, int_user_id) == "なし" {
+			c.HTML(200, "UserProductPage", gin.H{
+				"title":           title,
+				"login":           true,
+				"username":        UserInfo.UserId,
+				"csrfToken":       csrf.GetToken(c),
+				"products":        products,
+				"productUsername": product_username,
+				"productUserId":   user_id,
+				"countFollower":   count_follower,
+				"follow":          false,
+				"countProduct":    count_product,
+			})
+		} else {
+			c.HTML(200, "UserProductPage", gin.H{
+				"title":           title,
+				"login":           true,
+				"username":        UserInfo.UserId,
+				"csrfToken":       csrf.GetToken(c),
+				"products":        products,
+				"productUsername": product_username,
+				"productUserId":   user_id,
+				"countFollower":   count_follower,
+				"countProduct":    count_product,
+				"follow":          true,
+			})
+		}
+
 	}
 
 }

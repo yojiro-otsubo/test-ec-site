@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"main/app/others"
 	"main/config"
 	"net/http"
 	"time"
@@ -70,7 +71,7 @@ func StartWebServer() {
 	CSRFGroup := r.Group("/")
 	CSRFGroup.Use(sessions.Sessions("mysession", store))
 	CSRFGroup.Use(csrf.Middleware(csrf.Options{
-		Secret: RandString(10),
+		Secret: others.RandString(10),
 		ErrorFunc: func(c *gin.Context) {
 			c.String(400, "CSRF token mismatch")
 			c.Abort()
@@ -185,6 +186,10 @@ func StartWebServer() {
 	CSRFGroup.GET("/help/rules-and-manners", helpRulesAndManners)
 	CSRFGroup.GET("/help/return-guide", helpReturnGuide)
 	CSRFGroup.GET("/help/inquiry", helpInquiry)
+
+	//--------------------follow.go--------------------
+	CSRFGroup.POST("/follow", Follow)
+	CSRFGroup.POST("/delete-follow", DeleteFollow)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))

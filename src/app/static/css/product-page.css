@@ -37,6 +37,19 @@ img.product-img-content {
     overflow-wrap: break-word;
 }
 
+.star {
+	width: 20px;
+	height: 20px;
+	background: rgb(128, 128, 128);
+	clip-path: polygon(50% 5%, 61% 40%, 98% 40%, 68% 62%, 79% 96%, 50% 75%, 21% 96%, 32% 62%, 2% 40%, 39% 40%);
+}
+.star:hover{
+	width: 20px;
+	height: 20px;
+	background: rgb(255, 217, 0);
+	clip-path: polygon(50% 5%, 61% 40%, 98% 40%, 68% 62%, 79% 96%, 50% 75%, 21% 96%, 32% 62%, 2% 40%, 39% 40%);
+}
+
 @media (max-width: 799px) {
     .product-content-flex {
         display: flex;

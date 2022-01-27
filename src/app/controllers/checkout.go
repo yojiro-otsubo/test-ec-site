@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"main/app/models"
+	"main/app/others"
 	"main/config"
 	"net/http"
 	"os"
@@ -49,7 +50,7 @@ func CheckOutHandler(c *gin.Context) {
 
 		for {
 			transferGroup = ""
-			transferGroup = "tg_" + RandString(25)
+			transferGroup = "tg_" + others.RandString(25)
 			if models.CheckTransferGroup(transferGroup) == true {
 				break
 			}

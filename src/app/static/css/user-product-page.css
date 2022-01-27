@@ -1,0 +1,87 @@
+.seller-info-flex{
+    display: flex;
+    justify-content: left;
+    margin: 0 15px 0 15px;
+}
+
+.seller-icon {
+    width: 80px;
+    height: 80px;
+    border: 1px solid gray;
+    border-radius: 50%;
+}
+.seller-username{
+    font-size: 22px;
+    margin: 10px 0;
+}
+.wall{
+    border-left: 2px solid gray;
+    margin: 0 10px 0 10px;
+}
+
+.seller-follow-info-flex{
+    display: flex;
+    justify-content: left;
+    margin-bottom: 5px;
+}
+
+.seller-info-d-flex {
+    margin: 0 0 0 10px;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+}
+.user-self-introductio {
+    margin: 10px;
+}
+.user-self-introductio p{
+    margin: 10px;
+    overflow-wrap: break-word;
+}
+.seller-info-flex-box {
+    display: flex;
+    justify-content: space-between;
+}
+.follow-form-box {
+    margin: 0 10px;
+}
+.follow-submit {
+    background-color: rgb(255, 255, 255);
+    border: 0.2px solid rgb(0, 132, 255);
+    border-radius: 3px;
+    width: 120px;
+    height: 30px;
+}
+.follow-submit:hover{
+    background-color: rgb(184, 237, 255);
+}
+@media (max-width: 799px) {
+    .seller-icon {
+        width: 50px;
+        height: 50px;
+        border: 1px solid gray;
+        border-radius: 50%;
+    }
+    .seller-username{
+        font-size: 18px;
+        margin: 3px 0;
+    }
+
+    .seller-follow-info-flex{
+        display: flex;
+        justify-content: left;
+        margin-bottom: 3px;
+    }
+    .seller-follow-info-flex p{
+        font-size: 14px;
+    }
+    .seller-info-flex-box {
+        display: flex;
+        flex-flow: column;
+        justify-content: left
+    }
+
+    .follow-submit {
+        margin: 10px;
+    }
+}

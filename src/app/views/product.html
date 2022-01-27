@@ -12,10 +12,12 @@
     <div class="item-page-detail item-name"><p style="font-size: 22px;">{{.ItemName}}</p></div>
     <div class="item-page-detail item-description">
       <p style="color: rgb(138, 138, 138); font-weight: 400; font-size: 20px; margin-bottom: 5px;">商品説明</p>
-      <p style="margin-bottom: 3px;">{{.Description}}</p>
+      <p style="margin-bottom: 3px; white-space:pre-wrap;">{{.Description}}</p>
     </div>
     <div class="item-page-detail item-amount"><p>価格：￥{{.Amount}} (税込み)</p></div>
-    <div class="item-page-detail seller-name"><p>出品者：<a href="/userproduct/{{.UserId}}" style="color: dodgerblue;">{{.ProductUsername}}</a></p></div>
+    <div class="item-page-detail seller-name">
+      <p>出品者：<a href="/userproduct/{{.UserId}}" style="color: dodgerblue;">{{.ProductUsername}}</a></p>
+    </div>
     
     <div class="item-page-detail add-cart-box">
       <p style="font-size: 12px; color: rgb(100, 100, 100);">カートに追加後、<a href="/mycart" style="color: dodgerblue;">カートページ</a>でまとめて購入できます。</p>
