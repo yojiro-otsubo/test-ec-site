@@ -54,6 +54,7 @@ func ProductPage(c *gin.Context) {
 				"csrfToken":       csrf.GetToken(c),
 				"ProductId":       product[0],
 				"ProductUsername": username,
+				"UserId":          product[1],
 				"StripeProductId": product[2],
 				"StripePriceId":   product[3],
 				"ItemName":        product[4],
@@ -69,6 +70,7 @@ func ProductPage(c *gin.Context) {
 				"csrfToken":       csrf.GetToken(c),
 				"ProductId":       product[0],
 				"ProductUsername": username,
+				"UserId":          product[1],
 				"StripeProductId": product[2],
 				"StripePriceId":   product[3],
 				"ItemName":        product[4],
@@ -89,4 +91,32 @@ func ProductImage(c *gin.Context) {
 	c.HTML(200, "image", gin.H{
 		"productid": productNumber,
 	})
+}
+
+func UserProductPage(c *gin.Context) {
+	user_id := c.Param("number")
+	session := sessions.Default(c)
+	UserInfo.UserId = session.Get("UserId")
+	products := models.GetAllProductOfUserId(user_id)
+	product_username := models.GetUserName(user_id)
+	title := product_username + "さんのアイテム"
+	if UserInfo.UserId == nil {
+		c.HTML(200, "UserProductPage", gin.H{
+			"title":           title,
+			"login":           false,
+			"csrfToken":       csrf.GetToken(c),
+			"products":        products,
+			"productUsername": title,
+		})
+	} else {
+		c.HTML(200, "UserProductPage", gin.H{
+			"title":           title,
+			"login":           true,
+			"username":        UserInfo.UserId,
+			"csrfToken":       csrf.GetToken(c),
+			"products":        products,
+			"productUsername": title,
+		})
+	}
+
 }

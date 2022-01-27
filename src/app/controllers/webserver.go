@@ -53,6 +53,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("helpRulesAndManners", "app/views/base.html", "app/views/help/helpRulesAndManners.html")
 	render.AddFromFiles("helpReturnGuide", "app/views/base.html", "app/views/help/helpReturnGuide.html")
 	render.AddFromFiles("helpInquiry", "app/views/base.html", "app/views/help/helpInquiry.html")
+	render.AddFromFiles("UserProductPage", "app/views/base.html", "app/views/user-product-page.html")
 
 	return render
 }
@@ -122,6 +123,7 @@ func StartWebServer() {
 	//商品ページ
 	CSRFGroup.GET("/product/:number", ProductPage)
 	CSRFGroup.GET("/image/:number", ProductImage)
+	CSRFGroup.GET("/userproduct/:number", UserProductPage)
 
 	//--------------------checkout.go--------------------
 	//購入処理
