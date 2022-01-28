@@ -11,17 +11,17 @@ import (
 //購入履歴
 func purchaseHistory(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 
-	if UserInfo.UserId == nil {
+	if UserInfo.UserName == nil {
 		c.Redirect(302, "/loginform")
 	} else {
-		userid := models.GetUserID(UserInfo.UserId)
+		userid := models.GetUserID(UserInfo.UserName)
 		products := models.GetProductIdFromPaymentHistory(userid)
 		c.HTML(200, "purchaseHistory", gin.H{
 			"title":     "purchaseHistory",
 			"login":     true,
-			"username":  UserInfo.UserId,
+			"username":  UserInfo.UserName,
 			"csrfToken": csrf.GetToken(c),
 			"products":  products,
 		})

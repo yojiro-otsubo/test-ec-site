@@ -12,10 +12,10 @@ import (
 //トップページ
 func top(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	products := models.GetProductTop()
 	log.Println(products)
-	if UserInfo.UserId == nil {
+	if UserInfo.UserName == nil {
 		c.HTML(200, "top", gin.H{
 			"title":     "top",
 			"login":     false,
@@ -26,7 +26,7 @@ func top(c *gin.Context) {
 		c.HTML(200, "top", gin.H{
 			"title":     "top",
 			"login":     true,
-			"username":  UserInfo.UserId,
+			"username":  UserInfo.UserName,
 			"csrfToken": csrf.GetToken(c),
 			"products":  products,
 		})

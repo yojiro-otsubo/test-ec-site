@@ -15,14 +15,14 @@ import (
 
 func SippingSuccess(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	productid := c.PostForm("productid")
-	if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "なし" {
+	if UserInfo.UserName != nil && models.CheckDeliveryStatusProductId(productid) == "なし" {
 		models.InsertSipping(productid)
 		log.Println("なし")
 		c.Redirect(302, "/registered-items")
-	} else if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "あり" {
+	} else if UserInfo.UserName != nil && models.CheckDeliveryStatusProductId(productid) == "あり" {
 		log.Println("あり")
 		c.Redirect(302, "/registered-items")
 	} else {
@@ -32,10 +32,10 @@ func SippingSuccess(c *gin.Context) {
 
 func ArrivalSuccess(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	productid := c.PostForm("productid")
-	if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "あり" && models.CheckArrives(productid) != "1" {
+	if UserInfo.UserName != nil && models.CheckDeliveryStatusProductId(productid) == "あり" && models.CheckArrives(productid) != "1" {
 		log.Println("あり")
 		models.UpdateArrives(productid)
 		transferGroup := models.GetTransferGroup(productid)
@@ -59,7 +59,7 @@ func ArrivalSuccess(c *gin.Context) {
 			log.Println(err)
 		}
 		c.Redirect(302, "/purchase-history")
-	} else if UserInfo.UserId != nil && models.CheckDeliveryStatusProductId(productid) == "なし" {
+	} else if UserInfo.UserName != nil && models.CheckDeliveryStatusProductId(productid) == "なし" {
 		c.Redirect(302, "/purchase-history")
 
 	} else {

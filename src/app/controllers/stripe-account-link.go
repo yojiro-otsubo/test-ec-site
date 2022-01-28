@@ -18,9 +18,9 @@ import (
 func CreateAnExpressAccount(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	log.Println("Username = ", UserInfo.UserId)
-	if UserInfo.UserId != nil && UserInfo.StripeAccount == nil {
+	UserInfo.UserName = session.Get("UserName")
+	log.Println("Username = ", UserInfo.UserName)
+	if UserInfo.UserName != nil && UserInfo.StripeAccount == nil {
 		//stripe連結アカウント作成
 		stripe.Key = config.Config.StripeKey
 		params1 := &stripe.AccountParams{
@@ -48,7 +48,7 @@ func CreateAnExpressAccount(c *gin.Context) {
 
 		c.Redirect(307, result2.URL)
 
-	} else if UserInfo.UserId == nil {
+	} else if UserInfo.UserName == nil {
 		c.Redirect(302, "/loginform")
 	} else {
 		c.Redirect(302, "/")
@@ -59,10 +59,10 @@ func CreateAnExpressAccount(c *gin.Context) {
 func OkCreateAnExpressAccount(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.provisional = session.Get("provisional")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.provisional != nil && UserInfo.UserId != nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.provisional != nil && UserInfo.UserName != nil {
 		//user_id取得
-		userid := models.GetUserID(UserInfo.UserId)
+		userid := models.GetUserID(UserInfo.UserName)
 		if models.UserIdCheck(userid) == true {
 			//stripeアカウント登録
 			models.AccountRegist(userid, UserInfo.provisional)
@@ -91,8 +91,8 @@ func OkCreateAnExpressAccount(c *gin.Context) {
 func RefreshCreateAnExpressAccount(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.provisional = session.Get("provisional")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.provisional != nil && UserInfo.UserId != nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.provisional != nil && UserInfo.UserName != nil {
 		session.Delete("provisional")
 		session.Save()
 		c.Redirect(302, "/")

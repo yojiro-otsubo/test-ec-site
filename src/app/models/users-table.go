@@ -209,3 +209,57 @@ func GetUserEmail(user_id int) string {
 
 	return email
 }
+
+func UpdateToken(user_id int, token string) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var returntoken string
+
+	err = DbConnection.QueryRow("UPDATE users SET token = $2 WHERE id = $1", user_id, token).Scan(&returntoken)
+	if err != nil {
+		log.Println(err)
+	}
+	return returntoken
+}
+
+func TokenCheck(token string) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var booltoken string
+	err = DbConnection.QueryRow("SELECT token FROM users WHERE token = $1", token).Scan(&booltoken)
+	if err != nil {
+		return true
+	} else {
+		return false
+	}
+
+}
+func LoginTokenCheck(username, token interface{}) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var id string
+	err = DbConnection.QueryRow("SELECT id FROM users WHERE username = $1 AND token = $2", username, token).Scan(&id)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+
+}

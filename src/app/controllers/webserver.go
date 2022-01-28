@@ -17,9 +17,10 @@ import (
 
 //-------------------------------------------------- WebServer --------------------------------------------------
 type SessionInfo struct {
-	UserId        interface{}
+	UserName      interface{}
 	StripeAccount interface{}
 	provisional   interface{}
+	logintoken    interface{}
 }
 
 var UserInfo SessionInfo

@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"main/app/models"
+	"main/app/others"
 	"main/config"
 	"net/http"
 	"net/mail"
@@ -163,16 +164,28 @@ func Login(c *gin.Context) {
 		var check bool
 		userid := models.GetUserID(username)
 		stripeid, check := models.GetStripeAccountId(userid)
+		var login_token string
+		for {
+			login_token = ""
+			login_token = others.RandString(30)
+			bool_token := models.TokenCheck(login_token)
+			if bool_token == true {
+				break
+			}
+		}
+
 		if check == true {
 			session := sessions.Default(c)
-			session.Set("UserId", username)
+			session.Set("UserName", username)
 			session.Set("StripeAccount", stripeid)
+			session.Set("logintoken", login_token)
 			session.Save()
-			log.Println("username = ", session.Get("UserId"), "///stripeid = ", session.Get("StripeAccount"))
+			log.Println("username = ", session.Get("UserName"), "///stripeid = ", session.Get("StripeAccount"))
 			c.Redirect(302, "/")
 		} else {
 			session := sessions.Default(c)
-			session.Set("UserId", username)
+			session.Set("UserName", username)
+			session.Set("logintoken", login_token)
 			session.Save()
 			log.Println("username = ", session.Get("UserId"), "///stripeid = 未登録")
 
@@ -192,9 +205,9 @@ func Login(c *gin.Context) {
 //ログアウト処理
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 
-	if UserInfo.UserId != nil {
+	if UserInfo.UserName != nil {
 		session.Clear()
 		session.Save()
 		c.Redirect(302, "/")
@@ -204,31 +217,11 @@ func Logout(c *gin.Context) {
 
 }
 
-//セッションチェック関数（仮）
-func sessionCheck() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session := sessions.Default(c)
-		UserInfo.UserId = session.Get(("UserID"))
-		if UserInfo.UserId == nil {
-			log.Println("ログインしていません")
-			c.HTML(http.StatusMovedPermanently, "loginform", gin.H{
-				"login_massage": "ログインが必要です",
-				"csrfToken":     csrf.GetToken(c),
-			})
-			c.Abort()
-		} else {
-			c.Set("UserID", UserInfo.UserId)
-			c.Next()
-		}
-		log.Println("ログインチェック終了")
-	}
-}
-
 //ログインフォーム
 func LoginForm(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId == nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName == nil {
 		c.HTML(200, "loginform", gin.H{
 			"login":     false,
 			"csrfToken": csrf.GetToken(c),
@@ -241,8 +234,8 @@ func LoginForm(c *gin.Context) {
 //登録フォーム
 func SignupForm(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId == nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName == nil {
 		c.HTML(200, "signupform", gin.H{
 			"login":     false,
 			"csrfToken": csrf.GetToken(c),

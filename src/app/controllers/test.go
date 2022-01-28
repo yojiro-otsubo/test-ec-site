@@ -10,7 +10,7 @@ import (
 func test(c *gin.Context) {
 
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	/*
 		out, err := os.Create("app/static/img/item/test.txt")
 		if err != nil {
@@ -24,7 +24,7 @@ func test(c *gin.Context) {
 			log.Println(err)
 		}
 	*/
-	if UserInfo.UserId == nil {
+	if UserInfo.UserName == nil {
 		c.HTML(200, "test", gin.H{
 			"title":     "test",
 			"login":     false,
@@ -34,7 +34,7 @@ func test(c *gin.Context) {
 		c.HTML(200, "test", gin.H{
 			"title":     "test",
 			"login":     true,
-			"username":  UserInfo.UserId,
+			"username":  UserInfo.UserName,
 			"csrfToken": csrf.GetToken(c),
 		})
 	}

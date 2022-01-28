@@ -15,8 +15,8 @@ func AddCart(c *gin.Context) {
 	productid := c.PostForm("cart")
 	log.Println("product = ", productid)
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	userid := models.GetUserID(UserInfo.UserId)
+	UserInfo.UserName = session.Get("UserName")
+	userid := models.GetUserID(UserInfo.UserName)
 	struserid := strconv.Itoa(userid)
 	product := models.GetProduct(productid)
 
@@ -24,8 +24,8 @@ func AddCart(c *gin.Context) {
 		c.Redirect(302, "/")
 	}
 
-	if UserInfo.UserId != nil && struserid != product[1] {
-		userid := models.GetUserID(UserInfo.UserId)
+	if UserInfo.UserName != nil && struserid != product[1] {
+		userid := models.GetUserID(UserInfo.UserName)
 		models.AddToCart(userid, productid)
 		redirecturl := "/product/" + productid
 		c.Redirect(302, redirecturl)
@@ -36,8 +36,8 @@ func AddCart(c *gin.Context) {
 
 func CartPage(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	userid := models.GetUserID(UserInfo.UserId)
+	UserInfo.UserName = session.Get("UserName")
+	userid := models.GetUserID(UserInfo.UserName)
 	products := models.GetProductFromCartDB(userid, 1.1)
 	log.Println(products)
 
@@ -50,12 +50,12 @@ func CartPage(c *gin.Context) {
 		totalAmount = totalAmount + i
 	}
 	log.Println(totalAmount)
-	if UserInfo.UserId != nil {
+	if UserInfo.UserName != nil {
 		c.HTML(200, "cart", gin.H{
 			"title":       "cart",
 			"login":       true,
 			"products":    products,
-			"username":    UserInfo.UserId,
+			"username":    UserInfo.UserName,
 			"csrfToken":   csrf.GetToken(c),
 			"totalAmount": totalAmount,
 		})
@@ -66,9 +66,9 @@ func CartPage(c *gin.Context) {
 
 func DeleteItemsInCart(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId != nil {
-		userid := models.GetUserID(UserInfo.UserId)
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName != nil {
+		userid := models.GetUserID(UserInfo.UserName)
 		productid := c.PostForm("delete_item")
 		models.DeleteCartItem(userid, productid)
 		c.Redirect(302, "/mycart")

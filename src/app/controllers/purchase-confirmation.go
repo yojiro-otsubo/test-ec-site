@@ -12,12 +12,12 @@ import (
 
 func PurchaseConfirmationCart(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
-	userid := models.GetUserID(UserInfo.UserId)
-	if UserInfo.UserId != nil && models.PersonalUserIdCheck(userid) == "あり" {
-		userid := models.GetUserID(UserInfo.UserId)
+	userid := models.GetUserID(UserInfo.UserName)
+	if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "あり" {
+		userid := models.GetUserID(UserInfo.UserName)
 		products := models.GetProductFromCartDB(userid, 1.1)
 		log.Println(products)
 
@@ -30,17 +30,17 @@ func PurchaseConfirmationCart(c *gin.Context) {
 			totalAmount = totalAmount + i
 		}
 		log.Println(totalAmount)
-		if UserInfo.UserId != nil {
+		if UserInfo.UserName != nil {
 			c.HTML(200, "PurchaseConfirmation", gin.H{
 				"title":       "PurchaseConfirmation",
 				"login":       true,
 				"products":    products,
-				"username":    UserInfo.UserId,
+				"username":    UserInfo.UserName,
 				"csrfToken":   csrf.GetToken(c),
 				"totalAmount": totalAmount,
 			})
 		}
-	} else if UserInfo.UserId != nil && models.PersonalUserIdCheck(userid) == "なし" {
+	} else if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "なし" {
 		c.Redirect(302, "/personal-information-input")
 	} else {
 		c.Redirect(302, "/loginform")

@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"main/app/models"
+	"main/app/others"
 	"os"
 	"strconv"
 	"strings"
@@ -17,39 +18,27 @@ import (
 func mypage(c *gin.Context) {
 	uname := c.Param("username")
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 
-	if UserInfo.UserId == uname {
-		userid := models.GetUserID(UserInfo.UserId)
+	if UserInfo.UserName == uname {
+		userid := models.GetUserID(UserInfo.UserName)
 		Self_Introduction := models.GetSelfIntroduction(userid)
 		email := models.GetUserEmail(userid)
 		struserid := strconv.Itoa(userid)
-		filepath := "app/static/img/icon/userid" + struserid + "/" + "icon.jpg"
-		if f, err := os.Stat(filepath); os.IsNotExist(err) || f.IsDir() {
-			log.Println("ファイルは存在しません！")
-			c.HTML(200, "mypage", gin.H{
-				"title":            "マイページ",
-				"login":            true,
-				"username":         UserInfo.UserId,
-				"userid":           userid,
-				"email":            email,
-				"csrfToken":        csrf.GetToken(c),
-				"SelfIntroduction": Self_Introduction,
-				"filepath":         false,
-			})
-		} else {
-			log.Println("存在するファイルです")
-			c.HTML(200, "mypage", gin.H{
-				"title":            "マイページ",
-				"login":            true,
-				"username":         UserInfo.UserId,
-				"userid":           userid,
-				"email":            email,
-				"csrfToken":        csrf.GetToken(c),
-				"SelfIntroduction": Self_Introduction,
-				"filepath":         true,
-			})
-		}
+
+		filepathbool := others.IconFilePathCheck(struserid)
+
+		c.HTML(200, "mypage", gin.H{
+			"title":            "マイページ",
+			"login":            true,
+			"username":         UserInfo.UserName,
+			"userid":           userid,
+			"email":            email,
+			"csrfToken":        csrf.GetToken(c),
+			"SelfIntroduction": Self_Introduction,
+			"filepath":         filepathbool,
+		})
+
 	} else {
 		c.Redirect(302, "/")
 	}
@@ -57,10 +46,10 @@ func mypage(c *gin.Context) {
 
 func mypageDetail(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 
-	if UserInfo.UserId != nil {
-		userid := models.GetUserID(UserInfo.UserId)
+	if UserInfo.UserName != nil {
+		userid := models.GetUserID(UserInfo.UserName)
 		self_introduction := c.PostForm("self-introduction")
 		models.SelfIntroductionRegistration(userid, self_introduction)
 		struserid := strconv.Itoa(userid)

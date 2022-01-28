@@ -27,7 +27,7 @@ type CheckoutData struct {
 
 func CheckOutHandler(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
 	productid := c.PostFormArray("item")
@@ -43,8 +43,8 @@ func CheckOutHandler(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	userid := models.GetUserID(UserInfo.UserId)
-	if UserInfo.UserId != nil && models.PersonalUserIdCheck(userid) == "あり" {
+	userid := models.GetUserID(UserInfo.UserName)
+	if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "あり" {
 
 		var transferGroup string
 
@@ -76,7 +76,7 @@ func CheckOutHandler(c *gin.Context) {
 			"pk":           config.Config.PK,
 		})
 
-	} else if UserInfo.UserId != nil && models.PersonalUserIdCheck(userid) == "なし" {
+	} else if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "なし" {
 		c.Redirect(302, "/personal-information-input")
 	} else {
 		c.Redirect(302, "/loginform")
@@ -86,12 +86,12 @@ func CheckOutHandler(c *gin.Context) {
 //-------------------------------------------------- Payment Completion --------------------------------------------------
 func PaymentCompletion(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId != nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName != nil {
 		c.HTML(200, "paymentCompletion", gin.H{
 			"title":     "paymentCompletion",
 			"login":     true,
-			"username":  UserInfo.UserId,
+			"username":  UserInfo.UserName,
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {

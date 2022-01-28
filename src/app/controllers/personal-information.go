@@ -13,10 +13,10 @@ import (
 func PersonalInformation(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 
-	if UserInfo.UserId != nil {
-		userid := models.GetUserID(UserInfo.UserId)
+	if UserInfo.UserName != nil {
+		userid := models.GetUserID(UserInfo.UserName)
 		personal := models.GetPersonal(userid)
 		r_personal := models.GetReturnPersonal(userid)
 
@@ -44,7 +44,7 @@ func PersonalInformation(c *gin.Context) {
 			"r_address_line1":  r_personal[10],
 			"r_address_line2":  r_personal[11],
 			"r_organization":   r_personal[12],
-			"username":         session.Get("UserId"),
+			"username":         session.Get("UserName"),
 			"csrfToken":        csrf.GetToken(c),
 		})
 	} else {
@@ -55,14 +55,14 @@ func PersonalInformation(c *gin.Context) {
 func PersonalInformationInput(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId != nil {
-		userid := models.GetUserID(UserInfo.UserId)
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName != nil {
+		userid := models.GetUserID(UserInfo.UserName)
 		personal := models.GetPersonal(userid)
 		c.HTML(200, "PersonalInformationInput", gin.H{
 			"title":          "お届け先入力",
 			"login":          true,
-			"username":       session.Get("UserId"),
+			"username":       session.Get("UserName"),
 			"kanji_f_name":   personal[2],
 			"kanji_l_name":   personal[3],
 			"kana_f_name":    personal[4],
@@ -83,8 +83,8 @@ func PersonalInformationInput(c *gin.Context) {
 func PersonalInformationInputPost(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId != nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName != nil {
 		kanji_f_name := c.PostForm("kanji-f-name")
 		kanji_l_name := c.PostForm("kanji-l-name")
 		kana_f_name := c.PostForm("kana-f-name")
@@ -96,7 +96,7 @@ func PersonalInformationInputPost(c *gin.Context) {
 		address_line2 := c.PostForm("address-line2")
 		organization := c.PostForm("organization")
 
-		userid := models.GetUserID(UserInfo.UserId)
+		userid := models.GetUserID(UserInfo.UserName)
 
 		if models.PersonalUserIdCheck(userid) == "なし" {
 			models.PersonalInsert(userid, kanji_f_name, kanji_l_name, kana_f_name, kana_l_name, postal_code, address_level1, address_level2, address_line1, address_line2, organization)
@@ -112,14 +112,14 @@ func PersonalInformationInputPost(c *gin.Context) {
 func ReturnPersonalInformationInput(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId != nil {
-		userid := models.GetUserID(UserInfo.UserId)
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName != nil {
+		userid := models.GetUserID(UserInfo.UserName)
 		personal := models.GetReturnPersonal(userid)
 		c.HTML(200, "ReturnPersonalInformationInput", gin.H{
 			"title":                 "返品先情報",
 			"login":                 true,
-			"username":              session.Get("UserId"),
+			"username":              session.Get("UserName"),
 			"return_kanji_f_name":   personal[2],
 			"return_kanji_l_name":   personal[3],
 			"return_kana_f_name":    personal[4],
@@ -141,8 +141,8 @@ func ReturnPersonalInformationInput(c *gin.Context) {
 func ReturnPersonalInformationInputPost(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
-	if UserInfo.UserId != nil {
+	UserInfo.UserName = session.Get("UserName")
+	if UserInfo.UserName != nil {
 		kanji_f_name := c.PostForm("kanji-f-name")
 		kanji_l_name := c.PostForm("kanji-l-name")
 		kana_f_name := c.PostForm("kana-f-name")
@@ -155,7 +155,7 @@ func ReturnPersonalInformationInputPost(c *gin.Context) {
 		address_line2 := c.PostForm("address-line2")
 		organization := c.PostForm("organization")
 
-		userid := models.GetUserID(UserInfo.UserId)
+		userid := models.GetUserID(UserInfo.UserName)
 
 		if models.ReturnPersonalUserIdCheck(userid) == "なし" {
 			models.ReturnPersonalInsert(userid, kanji_f_name, kanji_l_name, kana_f_name, kana_l_name, phone_number, postal_code, address_level1, address_level2, address_line1, address_line2, organization)
@@ -171,18 +171,18 @@ func ReturnPersonalInformationInputPost(c *gin.Context) {
 func ReturnPersonalInformation(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	productid := c.PostForm("productid")
 	product_userid := c.PostForm("product_userid")
 	product_userid_int, _ := strconv.Atoi(product_userid)
-	if UserInfo.UserId != nil && models.CheckArrives(productid) == "1" {
+	if UserInfo.UserName != nil && models.CheckArrives(productid) == "1" {
 		personal := models.GetReturnPersonal(product_userid_int)
 		product := models.GetProduct(productid)
 		uname := models.GetUserName(product_userid)
 		c.HTML(200, "ReturnPersonalInformation", gin.H{
 			"title":                 "返品先情報",
 			"login":                 true,
-			"username":              session.Get("UserId"),
+			"username":              session.Get("UserName"),
 			"uname":                 uname,
 			"ItemName":              product[4],
 			"return_kanji_f_name":   personal[2],

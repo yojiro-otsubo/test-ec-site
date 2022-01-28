@@ -9,6 +9,9 @@
     height: 80px;
     border: 1px solid gray;
     border-radius: 50%;
+    text-align:center;
+    position: relative;
+    z-index: 300;
 }
 .seller-username{
     font-size: 22px;
@@ -37,6 +40,7 @@
 .user-self-introductio p{
     margin: 10px;
     overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
 .seller-info-flex-box {
     display: flex;

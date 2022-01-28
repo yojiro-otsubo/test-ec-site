@@ -5,7 +5,12 @@
   <div class="top-content-title"><p>出品者情報</p></div>
   <div class="seller-info-flex-box">
     <div class="seller-info-flex">
-      <div class="seller-icon"></div>
+      <div class="seller-icon">
+        <div class="icon-initial"><img src="../static/img/kkrn_icon_user_14.svg" alt=""></div>
+          {{if .filepath}}
+            <div class="icon-setting"><img src="../static/img/icon/userid{{.productUserId}}/icon.jpg" alt=""></div>
+          {{end}}
+      </div>
       <div class="seller-info-d-flex">
         <div class="seller-username"><p>{{.productUsername}} さん</p></div>
         <div class="seller-follow-info-flex">
@@ -30,7 +35,7 @@
       {{end}}
     </div>
   </div>
-  <div class="user-self-introductio"><p>testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest</p></div>
+  <div class="user-self-introductio"><p>{{.SelfIntroduction}}</p></div>
 
   <div class="top-content-title"><p>出品した商品</p></div>
   <div class="product-flex-box">

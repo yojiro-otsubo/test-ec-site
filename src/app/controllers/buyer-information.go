@@ -13,11 +13,11 @@ import (
 
 func BuyerInformation(c *gin.Context) {
 	session := sessions.Default(c)
-	UserInfo.UserId = session.Get("UserId")
+	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 
 	//userid := models.GetUserID(UserInfo.UserId)
-	if UserInfo.UserId != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
+	if UserInfo.UserName != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
 		stripe.Key = config.Config.StripeKey
 		productid := c.PostForm("productid")
 		product_userid := models.GetProduct(productid)
@@ -38,7 +38,7 @@ func BuyerInformation(c *gin.Context) {
 			"address_line1":  personal[9],
 			"address_line2":  personal[10],
 			"organization":   personal[11],
-			"username":       UserInfo.UserId,
+			"username":       UserInfo.UserName,
 			"productid":      productid,
 		})
 	} else {

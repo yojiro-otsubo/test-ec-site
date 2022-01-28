@@ -25,7 +25,7 @@ func ConnectionDB() {
 	}
 
 	//usersテーブル作成
-	cmd := "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255), self_introduction VARCHAR(1000));"
+	cmd := "CREATE TABLE IF NOT EXISTS users (id serial PRIMARY KEY, username VARCHAR(50), password VARCHAR(255), email VARCHAR(255), self_introduction VARCHAR(1000), token VARCHAR(50));"
 	_, err = DbConnection.Exec(cmd)
 	if err != nil {
 		log.Fatalln(err)
@@ -135,6 +135,12 @@ func ConnectionDB() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	/*
+		addcolumn := "ALTER TABLE users ADD COLUMN token VARCHAR(50);"
+		_, err = DbConnection.Exec(addcolumn)
+		if err != nil {
+			log.Fatalln(err)
+		}*/
 
 	defer DbConnection.Close()
 }
