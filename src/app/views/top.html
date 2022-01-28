@@ -4,11 +4,11 @@
 <div class="top-content">
   <div class="top-content-title"><p>新着アイテム</p></div>
   <div class="product-flex-box">
-    {{ $soldout := "1" }}
     {{range .products}}
     <a href="/product/{{.Id}}">
       <div class="product-box">
-        {{if eq .SoldOut $soldout}}
+        <div class="product-hover"></div>
+        {{if eq .SoldOut "1"}}
           <div class="product-img-box-top">
             <img src="../static/img/SOLD OUTのラベルアイコン素材 2.svg" alt="" class="soldout-img">
             <img src="../static/img/item/productid{{.Id}}/1.jpg" alt="" class="product-img">

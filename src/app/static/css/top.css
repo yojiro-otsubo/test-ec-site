@@ -18,6 +18,7 @@
     box-shadow: 0 0 6px rgb(100, 100, 100);
 
 }
+
 .top-content-title{
     border-bottom: 1px solid gray;
     margin: 10px 5px 10px 5px;
@@ -38,7 +39,7 @@
     img.product-img {
         width: 150px;
         height: 100px;
-        
+        object-fit: cover;
     }
 
     img.soldout-img{
@@ -61,7 +62,7 @@
 .product-img {
     width: 300px;
     height: 200px;
-    
+    object-fit: cover;
     
 }
 .soldout-img{

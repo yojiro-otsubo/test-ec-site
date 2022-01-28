@@ -22,9 +22,6 @@ func ProductPage(c *gin.Context) {
 	product := models.GetProduct(productNumber)
 	log.Println(product)
 	username := models.GetUserName(product[1])
-	if product[7] == "1" {
-		c.Redirect(302, "/")
-	}
 	f, err := strconv.ParseFloat(product[6], 64)
 	if err != nil {
 		log.Println(err)
@@ -46,6 +43,7 @@ func ProductPage(c *gin.Context) {
 			"Description":     product[5],
 			"username":        UserInfo.UserName,
 			"Amount":          taxamount,
+			"SoldOut":         product[7],
 		})
 	} else {
 		userid := models.GetUserID(UserInfo.UserName)
@@ -64,6 +62,7 @@ func ProductPage(c *gin.Context) {
 				"Description":     product[5],
 				"Amount":          taxamount,
 				"cart":            true,
+				"SoldOut":         product[7],
 			})
 		} else {
 			c.HTML(200, "product", gin.H{
@@ -80,6 +79,7 @@ func ProductPage(c *gin.Context) {
 				"Description":     product[5],
 				"Amount":          taxamount,
 				"cart":            false,
+				"SoldOut":         product[7],
 			})
 		}
 
