@@ -47,6 +47,61 @@ func EmailCheck(email string) bool {
 
 }
 
+func SelfIntroductionCheck(user_id int) bool {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var self_introduction string
+	err = DbConnection.QueryRow("SELECT self_introduction FROM users WHERE id = $1", user_id).Scan(&self_introduction)
+	if err != nil {
+		return false
+	} else {
+		return true
+	}
+
+}
+
+func GetSelfIntroduction(user_id int) string {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var self_introduction string
+	err = DbConnection.QueryRow("SELECT self_introduction FROM users WHERE id = $1", user_id).Scan(&self_introduction)
+	if err != nil {
+		return ""
+	} else {
+		return self_introduction
+	}
+
+}
+
+func SelfIntroductionRegistration(user_id int, self_introduction string) {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var selfintroduction string
+
+	err = DbConnection.QueryRow("UPDATE users SET self_introduction = $2 WHERE id = $1", user_id, self_introduction).Scan(&selfintroduction)
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
 //ログインチェック
 func LoginCheck(username, password string) bool {
 	var err error

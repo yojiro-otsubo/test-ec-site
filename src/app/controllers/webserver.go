@@ -98,6 +98,7 @@ func StartWebServer() {
 	//--------------------mypage.go--------------------
 	//マイページ
 	CSRFGroup.GET("/mypage/:username", mypage)
+	CSRFGroup.POST("/mypage-detail", mypageDetail)
 
 	//----------purchase-history.go----------
 	//購入履歴一覧

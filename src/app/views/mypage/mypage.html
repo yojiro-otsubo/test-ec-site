@@ -10,11 +10,40 @@
       <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>出品登録フォーム</p></div></a>
     </div>
     <div class="mypage-box mypage-content">
+      
       <div class="mypage-title"><p>ユーザー情報</p></div>
-      <div class="user-info-mypage">
-        <div class="my-username my-user-info"><p>ユーザー名：{{.username}}</p></div>
-        <div class="my-email my-user-info"><p>Eメール：{{.email}}</p></div>
-      </div>
+      <form action="/mypage-detail" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" value="{{.csrfToken}}">
+        <div class="mypage-user-info-flex">
+          <div class="mypage-user-icon">
+            
+            <div class="my-icon">
+              <div class="change-icon"><img src="../../static/img/カメラアイコン8.svg" alt="" width="50px" height="50px" style="margin-top: 73px;"></div>
+              <div class="icon-initial"><img src="../../static/img/kkrn_icon_user_14.svg" alt=""></div>
+              {{if .filepath}}
+                <div class="icon-setting"><img src="../../static/img/icon/userid{{.userid}}/icon.jpg" alt=""></div>
+              {{end}}
+              <img src="" alt="" id="icon-preview">
+            </div>
+            <div class="ragist-form-icon-image" style="margin: 5px;">
+              <input type="file" name="image" accept=".png, .jpg" id="icon-img-input">
+            </div>
+          </div>
+          <div class="user-info-mypage">   
+            <div class="my-username my-user-info"><p>ユーザー名：{{.username}}</p></div>
+            <div class="my-email my-user-info"><p>Eメール名：{{.email}}</p></div>
+          </div>
+        </div>
+        
+        <div class="my-self-introductio">
+          <p>自己紹介</p>
+          <textarea name="self-introduction" rows="10" maxlength="300" style="width: 100%; border: 0.5px solid orange;">{{.SelfIntroduction}}</textarea>
+        </div>
+        <div class="mypage-info-submit-box" style="text-align: right;">
+          <input type="submit" value="変更を保存" class="all-input">
+        </div>
+      </form>
+      
     </div>
   </div>
   
