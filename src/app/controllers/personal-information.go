@@ -14,8 +14,10 @@ func PersonalInformation(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
-	if UserInfo.UserName != nil {
+	if loginbool == true {
 		userid := models.GetUserID(UserInfo.UserName)
 		personal := models.GetPersonal(userid)
 		r_personal := models.GetReturnPersonal(userid)
@@ -56,7 +58,9 @@ func PersonalInformationInput(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true {
 		userid := models.GetUserID(UserInfo.UserName)
 		personal := models.GetPersonal(userid)
 		c.HTML(200, "PersonalInformationInput", gin.H{
@@ -84,7 +88,9 @@ func PersonalInformationInputPost(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true {
 		kanji_f_name := c.PostForm("kanji-f-name")
 		kanji_l_name := c.PostForm("kanji-l-name")
 		kana_f_name := c.PostForm("kana-f-name")
@@ -113,7 +119,9 @@ func ReturnPersonalInformationInput(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true {
 		userid := models.GetUserID(UserInfo.UserName)
 		personal := models.GetReturnPersonal(userid)
 		c.HTML(200, "ReturnPersonalInformationInput", gin.H{
@@ -142,7 +150,9 @@ func ReturnPersonalInformationInputPost(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true {
 		kanji_f_name := c.PostForm("kanji-f-name")
 		kanji_l_name := c.PostForm("kanji-l-name")
 		kana_f_name := c.PostForm("kana-f-name")
@@ -172,10 +182,12 @@ func ReturnPersonalInformation(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	productid := c.PostForm("productid")
 	product_userid := c.PostForm("product_userid")
 	product_userid_int, _ := strconv.Atoi(product_userid)
-	if UserInfo.UserName != nil && models.CheckArrives(productid) == "1" {
+	if loginbool == true && models.CheckArrives(productid) == "1" {
 		personal := models.GetReturnPersonal(product_userid_int)
 		product := models.GetProduct(productid)
 		uname := models.GetUserName(product_userid)

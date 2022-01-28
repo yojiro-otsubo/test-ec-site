@@ -29,6 +29,8 @@ func CheckOutHandler(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
 	productid := c.PostFormArray("item")
 	for i := 0; i < len(productid); i++ {
@@ -44,7 +46,7 @@ func CheckOutHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	userid := models.GetUserID(UserInfo.UserName)
-	if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "あり" {
+	if loginbool == true && models.PersonalUserIdCheck(userid) == "あり" {
 
 		var transferGroup string
 
@@ -76,7 +78,7 @@ func CheckOutHandler(c *gin.Context) {
 			"pk":           config.Config.PK,
 		})
 
-	} else if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "なし" {
+	} else if loginbool == true && models.PersonalUserIdCheck(userid) == "なし" {
 		c.Redirect(302, "/personal-information-input")
 	} else {
 		c.Redirect(302, "/loginform")
@@ -87,7 +89,9 @@ func CheckOutHandler(c *gin.Context) {
 func PaymentCompletion(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true {
 		c.HTML(200, "paymentCompletion", gin.H{
 			"title":     "paymentCompletion",
 			"login":     true,

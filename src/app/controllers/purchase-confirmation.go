@@ -14,9 +14,11 @@ func PurchaseConfirmationCart(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
 	userid := models.GetUserID(UserInfo.UserName)
-	if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "あり" {
+	if loginbool == true && models.PersonalUserIdCheck(userid) == "あり" {
 		userid := models.GetUserID(UserInfo.UserName)
 		products := models.GetProductFromCartDB(userid, 1.1)
 		log.Println(products)
@@ -30,7 +32,7 @@ func PurchaseConfirmationCart(c *gin.Context) {
 			totalAmount = totalAmount + i
 		}
 		log.Println(totalAmount)
-		if UserInfo.UserName != nil {
+		if loginbool == true {
 			c.HTML(200, "PurchaseConfirmation", gin.H{
 				"title":       "PurchaseConfirmation",
 				"login":       true,
@@ -40,7 +42,7 @@ func PurchaseConfirmationCart(c *gin.Context) {
 				"totalAmount": totalAmount,
 			})
 		}
-	} else if UserInfo.UserName != nil && models.PersonalUserIdCheck(userid) == "なし" {
+	} else if loginbool == true && models.PersonalUserIdCheck(userid) == "なし" {
 		c.Redirect(302, "/personal-information-input")
 	} else {
 		c.Redirect(302, "/loginform")

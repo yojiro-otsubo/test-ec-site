@@ -12,8 +12,9 @@ import (
 func purchaseHistory(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
-
-	if UserInfo.UserName == nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == false {
 		c.Redirect(302, "/loginform")
 	} else {
 		userid := models.GetUserID(UserInfo.UserName)

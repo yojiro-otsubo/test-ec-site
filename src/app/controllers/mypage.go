@@ -19,8 +19,10 @@ func mypage(c *gin.Context) {
 	uname := c.Param("username")
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
-	if UserInfo.UserName == uname {
+	if UserInfo.UserName == uname && loginbool == true {
 		userid := models.GetUserID(UserInfo.UserName)
 		Self_Introduction := models.GetSelfIntroduction(userid)
 		email := models.GetUserEmail(userid)
@@ -47,8 +49,10 @@ func mypage(c *gin.Context) {
 func mypageDetail(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
-	if UserInfo.UserName != nil {
+	if loginbool == true {
 		userid := models.GetUserID(UserInfo.UserName)
 		self_introduction := c.PostForm("self-introduction")
 		models.SelfIntroductionRegistration(userid, self_introduction)

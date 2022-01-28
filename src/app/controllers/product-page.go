@@ -17,6 +17,8 @@ func ProductPage(c *gin.Context) {
 	productNumber := c.Param("number")
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	product := models.GetProduct(productNumber)
 	log.Println(product)
 	username := models.GetUserName(product[1])
@@ -31,7 +33,7 @@ func ProductPage(c *gin.Context) {
 	taxamount := int(math.Round(f))
 	log.Println(taxamount)
 
-	if UserInfo.UserName == nil {
+	if loginbool == false {
 		c.HTML(200, "product", gin.H{
 			"title":           "product",
 			"login":           false,
@@ -99,6 +101,8 @@ func UserProductPage(c *gin.Context) {
 	int_user_id, _ := strconv.Atoi(user_id)
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	products := models.GetAllProductOfUserId(user_id)
 	product_username := models.GetUserName(user_id)
 	title := product_username + "さんのアイテム"
@@ -108,7 +112,7 @@ func UserProductPage(c *gin.Context) {
 	filepathbool := others.IconFilePathCheck(user_id)
 	self_introduction := models.GetSelfIntroduction(int_user_id)
 	log.Println(filepathbool)
-	if UserInfo.UserName == nil {
+	if loginbool == false {
 		c.HTML(200, "UserProductPage", gin.H{
 			"title":            title,
 			"login":            false,

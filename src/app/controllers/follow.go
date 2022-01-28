@@ -12,8 +12,10 @@ import (
 func Follow(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
-	if UserInfo.UserName != nil {
+	if loginbool == true {
 		follow_user_id := c.PostForm("user_id")
 		int_follow_user_id, _ := strconv.Atoi(follow_user_id)
 		log.Println("follow_user_id = ", follow_user_id)
@@ -30,8 +32,10 @@ func Follow(c *gin.Context) {
 func DeleteFollow(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
-	if UserInfo.UserName != nil {
+	if loginbool == true {
 		follow_user_id := c.PostForm("user_id")
 		int_follow_user_id, _ := strconv.Atoi(follow_user_id)
 		log.Println("follow_user_id = ", follow_user_id)

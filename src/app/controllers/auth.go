@@ -160,44 +160,52 @@ func kari_registration(c *gin.Context) {
 func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-	if models.LoginCheck(username, password) == true {
-		var check bool
-		userid := models.GetUserID(username)
-		stripeid, check := models.GetStripeAccountId(userid)
-		var login_token string
-		for {
-			login_token = ""
-			login_token = others.RandString(30)
-			bool_token := models.TokenCheck(login_token)
-			if bool_token == true {
-				break
+	session := sessions.Default(c)
+	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == false {
+		if models.LoginCheck(username, password) == true {
+			var check bool
+			userid := models.GetUserID(username)
+			stripeid, check := models.GetStripeAccountId(userid)
+			var login_token string
+			for {
+				login_token = ""
+				login_token = others.RandString(30)
+				bool_token := models.TokenCheck(login_token)
+				if bool_token == true {
+					break
+				}
 			}
-		}
+			models.UpdateToken(userid, login_token)
+			if check == true {
+				session := sessions.Default(c)
+				session.Set("UserName", username)
+				session.Set("StripeAccount", stripeid)
+				session.Set("logintoken", login_token)
+				session.Save()
+				log.Println("username = ", session.Get("UserName"), "///stripeid = ", session.Get("StripeAccount"))
+				c.Redirect(302, "/")
+			} else {
+				session := sessions.Default(c)
+				session.Set("UserName", username)
+				session.Set("logintoken", login_token)
+				session.Save()
+				log.Println("username = ", session.Get("UserId"), "///stripeid = 未登録")
 
-		if check == true {
-			session := sessions.Default(c)
-			session.Set("UserName", username)
-			session.Set("StripeAccount", stripeid)
-			session.Set("logintoken", login_token)
-			session.Save()
-			log.Println("username = ", session.Get("UserName"), "///stripeid = ", session.Get("StripeAccount"))
-			c.Redirect(302, "/")
+				c.Redirect(302, "/")
+			}
+
 		} else {
-			session := sessions.Default(c)
-			session.Set("UserName", username)
-			session.Set("logintoken", login_token)
-			session.Save()
-			log.Println("username = ", session.Get("UserId"), "///stripeid = 未登録")
-
-			c.Redirect(302, "/")
+			c.HTML(http.StatusBadRequest, "loginform", gin.H{
+				"login_status": "ユーザーネームまたはパスワードが違います",
+				"login":        false,
+				"csrfToken":    csrf.GetToken(c),
+			})
 		}
-
 	} else {
-		c.HTML(http.StatusBadRequest, "loginform", gin.H{
-			"login_status": "ユーザーネームまたはパスワードが違います",
-			"login":        false,
-			"csrfToken":    csrf.GetToken(c),
-		})
+		c.Redirect(302, "/")
 	}
 
 }
@@ -206,8 +214,11 @@ func Login(c *gin.Context) {
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
-
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	userid := models.GetUserID(UserInfo.UserName)
+	if loginbool == true {
+		models.UpdateToken(userid, "")
 		session.Clear()
 		session.Save()
 		c.Redirect(302, "/")
@@ -221,9 +232,11 @@ func Logout(c *gin.Context) {
 func LoginForm(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName == nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == false {
 		c.HTML(200, "loginform", gin.H{
-			"login":     false,
+			"login":     loginbool,
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {
@@ -235,9 +248,11 @@ func LoginForm(c *gin.Context) {
 func SignupForm(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName == nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == false {
 		c.HTML(200, "signupform", gin.H{
-			"login":     false,
+			"login":     loginbool,
 			"csrfToken": csrf.GetToken(c),
 		})
 	} else {

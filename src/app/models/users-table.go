@@ -210,7 +210,7 @@ func GetUserEmail(user_id int) string {
 	return email
 }
 
-func UpdateToken(user_id int, token string) string {
+func UpdateToken(user_id int, token string) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	defer DbConnection.Close()
@@ -224,7 +224,6 @@ func UpdateToken(user_id int, token string) string {
 	if err != nil {
 		log.Println(err)
 	}
-	return returntoken
 }
 
 func TokenCheck(token string) bool {
@@ -257,8 +256,11 @@ func LoginTokenCheck(username, token interface{}) bool {
 	var id string
 	err = DbConnection.QueryRow("SELECT id FROM users WHERE username = $1 AND token = $2", username, token).Scan(&id)
 	if err != nil {
+		log.Println("login token check false")
+		log.Println(err)
 		return false
 	} else {
+		log.Println("login token check true")
 		return true
 	}
 

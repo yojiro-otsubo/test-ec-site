@@ -24,11 +24,12 @@ func SellItemsForm(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	userid := models.GetUserID(UserInfo.UserName)
 	stripeid, _ := models.GetStripeAccountId(userid)
 
-	if UserInfo.UserName != nil && UserInfo.StripeAccount == stripeid && models.ReturnPersonalUserIdCheck(userid) == "あり" {
+	if loginbool == true && UserInfo.StripeAccount == stripeid && models.ReturnPersonalUserIdCheck(userid) == "あり" {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     true,
@@ -37,7 +38,7 @@ func SellItemsForm(c *gin.Context) {
 			"stripeid":  true,
 			"personal":  true,
 		})
-	} else if UserInfo.UserName != nil && UserInfo.StripeAccount != stripeid && models.ReturnPersonalUserIdCheck(userid) == "あり" {
+	} else if loginbool == true && UserInfo.StripeAccount != stripeid && models.ReturnPersonalUserIdCheck(userid) == "あり" {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     true,
@@ -46,7 +47,7 @@ func SellItemsForm(c *gin.Context) {
 			"stripeid":  false,
 			"personal":  true,
 		})
-	} else if UserInfo.UserName != nil && UserInfo.StripeAccount == stripeid && models.ReturnPersonalUserIdCheck(userid) == "なし" {
+	} else if loginbool == true && UserInfo.StripeAccount == stripeid && models.ReturnPersonalUserIdCheck(userid) == "なし" {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     true,
@@ -55,7 +56,7 @@ func SellItemsForm(c *gin.Context) {
 			"stripeid":  true,
 			"personal":  false,
 		})
-	} else if UserInfo.UserName != nil && UserInfo.StripeAccount != stripeid && models.ReturnPersonalUserIdCheck(userid) == "なし" {
+	} else if loginbool == true && UserInfo.StripeAccount != stripeid && models.ReturnPersonalUserIdCheck(userid) == "なし" {
 		c.HTML(200, "SellItems", gin.H{
 			"title":     "SellItems",
 			"login":     true,
@@ -73,8 +74,9 @@ func ItemRegist(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
-
-	if UserInfo.UserName != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
 		var err error
 		//post data
 		item := c.PostForm("itemname")
@@ -162,7 +164,7 @@ func ItemRegist(c *gin.Context) {
 
 		c.Redirect(302, "/")
 
-	} else if UserInfo.UserName != nil && UserInfo.StripeAccount == nil {
+	} else if loginbool == true && UserInfo.StripeAccount == nil {
 		c.Redirect(302, "/")
 	} else {
 		c.Redirect(302, "/loginform")
@@ -174,8 +176,10 @@ func ItemRegist(c *gin.Context) {
 func registeredItems(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
-	if UserInfo.UserName == nil {
+	if loginbool == false {
 		c.Redirect(302, "/")
 	} else {
 		userid := models.GetUserID(UserInfo.UserName)
@@ -197,9 +201,11 @@ func ItemDelete(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	productid := c.PostForm("productid")
 	userid := models.GetUserID(UserInfo.UserName)
-	if UserInfo.UserName != nil && models.CheckDeliveryStatusProductId(productid) == "なし" {
+	if loginbool == true && models.CheckDeliveryStatusProductId(productid) == "なし" {
 		models.DeleteProduct(userid, productid)
 		c.Redirect(302, "/registered-items")
 	}

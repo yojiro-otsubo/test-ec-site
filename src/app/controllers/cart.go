@@ -16,6 +16,8 @@ func AddCart(c *gin.Context) {
 	log.Println("product = ", productid)
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	userid := models.GetUserID(UserInfo.UserName)
 	struserid := strconv.Itoa(userid)
 	product := models.GetProduct(productid)
@@ -24,7 +26,7 @@ func AddCart(c *gin.Context) {
 		c.Redirect(302, "/")
 	}
 
-	if UserInfo.UserName != nil && struserid != product[1] {
+	if loginbool == true && struserid != product[1] {
 		userid := models.GetUserID(UserInfo.UserName)
 		models.AddToCart(userid, productid)
 		redirecturl := "/product/" + productid
@@ -37,6 +39,8 @@ func AddCart(c *gin.Context) {
 func CartPage(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	userid := models.GetUserID(UserInfo.UserName)
 	products := models.GetProductFromCartDB(userid, 1.1)
 	log.Println(products)
@@ -50,7 +54,7 @@ func CartPage(c *gin.Context) {
 		totalAmount = totalAmount + i
 	}
 	log.Println(totalAmount)
-	if UserInfo.UserName != nil {
+	if loginbool == true {
 		c.HTML(200, "cart", gin.H{
 			"title":       "cart",
 			"login":       true,
@@ -67,7 +71,9 @@ func CartPage(c *gin.Context) {
 func DeleteItemsInCart(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if loginbool == true {
 		userid := models.GetUserID(UserInfo.UserName)
 		productid := c.PostForm("delete_item")
 		models.DeleteCartItem(userid, productid)

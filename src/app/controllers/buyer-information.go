@@ -15,9 +15,11 @@ func BuyerInformation(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.StripeAccount = session.Get("StripeAccount")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 
 	//userid := models.GetUserID(UserInfo.UserId)
-	if UserInfo.UserName != nil && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
+	if loginbool == true && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
 		stripe.Key = config.Config.StripeKey
 		productid := c.PostForm("productid")
 		product_userid := models.GetProduct(productid)

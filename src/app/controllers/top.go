@@ -13,22 +13,18 @@ import (
 func top(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
 	products := models.GetProductTop()
-	log.Println(products)
-	if UserInfo.UserName == nil {
-		c.HTML(200, "top", gin.H{
-			"title":     "top",
-			"login":     false,
-			"csrfToken": csrf.GetToken(c),
-			"products":  products,
-		})
-	} else {
-		c.HTML(200, "top", gin.H{
-			"title":     "top",
-			"login":     true,
-			"username":  UserInfo.UserName,
-			"csrfToken": csrf.GetToken(c),
-			"products":  products,
-		})
-	}
+	log.Println(UserInfo.UserName)
+	log.Println(loginbool)
+	log.Println(UserInfo.logintoken)
+	c.HTML(200, "top", gin.H{
+		"title":     "top",
+		"login":     loginbool,
+		"csrfToken": csrf.GetToken(c),
+		"products":  products,
+		"username":  UserInfo.UserName,
+	})
+
 }

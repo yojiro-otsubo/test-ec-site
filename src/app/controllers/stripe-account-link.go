@@ -19,8 +19,12 @@ func CreateAnExpressAccount(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.StripeAccount = session.Get("StripeAccount")
 	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+
 	log.Println("Username = ", UserInfo.UserName)
-	if UserInfo.UserName != nil && UserInfo.StripeAccount == nil {
+
+	if loginbool == true && UserInfo.StripeAccount == nil {
 		//stripe連結アカウント作成
 		stripe.Key = config.Config.StripeKey
 		params1 := &stripe.AccountParams{
@@ -48,7 +52,7 @@ func CreateAnExpressAccount(c *gin.Context) {
 
 		c.Redirect(307, result2.URL)
 
-	} else if UserInfo.UserName == nil {
+	} else if loginbool == false {
 		c.Redirect(302, "/loginform")
 	} else {
 		c.Redirect(302, "/")
@@ -60,7 +64,9 @@ func OkCreateAnExpressAccount(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.provisional = session.Get("provisional")
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.provisional != nil && UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if UserInfo.provisional != nil && loginbool == true {
 		//user_id取得
 		userid := models.GetUserID(UserInfo.UserName)
 		if models.UserIdCheck(userid) == true {
@@ -92,7 +98,9 @@ func RefreshCreateAnExpressAccount(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.provisional = session.Get("provisional")
 	UserInfo.UserName = session.Get("UserName")
-	if UserInfo.provisional != nil && UserInfo.UserName != nil {
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	if UserInfo.provisional != nil && loginbool == true {
 		session.Delete("provisional")
 		session.Save()
 		c.Redirect(302, "/")
