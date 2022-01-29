@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	csrf "github.com/utrack/gin-csrf"
 )
 
 func Follow(c *gin.Context) {
@@ -45,6 +46,31 @@ func DeleteFollow(c *gin.Context) {
 		log.Println(redirect_url)
 		c.Redirect(302, redirect_url)
 
+	} else {
+		c.Redirect(302, "loginform")
+	}
+}
+
+func MyFollow(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+
+	if loginbool == true {
+		userid := models.GetUserID(UserInfo.UserName)
+		follow_user := models.GetFollow(userid)
+		follower_user := models.GetFollower(userid)
+		log.Println(follow_user)
+		log.Println(follower_user)
+		c.HTML(200, "MyFollow", gin.H{
+			"title":     "フォロー/フォロワー",
+			"login":     true,
+			"username":  UserInfo.UserName,
+			"follow":    follow_user,
+			"follower":  follower_user,
+			"csrfToken": csrf.GetToken(c),
+		})
 	} else {
 		c.Redirect(302, "loginform")
 	}

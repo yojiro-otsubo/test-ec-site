@@ -3,7 +3,9 @@ package models
 import (
 	"database/sql"
 	"log"
+	"main/app/others"
 	"main/config"
+	"strconv"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -263,5 +265,70 @@ func LoginTokenCheck(username, token interface{}) bool {
 		log.Println("login token check true")
 		return true
 	}
+
+}
+
+type User struct {
+	Id, Username, Countproduct string
+	Filepath                   bool
+}
+
+func GetFollow(user_id int) []User {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT id, username FROM users WHERE id IN(SELECT follow_user_id FROM follow WHERE user_id = $1)", user_id)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var userResult []User
+	for rows.Next() {
+		var u User
+		err := rows.Scan(&u.Id, &u.Username)
+		if err != nil {
+			log.Println(err)
+		}
+		u.Filepath = others.IconFilePathCheck(u.Id)
+		idint, _ := strconv.Atoi(u.Id)
+		u.Countproduct = CountProduct(idint)
+		userResult = append(userResult, u)
+	}
+	return userResult
+}
+
+func GetFollower(user_id int) []User {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT id, username FROM users WHERE id IN(SELECT user_id FROM follow WHERE follow_user_id = $1)", user_id)
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var userResult []User
+	for rows.Next() {
+		var u User
+		err := rows.Scan(&u.Id, &u.Username)
+		if err != nil {
+			log.Println(err)
+		}
+		u.Filepath = others.IconFilePathCheck(u.Id)
+		userResult = append(userResult, u)
+
+	}
+	return userResult
 
 }

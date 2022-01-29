@@ -1,0 +1,63 @@
+{{define "title"}}{{.title}}{{end}}
+
+{{define "content"}}
+  <div class="mypage-box-flex">
+    <div class="mypage-box mypage-flex-select">
+        <a href="/personal-information"><div class="mypage-select select-personal-information"><p>個人情報</p></div></a>
+        <a href="/mycart"><div class="mypage-select select-mycart"><p>カート</p></div></a>
+        <a href="/purchase-history"><div class="mypage-select select-purchase-history"><p>購入履歴</p></div></a>
+        <a href="/registered-items"><div class="mypage-select select-registered-items"><p>登録した商品</p></div></a>
+        <a href="/sell-items-form"><div class="mypage-select select-sell-items-form"><p>出品登録フォーム</p></div></a>
+        <a href="/myfollow"><div class="mypage-select select-mycart" style="background-color: rgb(255, 231, 185);"><p>フォロー/フォロワー</p></div></a>
+      </div>
+    <div class="mypage-box mypage-content">
+      
+        <div class="mypage-title"><p>フォロー</p></div>
+        <div class="follow-box">
+            <div class="follow-flex">
+                {{range .follow}}
+                    <a href="/userproduct/{{.Id}}">
+                        <div class="users-name-box">
+                            <div class="user-icons-box">
+                                {{if .Filepath}}
+                                    <img src="../../static/img/icon/userid{{.Id}}/icon.jpg" alt="" class="user-icons">
+                                {{else}}
+                                    <img src="../../static/img/kkrn_icon_user_14.svg" alt="" class="user-icons-none">
+                                {{end}}
+                            </div>
+                            <div class="myfollow-detail">
+                                <div class="myfollow-name"><p>{{.Username}}</p></div>
+                                <div class="myfollow-count-product"><p>出品数：{{.Countproduct}}</p></div>
+                            </div>
+                        </div>
+                    </a>
+                {{end}}
+            </div>
+        </div>
+        <div class="mypage-title"><p>フォロワー</p></div>
+        <div class="follow-box">
+            <div class="follow-flex">
+                {{range .follower}}
+                    <a href="/userproduct/{{.Id}}">
+                        <div class="users-name-box">
+                            <div class="user-icons-box">
+                                {{if .Filepath}}
+                                    <img src="../../static/img/icon/userid{{.Id}}/icon.jpg" alt="" class="user-icons">
+                                {{else}}
+                                    <img src="../../static/img/kkrn_icon_user_14.svg" alt="" class="user-icons-none">
+                                {{end}}
+                            </div>
+                            <div class="myfollow-detail">
+                                <div class="myfollow-name"><p>{{.Username}}</p></div>
+                                <div class="myfollow-count-product"><p>出品数：{{.Countproduct}}</p></div>
+                            </div>
+                        </div>
+                    </a>
+                {{end}}
+            </div>
+        </div>
+    </div>
+  </div>
+  
+  
+{{end}}

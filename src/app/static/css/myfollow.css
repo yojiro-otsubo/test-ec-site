@@ -1,0 +1,64 @@
+.follow-box {
+    margin: 10px;
+}
+
+.follow-flex{
+    height: 700px;
+    overflow-y: scroll;
+    border: 0.5px solid gainsboro;
+    margin-bottom: 20px;
+}
+.users-name-box{
+    display: flex;
+    justify-content: left;
+    margin: 2px;
+}
+.users-name-box:hover{
+    background-color: rgb(240, 240, 240);
+}
+.user-icons-box{
+    width: 50px;
+    height: 50px;
+    border: 1px solid gray;
+    border-radius: 50%;
+    position: relative;
+    z-index: 200;
+}
+
+.user-icons {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: absolute;
+    object-fit: cover;
+    z-index: 99;
+}
+
+.myfollow-detail{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.myfollow-name {
+    margin-top: 3px;
+    margin-left: 10px;
+    font-size: 22px;
+}
+.myfollow-name p{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.myfollow-count-product {
+    margin-bottom: 5px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+.myfollow-count-product p{
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
