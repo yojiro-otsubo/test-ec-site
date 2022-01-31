@@ -4,16 +4,13 @@ import (
 	"io"
 	"log"
 	"main/app/models"
-	"main/config"
+	"mime/multipart"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/price"
-	"github.com/stripe/stripe-go/v72/product"
 	csrf "github.com/utrack/gin-csrf"
 )
 
@@ -70,6 +67,53 @@ func SellItemsForm(c *gin.Context) {
 	}
 }
 
+func CreateImage(file multipart.File, header *multipart.FileHeader, image_number, strproductid string) {
+	var err error
+	filename := header.Filename
+	log.Println("filename =", filename)
+	pos := strings.LastIndex(filename, ".")
+	log.Println("pos =", filename[pos:])
+
+	create_path := "app/static/img/item/productid" + strproductid + "/" + filename
+
+	mkdir_path := "app/static/img/item/productid" + strproductid
+
+	// mkdir
+	err = os.Mkdir(mkdir_path, 0755)
+	if err != nil {
+		log.Println(err)
+	}
+
+	//create img file
+	//filepath := []string{create_path}
+	out, err := os.Create(create_path)
+	if err != nil {
+		log.Println("os.create err = ", err)
+	}
+
+	//file copy
+	_, err = io.Copy(out, file)
+	if err != nil {
+		log.Println("io.copy err = ", err)
+	}
+
+	defer out.Close()
+
+	//newpathpng := "app/static/img/item/productid" + strproductid + "/" + "1.png"
+	newpathjpg := "app/static/img/item/productid" + strproductid + "/" + image_number + ".jpg"
+
+	if filename[pos:] == ".png" {
+		if err := os.Rename(create_path, newpathjpg); err != nil {
+			log.Println(err)
+		}
+	} else {
+		if err := os.Rename(create_path, newpathjpg); err != nil {
+			log.Println(err)
+		}
+	}
+
+}
+
 func ItemRegist(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
@@ -83,20 +127,7 @@ func ItemRegist(c *gin.Context) {
 		description := c.PostForm("item-description")
 		amount := c.PostForm("price")
 		amountInt, _ := strconv.Atoi(amount)
-		amountInt64, _ := strconv.ParseInt(amount, 10, 64)
-
-		file, header, err := c.Request.FormFile("image")
-		if err != nil {
-			log.Println(err)
-			c.Redirect(302, "/test")
-			return
-		}
-
-		filename := header.Filename
-		log.Println("filename =", filename)
-		pos := strings.LastIndex(filename, ".")
-		log.Println("pos =", filename[pos:])
-
+		//amountInt64, _ := strconv.ParseInt(amount, 10, 64)
 		//get user id
 		userid := models.GetUserID(UserInfo.UserName)
 		//regist userid and get productid(pk)
@@ -104,63 +135,47 @@ func ItemRegist(c *gin.Context) {
 		//change int to str
 		strproductid := strconv.Itoa(productid)
 
-		create_path := "app/static/img/item/productid" + strproductid + "/" + filename
-
-		mkdir_path := "app/static/img/item/productid" + strproductid
-
-		// mkdir
-		err = os.Mkdir(mkdir_path, 0755)
+		file, header, err := c.Request.FormFile("image")
 		if err != nil {
 			log.Println(err)
+			c.Redirect(302, "/sell-items-form")
+			return
 		}
-
-		//create img file
-		filepath := []string{create_path}
-		out, err := os.Create(filepath[0])
+		CreateImage(file, header, "1", strproductid)
+		file2, header2, err := c.Request.FormFile("image2")
 		if err != nil {
-			log.Println("os.create err = ", err)
+			log.Println(err)
+			c.Redirect(302, "/sell-items-form")
+			return
 		}
-
-		//file copy
-		_, err = io.Copy(out, file)
+		CreateImage(file2, header2, "2", strproductid)
+		file3, header3, err := c.Request.FormFile("image3")
 		if err != nil {
-			log.Println("io.copy err = ", err)
+			log.Println(err)
+			c.Redirect(302, "/sell-items-form")
+			return
 		}
-
-		defer out.Close()
-
-		//newpathpng := "app/static/img/item/productid" + strproductid + "/" + "1.png"
-		newpathjpg := "app/static/img/item/productid" + strproductid + "/" + "1.jpg"
-
-		if filename[pos:] == ".png" {
-			if err := os.Rename(create_path, newpathjpg); err != nil {
-				log.Println(err)
+		CreateImage(file3, header3, "3", strproductid)
+		/*
+			//create stripe product
+			stripe.Key = config.Config.StripeKey
+			params := &stripe.ProductParams{
+				Name:        stripe.String(item),
+				Description: stripe.String(description),
+				Images:      stripe.StringSlice(filepath),
 			}
-		} else {
-			if err := os.Rename(create_path, newpathjpg); err != nil {
-				log.Println(err)
+			result, _ := product.New(params)
+
+			//create stripe price
+			params2 := &stripe.PriceParams{
+				Product:    stripe.String(result.ID),
+				UnitAmount: stripe.Int64(amountInt64),
+				Currency:   stripe.String("jpy"),
 			}
-		}
+			p, _ := price.New(params2)
 
-		//create stripe product
-		stripe.Key = config.Config.StripeKey
-		params := &stripe.ProductParams{
-			Name:        stripe.String(item),
-			Description: stripe.String(description),
-			Images:      stripe.StringSlice(filepath),
-		}
-		result, _ := product.New(params)
-
-		//create stripe price
-		params2 := &stripe.PriceParams{
-			Product:    stripe.String(result.ID),
-			UnitAmount: stripe.Int64(amountInt64),
-			Currency:   stripe.String("jpy"),
-		}
-		p, _ := price.New(params2)
-
-		//regist for productsdb
-		models.RegistProduct(productid, result.ID, p.ID)
+			//regist for productsdb*/
+		models.RegistProduct(productid, "null", "null")
 
 		c.Redirect(302, "/")
 

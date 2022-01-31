@@ -198,7 +198,7 @@ func GetProductTop() []Product {
 		log.Fatalln(err)
 	}
 
-	rows, err := DbConnection.Query("SELECT * FROM products LIMIT 21")
+	rows, err := DbConnection.Query("SELECT * FROM products LIMIT 99")
 	if err != nil {
 		log.Println(err)
 	}

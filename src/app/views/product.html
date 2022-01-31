@@ -3,20 +3,35 @@
 {{define "content"}}
 <div class="product-p-title"><p>商品</p></div>
 <div class="product-content-flex">
-  <a href="/image/{{.ProductId}}">
+  
     <div class="p-page-detail product-img-box">
-      {{if eq .SoldOut "1"}}
-        <div class="product-img-content">
-          <img src="../static/img/item/productid{{.ProductId}}/1.jpg" alt="" style="vertical-align: top;" id="product-img-c"> 
-        </div>
-        <div class="product-img-content-sold">
-          <img src="../static/img/SOLD OUTのラベルアイコン素材 2.svg" alt=""id="product-sold-img">
-        </div>
-      {{else}}
-        <img src="../static/img/item/productid{{.ProductId}}/1.jpg"  alt="" class="product-img-content" style="vertical-align: top;" id="product-img-c">
-      {{end}}
-    </div>
-  </a>
+      <div class="active-img">
+        <a href="/image/{{.ProductId}}">
+          {{if eq .SoldOut "1"}}
+            <div class="product-img-content">
+              <img src="../static/img/item/productid{{.ProductId}}/1.jpg" alt="" style="vertical-align: top;" id="p-img-soldout-1">
+              <img src="../static/img/item/productid{{.ProductId}}/2.jpg" alt="" style="vertical-align: top;" id="p-img-soldout-2">
+              <img src="../static/img/item/productid{{.ProductId}}/3.jpg" alt="" style="vertical-align: top;" id="p-img-soldout-3">
+
+            </div>
+            <div class="product-img-content-sold">
+              <img src="../static/img/SOLD OUTのラベルアイコン素材 2.svg" alt=""id="product-sold-img">
+            </div>
+          {{else}}
+            <img src="../static/img/item/productid{{.ProductId}}/1.jpg"  alt="" class="product-img-content" style="vertical-align: top;" id="p-img-1">
+            <img src="../static/img/item/productid{{.ProductId}}/2.jpg"  alt="" class="product-img-content" style="vertical-align: top;" id="p-img-2">
+            <img src="../static/img/item/productid{{.ProductId}}/3.jpg"  alt="" class="product-img-content" style="vertical-align: top;" id="p-img-3">
+
+          {{end}}
+        </a>
+      </div>
+      <div class="none-active-img">
+        <div class="none-active none-active1"><img src="../static/img/item/productid{{.ProductId}}/1.jpg" alt="" style="vertical-align: top;" id="product-img-c p-img-select-1"></div>
+        <div class="none-active none-active2"><img src="../static/img/item/productid{{.ProductId}}/2.jpg" alt="" style="vertical-align: top;" id="product-img-c p-img-select-2"></div>
+        <div class="none-active none-active3"><img src="../static/img/item/productid{{.ProductId}}/3.jpg" alt="" style="vertical-align: top;" id="product-img-c p-img-3select-"></div>
+      </div>
+    </div> 
+  
   
   <div class="p-page-detail product-detail">
     <div class="item-page-detail item-name"><p style="font-size: 22px;">{{.ItemName}}</p></div>

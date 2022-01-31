@@ -75,10 +75,14 @@ func mypageDetail(c *gin.Context) {
 		mkdir_path := "app/static/img/icon/userid" + struserid
 
 		// mkdir
-		err = os.Mkdir(mkdir_path, 0755)
-		if err != nil {
-			log.Println(err)
+		iconpath := others.IconFilePathCheck(struserid)
+		if iconpath == false {
+			err = os.Mkdir(mkdir_path, 0755)
+			if err != nil {
+				log.Println(err)
+			}
 		}
+
 		out, err := os.Create(create_path)
 		if err != nil {
 			log.Println("os.create err = ", err)

@@ -24,7 +24,7 @@
         {{if .personal}}
           <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">返品先情報は登録済です。</p></div>
         {{else}}
-        <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">返品先情報は未登録です。</p><a href="/return-personal-information-input">登録する</a></div>
+          <div style="margin-bottom: 10px;"><p style="color: rgb(255, 0, 0);">返品先情報は未登録です。</p><a href="/return-personal-information-input">登録する</a></div>
         {{end}}
         <div class="r-form ragist-form-item-name">
           <p>商品名</p>
@@ -38,7 +38,13 @@
           <p>商品価格</p><input type="number" name="price" required="required" max="99999999">円
         </div>
         <div class="ragist-form-item-image">
-          <p>商品画像</p><input type="file" name="image" accept=".png, .jpg" required="required">
+          <p>商品画像1</p><input type="file" name="image" accept=".png, .jpg" required="required">
+        </div>
+        <div class="ragist-form-item-image">
+          <p>商品画像2</p><input type="file" name="image2" accept=".png, .jpg" required="required">
+        </div>
+        <div class="ragist-form-item-image">
+          <p>商品画像3</p><input type="file" name="image3" accept=".png, .jpg" required="required">
         </div>
         <div class="agreement" style="margin: 10px 5px 10px 5px; border: 1px solid orange;">
           <object data="../static/txt/agreement.txt" type="text/plain" style="width: 100%;"></object>
