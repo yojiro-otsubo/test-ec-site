@@ -54,6 +54,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("helpBuyItemGuide", "app/views/base.html", "app/views/help/helpBuyItemGuide.html")
 	render.AddFromFiles("helpRulesAndManners", "app/views/base.html", "app/views/help/helpRulesAndManners.html")
 	render.AddFromFiles("helpReturnGuide", "app/views/base.html", "app/views/help/helpReturnGuide.html")
+	render.AddFromFiles("helpShippingGuide", "app/views/base.html", "app/views/help/helpShippingGuide.html")
 	render.AddFromFiles("helpInquiry", "app/views/base.html", "app/views/help/helpInquiry.html")
 	render.AddFromFiles("UserProductPage", "app/views/base.html", "app/views/user-product-page.html")
 	render.AddFromFiles("MyFollow", "app/views/base.html", "app/views/mypage/myfollow.html")
@@ -188,6 +189,7 @@ func StartWebServer() {
 	CSRFGroup.GET("/help/buy-item-guide", helpBuyItemGuide)
 	CSRFGroup.GET("/help/rules-and-manners", helpRulesAndManners)
 	CSRFGroup.GET("/help/return-guide", helpReturnGuide)
+	CSRFGroup.GET("/help/shipping-guide", helpShippingGuide)
 	CSRFGroup.GET("/help/inquiry", helpInquiry)
 
 	//--------------------follow.go--------------------

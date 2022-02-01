@@ -47,6 +47,11 @@
     margin-left: 5px;
 }
 
+.help-p a{
+    color: rgb(0, 150, 255)
+
+}
+
 @media (max-width: 799px) {
     .help-box-flex {
         display: flex;

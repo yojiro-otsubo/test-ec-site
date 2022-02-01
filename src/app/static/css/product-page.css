@@ -121,6 +121,9 @@
 .none-active3{
     border: 0.5px solid gainsboro;
 }
+
+
+
 @media (max-width: 799px) {
     .product-content-flex {
         display: flex;

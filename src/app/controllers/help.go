@@ -62,6 +62,18 @@ func helpReturnGuide(c *gin.Context) {
 		"login":    loginbool,
 	})
 }
+
+func helpShippingGuide(c *gin.Context) {
+	session := sessions.Default(c)
+	UserInfo.UserName = session.Get("UserName")
+	UserInfo.logintoken = session.Get("logintoken")
+	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
+	c.HTML(200, "helpShippingGuide", gin.H{
+		"title":    "発送ガイド",
+		"username": UserInfo.UserName,
+		"login":    loginbool,
+	})
+}
 func helpInquiry(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
