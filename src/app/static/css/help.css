@@ -52,6 +52,16 @@
 
 }
 
+.inquiry-email{
+    margin: 10px 0;
+}
+
+.inquiry-email input{
+    width: 100%;
+}
+.inquiry-submit{
+    text-align: right;
+}
 @media (max-width: 799px) {
     .help-box-flex {
         display: flex;

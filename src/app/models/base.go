@@ -128,7 +128,17 @@ func ConnectionDB() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
+	cmd10 := `CREATE TABLE IF NOT EXISTS inquiry (
+		id serial PRIMARY KEY, 
+		name VARCHAR(255), 
+		email VARCHAR(255), 
+		inquiry VARCHAR(2500), 
+		date VARCHAR(255)
+	);`
+	_, err = DbConnection.Exec(cmd10)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	//testテーブル作成
 	cmdtest := "CREATE TABLE IF NOT EXISTS test_db (id serial PRIMARY KEY, test VARCHAR(50));"
 	_, err = DbConnection.Exec(cmdtest)

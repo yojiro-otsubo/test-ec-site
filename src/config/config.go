@@ -21,6 +21,8 @@ type ConfigList struct {
 	GmailAddr  string
 	GmailUser  string
 	GmailPass  string
+	AdminPass  string
+	AdminToken string
 }
 
 var Config ConfigList
@@ -46,5 +48,7 @@ func init() {
 		GmailAddr:  cfg.Section("email").Key("addr").String(),
 		GmailUser:  cfg.Section("email").Key("username").String(),
 		GmailPass:  cfg.Section("email").Key("password").String(),
+		AdminPass:  cfg.Section("admin").Key("pass").String(),
+		AdminToken: cfg.Section("admin").Key("token").String(),
 	}
 }

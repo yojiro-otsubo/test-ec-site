@@ -21,6 +21,7 @@ type SessionInfo struct {
 	StripeAccount interface{}
 	provisional   interface{}
 	logintoken    interface{}
+	InquiryId     interface{}
 }
 
 var UserInfo SessionInfo
@@ -191,12 +192,14 @@ func StartWebServer() {
 	CSRFGroup.GET("/help/return-guide", helpReturnGuide)
 	CSRFGroup.GET("/help/shipping-guide", helpShippingGuide)
 	CSRFGroup.GET("/help/inquiry", helpInquiry)
+	CSRFGroup.POST("/help/post-inquiry", PostInquiry)
 
 	//--------------------follow.go--------------------
 	CSRFGroup.POST("/follow", Follow)
 	CSRFGroup.POST("/delete-follow", DeleteFollow)
 	CSRFGroup.GET("/myfollow", MyFollow)
 
+	//--------------------follow.go--------------------
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))
 
