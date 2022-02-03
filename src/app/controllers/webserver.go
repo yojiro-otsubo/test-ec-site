@@ -22,6 +22,7 @@ type SessionInfo struct {
 	provisional   interface{}
 	logintoken    interface{}
 	InquiryId     interface{}
+	Test          interface{}
 }
 
 var UserInfo SessionInfo
@@ -36,7 +37,9 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("purchaseHistory", "app/views/base.html", "app/views/mypage/purchaseHistory.html")
 	render.AddFromFiles("registeredItems", "app/views/base.html", "app/views/mypage/RegisteredItems.html")
 	render.AddFromFiles("SellItems", "app/views/base.html", "app/views/mypage/Sellitem.html")
-	render.AddFromFiles("test", "app/views/test.html")
+	render.AddFromFiles("test", "app/views/test/test.html")
+	render.AddFromFiles("testTop", "app/views/test/testTop.html")
+	render.AddFromFiles("testInquiry", "app/views/test/testInquiry.html")
 	render.AddFromFiles("product", "app/views/base.html", "app/views/product.html")
 	render.AddFromFiles("cart", "app/views/base.html", "app/views/mypage/cart.html")
 	render.AddFromFiles("checkout", "app/views/checkout.html")
@@ -72,6 +75,7 @@ func StartWebServer() {
 	r.Static("/static", "app/static")
 
 	store := cookie.NewStore([]byte("secret"))
+	store.Options(sessions.Options{MaxAge: 60 * 60 * 24})
 	CSRFGroup := r.Group("/")
 	CSRFGroup.Use(sessions.Sessions("mysession", store))
 	CSRFGroup.Use(csrf.Middleware(csrf.Options{
@@ -94,6 +98,9 @@ func StartWebServer() {
 
 	//--------------------test.go--------------------
 	CSRFGroup.GET("/test", test)
+	CSRFGroup.POST("/test/token", testToken)
+	CSRFGroup.GET("/test/top", testTop)
+	CSRFGroup.GET("/test/inquiry", testInquiry)
 
 	//--------------------top.go--------------------
 	//topページ
@@ -199,7 +206,6 @@ func StartWebServer() {
 	CSRFGroup.POST("/delete-follow", DeleteFollow)
 	CSRFGroup.GET("/myfollow", MyFollow)
 
-	//--------------------follow.go--------------------
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))
 

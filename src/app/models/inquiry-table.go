@@ -26,6 +26,7 @@ func InsertInquiry(name, email, inquiry string, date string) string {
 func GetInquiry(inquiry_id interface{}) (string, bool) {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
 
 	if err != nil {
 		log.Fatalln(err)
@@ -40,5 +41,40 @@ func GetInquiry(inquiry_id interface{}) (string, bool) {
 	}
 	log.Println(true, id, date)
 	return date, true
+
+}
+
+type Inquiry struct {
+	Id, Name, Email, InquiryMsg, Date string
+}
+
+func GetInquiryAll() []Inquiry {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	rows, err := DbConnection.Query("SELECT * FROM inquiry ORDER BY id DESC")
+	if err != nil {
+		log.Println(err)
+	}
+	defer rows.Close()
+
+	var inquiryResult []Inquiry
+	for rows.Next() {
+		var i Inquiry
+		err := rows.Scan(&i.Id, &i.Name, &i.Email, &i.InquiryMsg, &i.Date)
+		if err != nil {
+			log.Println(err)
+		}
+
+		inquiryResult = append(inquiryResult, i)
+
+	}
+
+	return inquiryResult
 
 }

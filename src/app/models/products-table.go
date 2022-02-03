@@ -93,7 +93,7 @@ func GetAllProductOfUserId(userid string) []Product {
 		log.Fatalln(err)
 	}
 
-	rows, err := DbConnection.Query("SELECT * FROM products WHERE user_id = $1", userid)
+	rows, err := DbConnection.Query("SELECT * FROM products WHERE user_id = $1 ORDER BY id DESC", userid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -198,7 +198,7 @@ func GetProductTop() []Product {
 		log.Fatalln(err)
 	}
 
-	rows, err := DbConnection.Query("SELECT * FROM products LIMIT 99")
+	rows, err := DbConnection.Query("SELECT * FROM products ORDER BY id DESC LIMIT 99")
 	if err != nil {
 		log.Println(err)
 	}
