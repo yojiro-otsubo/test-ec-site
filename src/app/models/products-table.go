@@ -27,7 +27,7 @@ func RegistProduct(pkid int, productid, priceid string) {
 
 }
 
-func RegistUserIdAndGetProductId(userid, amount int, item_name, description string) int {
+func RegistUserIdAndGetProductId(userid, amount int, item_name, description, category string) int {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	if err != nil {
@@ -38,9 +38,9 @@ func RegistUserIdAndGetProductId(userid, amount int, item_name, description stri
 	var id int
 	//temporary := "Temporary"
 
-	err = DbConnection.QueryRow("INSERT INTO products(user_id, item_name, description, amount, sold_out) VALUES($1, $2, $3, $4, $5) RETURNING id", userid, item_name, description, amount, "0").Scan(&id)
+	err = DbConnection.QueryRow("INSERT INTO products(user_id, item_name, description, amount, sold_out, category) VALUES($1, $2, $3, $4, $5, $6) RETURNING id", userid, item_name, description, amount, "0", category).Scan(&id)
 	if err != nil {
-		log.Println(err)
+		log.Println("RegistUserIdAndGetProductId", err)
 	}
 	log.Println("PRIMARY KEY = ", id)
 
@@ -49,7 +49,7 @@ func RegistUserIdAndGetProductId(userid, amount int, item_name, description stri
 }
 
 type Product struct {
-	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut string
+	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut, Category string
 }
 
 func GetTheProductOfUserId(userid int) []Product {
@@ -70,7 +70,7 @@ func GetTheProductOfUserId(userid int) []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -102,7 +102,7 @@ func GetAllProductOfUserId(userid string) []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -134,7 +134,7 @@ func GetSoldOutProductOfUserId(userid int) []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -168,7 +168,7 @@ func GetSippingOkProductOfUserId(userid int) []ProductArrival {
 	var productResult []ProductArrival
 	for rows.Next() {
 		var p ProductArrival
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -207,7 +207,7 @@ func GetProductTop() []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -229,9 +229,9 @@ func GetProduct(product_id string) [8]string {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	var Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut string
+	var Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut, Category string
 
-	err = DbConnection.QueryRow("SELECT * FROM products WHERE id = $1", product_id).Scan(&Id, &UserId, &StripeProductId, &StripePriceId, &ItemName, &Description, &Amount, &SoldOut)
+	err = DbConnection.QueryRow("SELECT * FROM products WHERE id = $1", product_id).Scan(&Id, &UserId, &StripeProductId, &StripePriceId, &ItemName, &Description, &Amount, &SoldOut, &Category)
 	if err != nil {
 		log.Println(err)
 	}
@@ -259,7 +259,7 @@ func GetProductFromCartDB(user_id interface{}, tax float64) []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -280,7 +280,7 @@ func GetProductFromCartDB(user_id interface{}, tax float64) []Product {
 }
 
 type ProductArrival struct {
-	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut, Arrival string
+	Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut, Arrival, Category string
 }
 
 func GetProductIdFromPaymentHistory(user_id interface{}) []ProductArrival {
@@ -301,7 +301,7 @@ func GetProductIdFromPaymentHistory(user_id interface{}) []ProductArrival {
 	var productResult []ProductArrival
 	for rows.Next() {
 		var p ProductArrival
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}
@@ -355,7 +355,7 @@ func GetProductPurchaseConfirmation(productid []int) []Product {
 	var productResult []Product
 	for rows.Next() {
 		var p Product
-		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut)
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
 		if err != nil {
 			log.Println(err)
 		}

@@ -123,6 +123,8 @@ func ItemRegist(c *gin.Context) {
 	if loginbool == true && models.CheckStripeAccountId(UserInfo.StripeAccount) == true {
 		var err error
 		//post data
+		category := c.PostForm("category")
+		log.Println(category)
 		item := c.PostForm("itemname")
 		description := c.PostForm("item-description")
 		amount := c.PostForm("price")
@@ -131,7 +133,7 @@ func ItemRegist(c *gin.Context) {
 		//get user id
 		userid := models.GetUserID(UserInfo.UserName)
 		//regist userid and get productid(pk)
-		productid := models.RegistUserIdAndGetProductId(userid, amountInt, item, description)
+		productid := models.RegistUserIdAndGetProductId(userid, amountInt, item, description, category)
 		//change int to str
 		strproductid := strconv.Itoa(productid)
 

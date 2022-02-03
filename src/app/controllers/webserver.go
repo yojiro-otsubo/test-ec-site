@@ -62,6 +62,7 @@ func createMultitemplate() multitemplate.Renderer {
 	render.AddFromFiles("helpInquiry", "app/views/base.html", "app/views/help/helpInquiry.html")
 	render.AddFromFiles("UserProductPage", "app/views/base.html", "app/views/user-product-page.html")
 	render.AddFromFiles("MyFollow", "app/views/base.html", "app/views/mypage/myfollow.html")
+	render.AddFromFiles("Search", "app/views/base.html", "app/views/Search.html")
 
 	return render
 }
@@ -205,6 +206,8 @@ func StartWebServer() {
 	CSRFGroup.POST("/follow", Follow)
 	CSRFGroup.POST("/delete-follow", DeleteFollow)
 	CSRFGroup.GET("/myfollow", MyFollow)
+	//--------------------search.go--------------------
+	CSRFGroup.POST("/search", Search)
 
 	//RUNサーバー
 	r.Run(fmt.Sprintf(":%d", config.Config.Port))

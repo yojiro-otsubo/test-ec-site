@@ -47,7 +47,8 @@ func ConnectionDB() {
 			item_name VARCHAR(255), 
 			description VARCHAR(1000), 
 			amount INT, 
-			sold_out INT
+			sold_out INT,
+			category VARCHAR(50)
 		);`
 	_, err = DbConnection.Exec(cmd2)
 	if err != nil {
@@ -146,7 +147,7 @@ func ConnectionDB() {
 		log.Fatalln(err)
 	}
 	/*
-		addcolumn := "ALTER TABLE users ADD COLUMN token VARCHAR(50);"
+		addcolumn := "ALTER TABLE products ADD COLUMN category VARCHAR(50);"
 		_, err = DbConnection.Exec(addcolumn)
 		if err != nil {
 			log.Fatalln(err)

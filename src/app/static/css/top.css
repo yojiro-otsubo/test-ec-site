@@ -29,6 +29,27 @@
     padding-left: 5px;
 }
 
+.top-category-search{
+    margin: 10px;
+}
+.top-category-checkbox{
+    width: 160px;
+    display: flex;
+    justify-content: left;
+}
+.top-category-checkbox-flex{
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+}
+
+.top-price-search{
+    margin: 10px 0;
+}
+.top-price-search select{
+    width: 100px;
+}
+
 @media (max-width: 799px) {
     .product-box {
         width: 152px;
