@@ -37,11 +37,7 @@
     display: flex;
     justify-content: left;
 }
-.top-category-checkbox-flex{
-    display: flex;
-    justify-content: left;
-    flex-wrap: wrap;
-}
+
 
 .top-price-search{
     margin: 10px 0;

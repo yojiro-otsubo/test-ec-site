@@ -44,6 +44,7 @@ func ProductPage(c *gin.Context) {
 			"username":        UserInfo.UserName,
 			"Amount":          taxamount,
 			"SoldOut":         product[7],
+			"Category":        product[8],
 		})
 	} else {
 		userid := models.GetUserID(UserInfo.UserName)
@@ -63,6 +64,7 @@ func ProductPage(c *gin.Context) {
 				"Amount":          taxamount,
 				"cart":            true,
 				"SoldOut":         product[7],
+				"Category":        product[8],
 			})
 		} else {
 			c.HTML(200, "product", gin.H{
@@ -80,6 +82,7 @@ func ProductPage(c *gin.Context) {
 				"Amount":          taxamount,
 				"cart":            false,
 				"SoldOut":         product[7],
+				"Category":        product[8],
 			})
 		}
 

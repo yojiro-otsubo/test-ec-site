@@ -7,31 +7,35 @@
     <form action="/search" method="post">
       <input type="hidden" name="_csrf" value="{{.csrfToken}}">
       <div class="top-category-checkbox-flex">
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="絵画"><p>絵画　件</p></div>
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="版画"><p>版画　件</p></div>
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="彫刻"><p>彫刻　件</p></div>
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="オブジェ"><p>オブジェ　件</p></div>
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="工芸"><p>工芸　件</p></div>
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="写真"><p>写真　件</p></div>
-        <div class="top-category-checkbox"><input type="checkbox" name="checkbox" value="その他"><p>その他　件</p></div>
+        <p>カテゴリー</p>
+        <select name="category" id="">
+          <option value="全て">全て</option>
+          <option value="その他">その他</option>
+          <option value="絵画">絵画</option>
+          <option value="版画">版画</option>
+          <option value="彫刻">彫刻</option>
+          <option value="オブジェ">オブジェ</option>
+          <option value="工芸">工芸</option>
+          <option value="写真">写真</option>
+        </select>
         
       </div>
       <div class="top-price-search">
         <p>価格上限</p>
         <select name="f">
-          <option value="none">設定なし</option>
+          <option value="設定なし">設定なし</option>
           <option value="10000">￥10000</option>
           <option value="100000">￥100000</option>
-          <option value="none">￥500000</option>
-          <option value="none">￥1000000</option>
+          <option value="500000">￥500000</option>
+          <option value="1000000">￥1000000</option>
 
         </select> 〜 
         <select name="l">
-          <option value="none">設定なし</option>
+          <option value="設定なし">設定なし</option>
           <option value="10000">￥10000</option>
           <option value="100000">￥100000</option>
-          <option value="none">￥500000</option>
-          <option value="none">￥1000000</option>
+          <option value="500000">￥500000</option>
+          <option value="1000000">￥1000000</option>
         </select>
       </div>
       <div>

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"log"
 	"main/app/models"
 
 	"github.com/gin-contrib/sessions"
@@ -13,24 +12,27 @@ func Search(c *gin.Context) {
 	session := sessions.Default(c)
 	UserInfo.UserName = session.Get("UserName")
 	UserInfo.logintoken = session.Get("logintoken")
-	checkbox := c.PostFormArray("checkbox")
-	log.Println(len(checkbox))
-
-	for i := 0; i < len(checkbox); i++ {
+	category := c.PostForm("category")
+	f_price := c.PostForm("f")
+	l_price := c.PostForm("l")
+	var products []models.Product
+	if category == "全て" {
+		products = models.GetProductSearchAll(f_price, l_price)
+	} else {
+		products = models.GetProductSearch(category, f_price, l_price)
 
 	}
 
 	loginbool := models.LoginTokenCheck(UserInfo.UserName, UserInfo.logintoken)
-	products := models.GetProductTop()
-	log.Println(UserInfo.UserName)
-	log.Println(loginbool)
-	log.Println(UserInfo.logintoken)
 	c.HTML(200, "Search", gin.H{
 		"title":     "Search",
 		"login":     loginbool,
 		"csrfToken": csrf.GetToken(c),
 		"products":  products,
 		"username":  UserInfo.UserName,
+		"c":         category,
+		"f":         f_price,
+		"l":         l_price,
 	})
 
 }

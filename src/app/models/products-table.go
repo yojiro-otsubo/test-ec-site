@@ -221,7 +221,7 @@ func GetProductTop() []Product {
 
 }
 
-func GetProduct(product_id string) [8]string {
+func GetProduct(product_id string) [9]string {
 	var err error
 	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
 	defer DbConnection.Close()
@@ -236,7 +236,7 @@ func GetProduct(product_id string) [8]string {
 		log.Println(err)
 	}
 
-	arr := [...]string{Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut}
+	arr := [...]string{Id, UserId, StripeProductId, StripePriceId, ItemName, Description, Amount, SoldOut, Category}
 	return arr
 }
 
@@ -405,4 +405,115 @@ func CountProduct(user_id int) string {
 		log.Println("count = ", count)
 		return count
 	}
+}
+
+func GetProductSearch(category, f_price, l_price string) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var rows *sql.Rows
+	if f_price == "設定なし" && l_price == "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE category = $1 ORDER BY id DESC LIMIT 99", category)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if f_price != "設定なし" && l_price == "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE category = $1 AND amount >= $2 ORDER BY id DESC LIMIT 99", category, f_price)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if f_price == "設定なし" && l_price != "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE category = $1 AND amount <= $2 ORDER BY id DESC LIMIT 99", category, l_price)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if f_price != "設定なし" && l_price != "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE category = $1 AND amount >= $2 AND amount <= $3 ORDER BY id DESC LIMIT 99", category, f_price, l_price)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
+
+}
+func GetProductSearchAll(f_price, l_price string) []Product {
+	var err error
+	DbConnection, err = sql.Open(config.Config.DBdriver, ConnectionInfo())
+	defer DbConnection.Close()
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	var rows *sql.Rows
+	if f_price == "設定なし" && l_price == "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products ORDER BY id DESC LIMIT 99")
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if f_price != "設定なし" && l_price == "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE amount >= $1 ORDER BY id DESC LIMIT 99", f_price)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if f_price == "設定なし" && l_price != "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE amount <= $1 ORDER BY id DESC LIMIT 99", l_price)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if f_price != "設定なし" && l_price != "設定なし" {
+		rows, err = DbConnection.Query("SELECT * FROM products WHERE amount >= $1 AND amount <= $2 ORDER BY id DESC LIMIT 99", f_price, l_price)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	defer rows.Close()
+
+	var productResult []Product
+	for rows.Next() {
+		var p Product
+		err := rows.Scan(&p.Id, &p.UserId, &p.StripeProductId, &p.StripePriceId, &p.ItemName, &p.Description, &p.Amount, &p.SoldOut, &p.Category)
+		if err != nil {
+			log.Println(err)
+		}
+		if p.Id != "" && p.UserId != "" && p.StripeProductId != "" && p.StripePriceId != "" && p.ItemName != "" && p.Description != "" && p.Amount != "" {
+			productResult = append(productResult, p)
+		}
+	}
+	//log.Println(productResult)
+
+	return productResult
+
 }
